@@ -1,4 +1,4 @@
-ARG TAG=current-alpine3.14
+ARG TAG=current-alpine
 
 FROM node:$TAG as production 
 
@@ -10,14 +10,10 @@ WORKDIR /usr/src/app
 
 COPY package*.json ./
 
-RUN  npm install -g npm@"V"
-
-RUN npm install
-
-RUN npm install glob rimraf nest
+RUN npm i
 
 COPY . .
 
-RUN npm run build
+RUN npm run build && npm uninstall @nestjs/cli --save
 
 CMD ["node", "dist/main"]
