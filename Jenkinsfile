@@ -24,7 +24,7 @@ pipeline{
 
              steps{
                  
-                  echo "Bonjour je suis B, je suis à la recherche du jus de pomme"
+                  echo "Bonjour je suis B, je suis à la recherche du jus"
 
              }   
         
