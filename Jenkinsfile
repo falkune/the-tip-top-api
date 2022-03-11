@@ -19,6 +19,17 @@ pipeline{
                 }
             }
         }
+
+        stage ("B") {
+
+             steps{
+                 
+                  echo "Bonjour je suis B, je suis à la recherche du jus de pomme"
+
+             }   
+        
+        
+        }
     }
     post{
         always{
