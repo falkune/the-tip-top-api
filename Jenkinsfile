@@ -6,22 +6,30 @@ pipeline{
     
     stages{
 
-        stage("git"){       
-              steps {
-                 echo "GIT"
-              }
+        stage("clean"){
+
+            parallel{
+
+              stage("system"){
+                  steps {
+                     sh "printenv"
+                  }
+               }
+
+               stage("docker"){
+                    steps {
+                        sh "docker info"
+                        sh "docker images"
+                    }
+               }
+                   
            }
+        }
+
 
         stage("build") {
 
             parallel {
-               
-               stage("docker"){
-                   steps {
-                       sh "docker images"
-                       echo "The docker host prod is ${env.DOCKER_PROD_HOST}"
-                   }
-               }
 
                stage("postgres"){
                    steps{
