@@ -7,15 +7,22 @@ pipeline{
         stage("build") {
 
             parallel {
+               
+               stage("docker"){
+                   steps {
+                       sh "docker images"
+                   }
+               }
+
                stage("postgres"){
                    steps{
-                     sh "echo build ID:  ${env.BUILD_ID}"
+                     echo "build ID:  ${env.BUILD_ID}"
                  }    
                }
 
                stage("api") {
                    steps{
-                       sh "echo Build Tag is: ${env.BUILD_TAG}"
+                       echo "Build Tag is: ${env.BUILD_TAG}"
                    }
                }
 
@@ -24,14 +31,14 @@ pipeline{
 
         stage("registry") {
             steps{
-                sh "echo deploy images to the private registry"
+                echo "deploy images to the private registry"
             }
         }
 
 
         stage("test"){
            steps{
-               sh "echo launch test env"
+               echo "launch test env"
            }
         }
 
@@ -42,13 +49,13 @@ pipeline{
 
                 stage ('pre-prod'){
                     steps{
-                        sh "echo launch preprod containers"
+                        echo "aunch preprod containers"
                     }
                 }
 
                 stage('prod'){
                     steps {
-                        sh "echo launch prod containers"
+                        echo "launch prod containers"
                     }
                 }
             }
