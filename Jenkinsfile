@@ -1,7 +1,7 @@
 pipeline{
     agent any
     environment {
-      DOCKER_PROD_HOST: "tcp://45.155.170.65:2375"
+      DOCKER_PROD_HOST="tcp://45.155.170.65:2375"
     }  
     
     stages{
