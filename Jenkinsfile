@@ -1,8 +1,16 @@
 pipeline{
-    
-    agent any 
+    agent any
+    environment {
+      DOCKER_PROD_HOST "tcp://45.155.170.65:2375"
+    }  
     
     stages{
+
+        stage("git"){       
+              steps {
+                 echo "GIT"
+              }
+           }
 
         stage("build") {
 
@@ -11,6 +19,7 @@ pipeline{
                stage("docker"){
                    steps {
                        sh "docker images"
+                       echo "The docker host prod is ${env.DOCKER_PROD_HOST}"
                    }
                }
 
