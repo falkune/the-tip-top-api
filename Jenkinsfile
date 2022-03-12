@@ -31,7 +31,7 @@ pipeline{
 
         stage("test"){
            steps{
-               sh "launch test env"
+               sh "echo launch test env"
            }
         }
 
