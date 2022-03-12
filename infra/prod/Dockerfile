@@ -1,19 +1,29 @@
-ARG TAG=current-alpine
 
-FROM node:$TAG as production 
+FROM node:alpine As development
+
+WORKDIR /usr/src/app
+
+COPY package*.json ./
+
+RUN npm update && npm install --only=development
+
+COPY . .
+
+RUN npm run build
+
+FROM node:alpine as production
 
 ARG NODE_ENV=production
-
 ENV NODE_ENV=${NODE_ENV}
 
 WORKDIR /usr/src/app
 
 COPY package*.json ./
 
-RUN npm i
+RUN npm install --only=production
 
 COPY . .
 
-RUN npm run build && npm uninstall @nestjs/cli --save
+COPY --from=development /usr/src/app/dist ./dist
 
 CMD ["node", "dist/main"]

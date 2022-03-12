@@ -1,45 +1,48 @@
 pipeline{
-
+    
     agent any 
-
+    
     stages{
-        stage("A"){
+
+        stage("build") {
+
+            parallel {
+               stage("postgres"){
+                   steps{
+                     sh "echo build ${env.BUILD_ID}"
+                 }    
+               }
+
+               stage("api") {
+                   steps{
+                       sh "echo api ${env.BUILD_TAG}"
+                   }
+               }
+
+            }
+        }
+
+        stage("registry") {
             steps{
-                echo "========executing A==========="
-            }
-            post{
-                always{
-                    echo "========always========"
-                }
-                success{
-                    echo "========A executed successfully========"
-                }
-                failure{
-                    echo "========A execution failed========"
-                }
+                sh "deploy images to the private registry"
             }
         }
 
-        stage ("B") {
 
-             steps{
-                 
-                  echo "Bonjour je suis, je suis à la recherche du jus"
+        stage("test"){
+           steps{
+               sh "launch test env"
+           }
+        }
 
-             }   
-        
-        
-        }
+
+        stage("deploy"){
+            steps{
+                sh "launch prod env"
+            }
+         
+         }
+    
     }
-    post{
-        always{
-            echo "========always========"
-        }
-        success{
-            echo "========pipeline executed successfully ========"
-        }
-        failure{
-            echo "========pipeline execution failed========"
-        }
-    }
+    
 }
