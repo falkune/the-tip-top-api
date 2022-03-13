@@ -56,7 +56,7 @@ pipeline{
             
             stage("login"){        
                steps{
-                   sh "docker login -u $REGISTRY_CRED_USR -P $REGISTRY_CRED_PSW"
+                   sh "docker login -u ${env.REGISTRY_CRED_USR} -p ${env.REGISTRY_CRED_PSW} http://${env.DOCKER_PRIVATE_REGISTER}"
                 }
               }
             
