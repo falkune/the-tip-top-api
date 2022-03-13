@@ -3,6 +3,7 @@ pipeline{
     environment {
       DOCKER_PROD_HOST="tcp://45.155.170.65:2375"
       DOCKER_PRIVATE_REGISTER="localhost:8083"
+      REGISTRY_CRED=credentials('jenkins-registry-credential')
     }
       
     stages{
@@ -50,6 +51,15 @@ pipeline{
         }
 
         stage("registry") {
+        
+          stages{
+            
+            stage("login"){        
+               steps{
+                   sh "docker login -u $REGISTRY_CRED_USER -P $REGISTRY_CRED_PSW"
+               }
+            }
+            
             parallel {   
                stage("postgres"){   
                    steps{
@@ -65,7 +75,7 @@ pipeline{
 
               }
             }
-
+          }
         }
 
 
