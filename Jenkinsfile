@@ -2,32 +2,11 @@ pipeline{
     agent any
     environment {
       DOCKER_PROD_HOST="tcp://45.155.170.65:2375"
-      DOCKER_PRIVATE_REGISTER="localhost:8083"
+      DOCKER_PRIVATE_REGISTER="registry.dsp-archiwebo21-ct-df-an-cd.fr"
       REGISTRY_CRED=credentials('jenkins-registry-credential')
     }
       
     stages{
-
-        stage("clean"){
-
-            parallel{
-
-              stage("system"){
-                  steps {
-                     sh "printenv"
-                  }
-               }
-
-               stage("docker"){
-                    steps {
-                        sh "docker info"
-                        sh "docker images"
-                    }
-               }
-                   
-           }
-        }
-
 
         stage("build") {
 
@@ -43,7 +22,7 @@ pipeline{
                        branch "dev"
                    }
                    steps{
-                       sh "docker build -t ${env.DOCKER_PRIVATE_REGISTER}/thetiptop/api:${env.BRANCH_NAME}_${env.BUILD_ID} -f infra/test/Dockerfile ."  
+                       sh "docker build -t ${env.DOCKER_PRIVATE_REGISTER}/thetiptop/api:${env.BRANCH_NAME}${env.BUILD_ID} -f infra/test/Dockerfile ."  
                    }
                }
 
@@ -56,7 +35,8 @@ pipeline{
             
             stage("login"){        
                steps{
-                   sh "docker login -u ${env.REGISTRY_CRED_USR} -p ${env.REGISTRY_CRED_PSW} http://${env.DOCKER_PRIVATE_REGISTER}"
+                   echo "Login to the docker private registry"
+                   sh "docker login -u ${env.REGISTRY_CRED_USR} -p ${env.REGISTRY_CRED_PSW} ${env.DOCKER_PRIVATE_REGISTER}"
                 }
               }
             
@@ -71,7 +51,7 @@ pipeline{
                     stage("api"){      
                         steps{
                             echo "push api image to the private registry"
-                            sh "docker push ${env.DOCKER_PRIVATE_REGISTER}/thetiptop/api:${env.BRANCH_NAME}_${env.BUILD_ID}"
+                            sh "docker push ${env.DOCKER_PRIVATE_REGISTER}/thetiptop/api:${env.BRANCH_NAME}${env.BUILD_ID}"
                         }
 
                     }
