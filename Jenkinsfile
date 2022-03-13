@@ -51,7 +51,8 @@ pipeline{
         }
 
         stage("registry") {
-        
+           
+           stages{
             
             stage("login"){        
                steps{
@@ -59,22 +60,26 @@ pipeline{
                 }
               }
             
-            parallel {   
-               stage("postgres"){   
-                   steps{
-                       echo "push postgres image to the docker private registry"
+            stage("push"){
+                    parallel {   
+                    stage("postgres"){   
+                        steps{
+                            echo "push postgres image to the docker private registry"
+                            }
+                        }
+
+                    stage("api"){      
+                        steps{
+                            echo "push api image to the private registry"
+                            sh "docker push ${env.DOCKER_PRIVATE_REGISTER}/thetiptop/api:${env.BRANCH_NAME}_${env.BUILD_ID}"
+                        }
+
                     }
                 }
-
-              stage("api"){      
-                 steps{
-                    echo "push api image to the private registry"
-                    sh "docker push ${env.DOCKER_PRIVATE_REGISTER}/thetiptop/api:${env.BRANCH_NAME}_${env.BUILD_ID}"
-                }
-
-              }
             }
           }
+        }
+    
         
 
 
