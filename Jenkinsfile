@@ -38,8 +38,11 @@ pipeline{
                }
 
                stage("api") {
+                   when{
+                       branch "dev"
+                   }
                    steps{
-                       sh "docker build -t thetiptop/api:${env.BRANCH_NAME}_${env.BUILD_ID} -f ./infra/dev/Dockerfile ."  
+                       sh "docker build -t thetiptop/api:${env.BRANCH_NAME}_${env.BUILD_ID} -f infra/test/Dockerfile ."  
                    }
                }
 
