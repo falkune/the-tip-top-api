@@ -2,7 +2,7 @@ pipeline{
     agent any
     environment {
       DOCKER_PROD_HOST="tcp://45.155.170.65:2375"
-      DOCKER_PRIVATE_REGISTER="http://172.12.14.1:8083"
+      DOCKER_PRIVATE_REGISTER="http://localhost:8083"
     }
       
     stages{
