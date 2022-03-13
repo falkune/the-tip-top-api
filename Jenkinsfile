@@ -18,9 +18,6 @@ pipeline{
                }
 
                stage("api") {
-                   when{
-                       branch "dev"
-                   }
                    steps{
                        sh "docker build -t ${env.DOCKER_PRIVATE_REGISTER}/thetiptop/api:${env.BRANCH_NAME}${env.BUILD_ID} -f infra/test/Dockerfile ."  
                    }
