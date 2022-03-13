@@ -3,8 +3,8 @@ pipeline{
     environment {
       DOCKER_PROD_HOST="tcp://45.155.170.65:2375"
       DOCKER_PRIVATE_REGISTER="http://172.12.14.1:8083"
-    }  
-    
+    }
+      
     stages{
 
         stage("clean"){
@@ -31,18 +31,15 @@ pipeline{
         stage("build") {
 
             parallel {
-
                stage("postgres"){
                    steps{
-                     echo "build ID:  ${env.BUILD_ID}"
+                     echo "build the postgres image"
                  }    
                }
 
                stage("api") {
                    steps{
-                       echo "Build Tag is: ${env.BUILD_TAG}"
-                       sh "docker build -t "
-                       
+                       sh "docker build -t thetiptop/api:${env.BRANCH_NAME}_${env.BUILD_ID} -f infra/dev/Dockerfile ."  
                    }
                }
 
@@ -50,9 +47,22 @@ pipeline{
         }
 
         stage("registry") {
-            steps{
-                echo "deploy images to the private registry"
+            parallel {   
+               stage("postgres"){   
+                   steps{
+                       echo "push postgres image to the docker private registry"
+                    }
+                }
+
+              stage("api"){      
+                 steps{
+                    echo "push api image to the private registry"
+                    sh "docker push ${env.DOCKER_PRIVATE_REGISTER}/docker-private/ thetiptop/api:${env.BRANCH_NAME}_${env.BUILD_ID}"
+                }
+
+              }
             }
+
         }
 
 
@@ -69,7 +79,7 @@ pipeline{
 
                 stage ('pre-prod'){
                     steps{
-                        echo "aunch preprod containers"
+                        echo "launch preprod containers"
                     }
                 }
 
