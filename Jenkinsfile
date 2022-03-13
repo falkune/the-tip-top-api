@@ -82,7 +82,7 @@ pipeline{
 
                 stage('prod'){
                     steps {
-                        echo "launch prod containers"
+                        echo "launch prod containers to"
                     }
                 }
 
