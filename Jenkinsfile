@@ -60,7 +60,7 @@ pipeline{
               stage("api"){      
                  steps{
                     echo "push api image to the private registry"
-                    sh "docker push ${env.DOCKER_PRIVATE_REGISTER}/docker-private/thetiptop/api:${env.BRANCH_NAME}_${env.BUILD_ID}"
+                    sh "docker push ${env.DOCKER_PRIVATE_REGISTER}/thetiptop/api:${env.BRANCH_NAME}_${env.BUILD_ID}"
                 }
 
               }
