@@ -9,12 +9,11 @@ pipeline{
     stages{
 
         stage("build") {
-
             parallel {
-               stage("postgres"){
+               stage("mongodb"){
                    steps{
                      echo "build the postgres image"
-                 }    
+                  }    
                }
 
                stage("api") {
@@ -39,7 +38,7 @@ pipeline{
             
             stage("push"){
                     parallel {   
-                    stage("postgres"){   
+                    stage("mongodb"){   
                         steps{
                             echo "push postgres image to the docker private registry"
                             }
@@ -50,20 +49,34 @@ pipeline{
                             echo "push api image to the private registry"
                             sh "docker push ${env.DOCKER_PRIVATE_REGISTER}/thetiptop/api:${env.BRANCH_NAME}${env.BUILD_ID}"
                         }
-
                     }
                 }
             }
           }
         }
-    
-        
-
 
         stage("test"){
-           steps{
-               echo "launch test env"
-           }
+            agent {
+                docker {
+                    image "node:alpine"
+                    command "npm install"
+                }
+            }
+
+            stages {
+                
+                 stage("coverage") {
+                    steps{
+                     sh "npm run test:cov"                 
+                    }
+                 }
+
+                 stage("e2e"){
+                     steps{
+                        sh "npm run test:e2e"
+                     }
+                 }
+            }
         }
 
 
