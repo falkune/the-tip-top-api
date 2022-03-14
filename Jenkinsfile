@@ -18,7 +18,7 @@ pipeline{
 
                stage("api") {
                    steps{
-                       sh "docker build -t ${env.DOCKER_PRIVATE_REGISTER}/thetiptop/api:${env.BRANCH_NAME}${env.BUILD_ID} -f infra/test/Dockerfile ."  
+                       sh "docker build -t ${env.DOCKER_PRIVATE_REGISTER}/thetiptop/api:${env.BRANCH_NAME}${env.BUILD_ID} -f infra/dev/Dockerfile ."  
                    }
                }
 
