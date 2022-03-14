@@ -59,7 +59,6 @@ pipeline{
             agent {
                 docker {
                     image "node:alpine"
-                    command "npm install"
                 }
             }
 
@@ -67,6 +66,7 @@ pipeline{
                 
                  stage("coverage") {
                     steps{
+                     sh "npm install"
                      sh "npm run test:cov"                 
                     }
                  }
