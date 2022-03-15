@@ -118,7 +118,7 @@ pipeline{
             parallel{
                 stage ('pre-prod'){
                     when{
-                        expression { branch 'release' }
+                         branch 'release' 
                     }
                     steps{
                         echo "publish preprod"
@@ -127,7 +127,7 @@ pipeline{
 
                 stage('prod'){
                     when {
-                        expression { branch 'main' }
+                        branch 'main' 
                     }
                     steps {
                         echo "publish to prod"
