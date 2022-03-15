@@ -10,8 +10,7 @@ pipeline{
 
         stage("build") {
             parallel {
-               stage("mongodb"){
-                  
+               stage("mongodb"){     
                 stages {
                   
                    stage("release"){  
@@ -57,21 +56,36 @@ pipeline{
 
         stage("registry") {
                 when { expression { BRANCH_NAME ==~ /(main|release)/ } }
-                parallel {   
-                        stage("mongodb"){   
-                            steps{
-                                  echo "push postgres image to the docker private registry"
-                                }
-                            }
+                stages {
 
-                        stage("api"){      
-                            steps{
-                                echo "push api image to the private registry"
-                                sh "docker push ${env.DOCKER_PRIVATE_REGISTER}/thetiptop/api:${env.BRANCH_NAME}${env.BUILD_ID}"
-                            }
+                      stage("login"){
+                         
+                           steps{
+                                  echo "Login to the docker private registry"
+                                  sh "docker login -u ${env.REGISTRY_CRED_USR} -p ${env.REGISTRY_CRED_PSW} ${env.DOCKER_PRIVATE_REGISTER}"
+                              }
                         }
-                    }
-            }
+                      
+                      stage("push"){
+
+                          parallel {
+                          
+                                stage("mongodb"){   
+                                    steps{
+                                        echo "push postgres image to the docker private registry"
+                                        }
+                                    }
+
+                                stage("api"){      
+                                    steps{
+                                        echo "push api image to the private registry"
+                                        sh "docker push ${env.DOCKER_PRIVATE_REGISTER}/thetiptop/api:${env.BRANCH_NAME}${env.BUILD_ID}"
+                                    }
+                                }
+                          }
+                      }
+                 }
+             }
 
         stage("test"){
             
@@ -81,7 +95,7 @@ pipeline{
         
             agent {
                 docker {
-                    image "index.docker.io/node:alpine"
+                    image "node:alpine"
                 }
             }
 
