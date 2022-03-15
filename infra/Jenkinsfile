@@ -88,13 +88,20 @@ pipeline{
              }
 
         stage("test"){
+            
             when {branch "dev"}
-            agent { docker { image "node:alpine" }}
-            parallel{
+        
+            agent {
+                docker {
+                    image "node:alpine"
+                }
+            }
+
+            stages {
                  stage("coverage") {
                     steps{
-                        sh "npm install"
-                        sh "npm run test:cov"                 
+                     sh "npm install"
+                     sh "npm run test:cov"                 
                     }
                  }
 
