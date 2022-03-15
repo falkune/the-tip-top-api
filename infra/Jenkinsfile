@@ -11,15 +11,46 @@ pipeline{
         stage("build") {
             parallel {
                stage("mongodb"){
-                   steps{
-                     echo "build the postgres image"
-                  }    
-               }
+                  
+                stages {
+                  
+                   stage("release"){  
+                          when {branch 'release'}
+                          steps {
+                              echo "build db release version"
+                          }
+                    }
+
+                   stage("stable"){
+                       when{branch 'main'}
+                       steps{
+                           echo "build stable db version"
+                       }
+                    }
+                }
+            
+             }
 
                stage("api") {
-                   steps{
-                       sh "docker build -t ${env.DOCKER_PRIVATE_REGISTER}/thetiptop/api:${env.BRANCH_NAME}${env.BUILD_ID} -f infra/dev/api/Dockerfile ."  
-                   }
+
+                    stages {
+                  
+                        stage("release"){  
+                                when {branch 'release'}
+                                  steps{
+                                   sh "docker build -t ${env.DOCKER_PRIVATE_REGISTER}/thetiptop/api:${env.BRANCH_NAME}${env.BUILD_ID} -f infra/dev/api/Dockerfile ."  
+                                }
+                         }
+
+                        stage("stable"){
+                            when{branch 'main'}
+                               steps{
+                                sh "docker build -t ${env.DOCKER_PRIVATE_REGISTER}/thetiptop/api:${env.BRANCH_NAME}${env.BUILD_ID} -f infra/dev/api/Dockerfile ."     
+                             } 
+                        
+                         }
+              
+                     }
                }
             }
         }
@@ -55,6 +86,11 @@ pipeline{
         }
 
         stage("test"){
+            
+            when {
+                branch "dev"
+            }
+        
             agent {
                 docker {
                     image "node:alpine"
@@ -80,17 +116,23 @@ pipeline{
 
         stage("deploy"){
 
-            stages{
+            parallel{
 
                 stage ('pre-prod'){
+                    when{
+                        expression { branch "release" }
+                    }
                     steps{
-                        echo "launch preprod containers"
+                        echo "publish preprod"
                     }
                 }
 
                 stage('prod'){
+                    when {
+                        expression { branch "main" }
+                    }
                     steps {
-                        echo "launch prod containers to"
+                        echo "publish to prod"
                     }
                 }
 

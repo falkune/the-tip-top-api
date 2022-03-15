@@ -1,7 +1,7 @@
 version: "3.8"
 
 networks:
-  api-prod-network:
+  prod:
      external: true  
 
 volumes:
@@ -14,7 +14,7 @@ services:
     volumes:
       - db:data:/data/db
     networks:
-      - api-prod-network 
+      - prod 
   api:
     image: ${BASE_IMG}/api:${API_PROD_TAG_IMG}
     labels:
@@ -26,4 +26,4 @@ services:
         - traefik.http.services.api.loadbalancer.server.port=3000
     container_name: api
     networks:
-      - api-prod-network
+      - prod
