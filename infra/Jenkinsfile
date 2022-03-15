@@ -88,9 +88,6 @@ pipeline{
              }
 
         stage("test"){
-            
-            when {branch "dev"}
-        
             agent {
                 docker {
                     image "node:alpine"
@@ -99,6 +96,7 @@ pipeline{
 
             stages {
                  stage("coverage") {
+                     when {branch "dev"}
                     steps{
                      sh "npm install"
                      sh "npm run test:cov"                 
@@ -106,6 +104,7 @@ pipeline{
                  }
 
                  stage("e2e"){
+                     when {branch "dev"}
                      steps{
                         sh "npm run test:e2e"
                      }
