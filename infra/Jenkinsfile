@@ -101,7 +101,7 @@ pipeline{
                      sh "npm install"
                      sh "npm run test:cov"
                      sh "ls"
-                     junit 'coverage/*.xml'
+                     publishCoverage adapters: [jacocoAdapter('coverage/clover.xml')]
                  
                     }
                  }
