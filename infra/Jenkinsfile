@@ -81,7 +81,7 @@ pipeline{
         
             agent {
                 docker {
-                    image "node:alpine"
+                    image "index.docker.io/node:alpine"
                 }
             }
 
