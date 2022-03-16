@@ -3,13 +3,13 @@ import { CreateTicketDto } from './dto/create-ticket.dto';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
 
 @Injectable()
-export class TicketsService {
+export class TicketService {
   create(createTicketDto: CreateTicketDto) {
     return 'This action adds a new ticket';
   }
 
   findAll() {
-    return `This action returns all tickets`;
+    return `This action returns all ticket`;
   }
 
   findOne(id: number) {
