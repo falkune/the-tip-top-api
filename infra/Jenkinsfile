@@ -16,14 +16,14 @@ pipeline{
                    stage("release"){  
                           when {branch 'release'}
                           steps {
-                              echo "build db release version"
+                              sh "scripts/build.sh"
                           }
                     }
 
                    stage("stable"){
                        when{branch 'main'}
                        steps{
-                           echo "build stable db version"
+                           sh "scripts/build.sh"
                        }
                     }
             
@@ -37,14 +37,14 @@ pipeline{
                         stage("release"){  
                                 when {branch 'release'}
                                   steps{
-                                   sh "docker build -t ${env.DOCKER_PRIVATE_REGISTER}/thetiptop/api:${env.BRANCH_NAME}${env.BUILD_ID} -f infra/dev/api/Dockerfile ."  
+                                   sh "scripts/build.sh"  
                                 }
                          }
 
                         stage("stable"){
                             when{branch 'main'}
                                steps{
-                                sh "docker build -t ${env.DOCKER_PRIVATE_REGISTER}/thetiptop/api:${env.BRANCH_NAME}${env.BUILD_ID} -f infra/dev/api/Dockerfile ."     
+                                sh "scripts/build.sh"     
                              } 
                         
                          }
@@ -62,7 +62,7 @@ pipeline{
                          
                            steps{
                                   echo "Login to the docker private registry"
-                                  sh "docker login -u ${env.REGISTRY_CRED_USR} -p ${env.REGISTRY_CRED_PSW} ${env.DOCKER_PRIVATE_REGISTER}"
+                                  sh "scripts/login.sh"    
                               }
                         }
                       
@@ -73,13 +73,14 @@ pipeline{
                                 stage("mongodb"){   
                                     steps{
                                         echo "push postgres image to the docker private registry"
+                                         sh "scripts/registry.sh"    
                                         }
                                     }
 
                                 stage("api"){      
                                     steps{
                                         echo "push api image to the private registry"
-                                        sh "docker push ${env.DOCKER_PRIVATE_REGISTER}/thetiptop/api:${env.BRANCH_NAME}${env.BUILD_ID}"
+                                        sh "scripts/registry.sh"    
                                     }
                                 }
                           }
@@ -98,9 +99,7 @@ pipeline{
                  stage("coverage") {
                      when {branch "dev"}
                     steps{
-                     sh "npm install"
-                     sh "npm run test:cov"
-                     sh "ls"
+                     sh "scripts/test.sh"
                      clover(cloverReportDir: 'coverage', cloverReportFileName: 'clover.xml',
                         // optional, default is: method=70, conditional=80, statement=80
                         healthyTarget: [methodCoverage: 70, conditionalCoverage: 80, statementCoverage: 80],
@@ -116,7 +115,7 @@ pipeline{
                  stage("e2e"){
                      when {branch "dev"}
                      steps{
-                        sh "npm run test:e2e"
+                        sh "scripts/test.sh"
                      }
                  }
             }
@@ -132,6 +131,7 @@ pipeline{
                     }
                     steps{
                         echo "publish preprod"
+                        sh "scripts/deploy.sh"    
                     }
                 }
 
@@ -141,6 +141,7 @@ pipeline{
                     }
                     steps {
                         echo "publish to prod"
+                        sh "scripts/deploy.sh"    
                     }
                 }
 
