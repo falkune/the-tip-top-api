@@ -1,7 +1,7 @@
 <div align="center">
   <img width="250" src="https://camo.githubusercontent.com/18fe3feea5e3593c593e12e552494a3995eceacf/687474703a2f2f6b616d696c6d79736c69776965632e636f6d2f7075626c69632f6e6573742d6c6f676f2e706e672331" alt="Awesome">
   <br>
-  <h3>real-world-example-nestjs-mongoose-jwt-auth-roles-and-permission</h3>
+  <h3>api groupe 6 dsp5</h3>
   <hr>
 </div>
 
@@ -55,4 +55,4 @@ This example repo uses the NestJS swagger module for API documentation. [NestJS 
 
 ## Authors
 
- **Pejman Hadavi**
+ **Groupe 6 dsp5_2021/2022**
