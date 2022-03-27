@@ -121,7 +121,7 @@ pipeline{
                  stage("e2e"){
                      when {branch "dev"}
                      steps{
-                        sh "npm test run" 
+                        sh "npm run test:e2e" 
                      }
                  }
             }
