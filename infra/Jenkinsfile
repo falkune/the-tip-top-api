@@ -100,6 +100,10 @@ pipeline{
                      when {branch "dev"}
                     steps{
                      sh "scripts/test.sh"
+                 }
+
+                 post {
+
                      clover(cloverReportDir: 'coverage', cloverReportFileName: 'clover.xml',
                         // optional, default is: method=70, conditional=80, statement=80
                         healthyTarget: [methodCoverage: 70, conditionalCoverage: 80, statementCoverage: 80],
@@ -110,6 +114,7 @@ pipeline{
                         )
                  
                     }
+                     
                  }
 
                  stage("e2e"){
