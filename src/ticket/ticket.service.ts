@@ -39,7 +39,8 @@ export class TicketService {
     // │ │├─┘ ││├─┤ │ ├┤   ├─┤├┬┘ │ ││  │  ├┤     ├─┤│  │    ├─┘├─┤├┬┘├─┤│││└─┐  
     // └─┘┴  ─┴┘┴ ┴ ┴ └─┘  ┴ ┴┴└─ ┴ ┴└─┘┴─┘└─┘    ┴ ┴┴─┘┴─┘  ┴  ┴ ┴┴└─┴ ┴┴ ┴└─┘  \
     async updateTicketPut(id: string, createTicketDto: CreateTicketDto): Promise<Ticket> {
-        return await this.ticketModel.updateOne({_id: id}, createTicketDto);
+        // return await this.ticketModel.updateOne({_id: id}, createTicketDto);
+        return null
     }
 
     // ┌┬┐┌─┐┬  ┌─┐┌┬┐┌─┐  ┌─┐┌┐┌┌─┐  ┌─┐┬─┐┌┬┐┬┌─┐┬  ┌─┐
