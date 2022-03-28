@@ -1,58 +1,73 @@
-<div align="center">
-  <img width="250" src="https://camo.githubusercontent.com/18fe3feea5e3593c593e12e552494a3995eceacf/687474703a2f2f6b616d696c6d79736c69776965632e636f6d2f7075626c69632f6e6573742d6c6f676f2e706e672331" alt="Awesome">
-  <br>
-  <h3>api groupe 6 dsp5</h3>
-  <hr>
-</div>
+<p align="center">
+  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
+</p>
 
-# Getting started
+[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
+[circleci-url]: https://circleci.com/gh/nestjs/nest
+
+  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
+    <p align="center">
+<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
+<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
+<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
+<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
+<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
+<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
+<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
+<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
+  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
+    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
+  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
+</p>
+  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
+  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+
+## Description
+
+[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
 ## Installation
 
-Clone the repository
+```bash
+$ npm install
+```
 
-    git clone https://github.com/pejmanhadavi/real-world-example-nestjs-mongoose-jwt-auth.git
+## Running the app
 
-Switch to the repo folder
+```bash
+# development
+$ npm run start
 
-    cd real-world-example-nestjs-mongoose-jwt-auth
-    
-Install dependencies
-    
-    npm install
+# watch mode
+$ npm run start:dev
 
-Create a .env file and write it as follows
+# production mode
+$ npm run start:prod
+```
 
-    MONGO_URI='mongodb://localhost/YOURMONGODBNAME'
-    JWT_SECRET='YOURJWTSECRETCHANGEIT'
-    ENCRYPT_JWT_SECRET='YOURJWTENCRIPTINGPASSCHANGEIT'
-    JWT_EXPIRATION=30m
- 
-----------
+## Test
 
-## Database
+```bash
+# unit tests
+$ npm run test
 
-The example codebase uses [Mongoose](https://mongoosejs.com/).
+# e2e tests
+$ npm run test:e2e
 
-----------
+# test coverage
+$ npm run test:cov
+```
 
-## NPM scripts
-- `npm run start:watch` - Start application in watch mode
+## Support
 
-----------
-# Authentication
- 
-This applications uses JSON Web Token (JWT) to handle authentication.
-This app uses <strong>refresh-Token</strong> mechanism to refresh jsonwebtoken after 30 minutes.
+Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
 
-----------
- 
-# Swagger API docs
+## Stay in touch
 
-Visit http://127.0.0.1:3000/api in your browser
+- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
+- Website - [https://nestjs.com](https://nestjs.com/)
+- Twitter - [@nestframework](https://twitter.com/nestframework)
 
-This example repo uses the NestJS swagger module for API documentation. [NestJS Swagger](https://github.com/nestjs/swagger) - [www.swagger.io](https://swagger.io/)
+## License
 
-## Authors
-
- **Groupe 6 dsp5_2021/2022**
+Nest is [MIT licensed](LICENSE).
