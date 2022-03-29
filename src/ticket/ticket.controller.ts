@@ -2,11 +2,11 @@ import { Controller, Get, Post, Put, Delete, Body, Param, HttpCode, HttpStatus, 
 import {
     ApiCreatedResponse,
     ApiOkResponse,
-    ApiUseTags,
+    ApiTags,
     ApiBearerAuth,
-    ApiImplicitHeader,
+    ApiHeader,
     ApiOperation,
-    ApiImplicitParam,
+    ApiParam,
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 
@@ -15,7 +15,7 @@ import { CreateTicketDto } from './dto/create-ticket.dto';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 
-@ApiUseTags('Ticket')
+@ApiTags('Ticket')
 @Controller('ticket')
 @UseGuards(RolesGuard)
 export class TicketController {
@@ -25,7 +25,7 @@ export class TicketController {
 
     @Get()
     @HttpCode(HttpStatus.OK)
-    @ApiOperation({title: 'Get All ticket',})
+    @ApiOperation({summary: 'Get All ticket',})
     @ApiOkResponse({})
     async getAllTicket() {
         return await this.ticketService.getAllTickets();
@@ -33,8 +33,8 @@ export class TicketController {
 
     @Get(':id')
     @HttpCode(HttpStatus.OK)
-    @ApiOperation({title: 'Get One ticket',})
-    @ApiImplicitParam({name: 'id', description: 'id of ticket'})
+    @ApiOperation({summary: 'Get One ticket',})
+    @ApiParam({name: 'id', description: 'id of ticket'})
     @ApiOkResponse({})
     async getOneTickets(@Param() params) {
         return await this.ticketService.getOneTicket(params.id);
@@ -44,9 +44,9 @@ export class TicketController {
     @HttpCode(HttpStatus.CREATED)
     @UseGuards(AuthGuard('jwt'))
     @Roles('admin')
-    @ApiOperation({title: 'Create one ticket',})
+    @ApiOperation({summary: 'Create one ticket',})
     @ApiBearerAuth()
-    @ApiImplicitHeader({
+    @ApiHeader({
         name: 'Bearer',
         description: 'the token we need for auth.'
     })
@@ -60,10 +60,10 @@ export class TicketController {
     @HttpCode(HttpStatus.OK)
     @UseGuards(AuthGuard('jwt'))
     @Roles('admin')
-    @ApiOperation({title: 'Update one ticket by id ( all params )',})
+    @ApiOperation({summary: 'Update one ticket by id ( all params )',})
     @ApiBearerAuth()
-    @ApiImplicitParam({name: 'id', description: 'id of ticket'})
-    @ApiImplicitHeader({
+    @ApiParam({name: 'id', description: 'id of ticket'})
+    @ApiHeader({
         name: 'Bearer',
         description: 'the token we need for auth.'
     })
@@ -76,13 +76,13 @@ export class TicketController {
     @HttpCode(HttpStatus.OK)
     @UseGuards(AuthGuard('jwt'))
     @Roles('admin')
-    @ApiOperation({title: 'Delete one ticket',})
+    @ApiOperation({summary: 'Delete one ticket',})
     @ApiBearerAuth()
-    @ApiImplicitHeader({
+    @ApiHeader({
         name: 'Bearer',
         description: 'the token we need for auth.'
     })
-    @ApiImplicitParam({name: 'id', description: 'id of ticket we want to delete.'})
+    @ApiParam({name: 'id', description: 'id of ticket we want to delete.'})
     @ApiOkResponse({})
     async deleteOneTicket(@Param() params) {
         return await this.ticketService.deleteTicket(params.id);

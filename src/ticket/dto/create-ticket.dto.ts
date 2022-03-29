@@ -1,8 +1,8 @@
 import { IsNotEmpty, MinLength, MaxLength, IsEmail, IsString } from 'class-validator';
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateTicketDto {
-    @ApiModelProperty({
+    @ApiProperty({
         example: 'Example Title',
         description: 'Title of ticket',
         format: 'string',
@@ -16,7 +16,7 @@ export class CreateTicketDto {
     readonly title: string;
 
 
-    @ApiModelProperty({
+    @ApiProperty({
         example: 'Body exmaple ...',
         description: 'Main part of ticket',
         format: 'string',
