@@ -97,14 +97,15 @@ pipeline{
 
             stages {
                 stage("install packages"){
+                   when {
+                       branch "dev"
+                   }
                    steps{
-                       when {branch "dev"}
-                       steps {
                            sh "node --version"
                            sh "npm version"
                            sh "npm install"
                        }
-                   }
+                   
                 }
                  stage("coverage") {
                     when {branch "dev"}
