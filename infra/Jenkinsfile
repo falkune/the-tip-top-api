@@ -91,7 +91,7 @@ pipeline{
         stage("test"){
             agent {
                 docker {
-                    image "node:alpine"
+                    image "node:14-alpine"
                 }
             }
 
