@@ -176,8 +176,8 @@ export class UserService {
 
     private async findUserByEmail(email: string): Promise<User> {
 
-        // const user = await this.userModel.findOne({email, verified: true});
-         const user = await this.userModel.findOne({email, verified: false});
+        const user = await this.userModel.findOne({email, verified: true});
+        //  const user = await this.userModel.findOne({email, verified: false});
         if (!user) {
           throw new NotFoundException('Wrong email or password.');
         }
