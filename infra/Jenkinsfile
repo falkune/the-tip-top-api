@@ -12,7 +12,6 @@ pipeline{
             parallel {
                stage("mongodb"){     
                 stages {
-                  
                    stage("release"){  
                           when {branch 'release'}
                           steps {
@@ -110,7 +109,7 @@ pipeline{
                  stage("coverage") {
                     when {branch "dev"}
                     steps{
-                     sh "npm run test:cov"
+                    sh "npm run test:cov"
                      //sh "scripts/test.sh cov"
                     }
 
@@ -132,23 +131,32 @@ pipeline{
                  stage("e2e"){
                      when {branch "dev"}
                      steps{
-                        sh "npm run test:e2e" 
+                        echo "handle e2e test"
+                        //sh "npm run test:e2e" 
                      }
                  }
             }
         }
 
-
         stage("deploy"){
             
             parallel{
                 stage ('pre-prod'){
-                    when{
+                    /*when{
                          branch 'release' 
-                    }
+                    }*/
                     steps{
-                        echo "publish preprod"
-                        sh "scripts/deploy.sh"    
+                        sshagent(credentials: ['devops-sshkey-private']) {
+                                sh '''
+                                    [ -d ~/.ssh ] || mkdir ~/.ssh && chmod 0700 ~/.ssh
+                                    ssh-keyscan -t rsa -H 45.155.170.65 >> ~/.ssh/known_hosts
+                                    ssh -o StrictHostKeyChecking=no donald@45.155.170.65
+                                '''
+                                sh "ssh -o StrictHostKeyChecking=no -l donald 45.155.170.65 ./infra/scripts/deploy.sh"
+
+                        }
+
+                           
                     }
                 }
 
