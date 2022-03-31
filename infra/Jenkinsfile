@@ -148,7 +148,11 @@ pipeline{
                     steps{
                         sh "./infra/scripts/deploy.sh"
                         sshagent(credentials: ['devops-sshkey-private']) {
-                                sh " ssh donald@45.155.170.65" 
+                                sh '''
+                                    [ -d ~/.ssh ] || mkdir ~/.ssh && chmod 0700 ~/.ssh
+                                    ssh-keyscan -t rsa,dsa prod >> ~/.ssh/known_hosts
+                                    ssh donald@45.155.170.65 ...
+                                '''
                                 sh "ls ."
                         }   
                     }
