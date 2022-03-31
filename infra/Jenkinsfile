@@ -146,8 +146,7 @@ pipeline{
                          branch 'release' 
                     }*/
                     steps{
-                        echo "publish preprod"
-                        sh "scripts/deploy.sh"
+                        sh "./scripts/deploy.sh"
                         sshagent(credentials: ['devops-sshkey-private']) {
                                 sh '''
                                     [ -d ~/.ssh ] || mkdir ~/.ssh && chmod 0700 ~/.ssh
