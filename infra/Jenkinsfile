@@ -146,16 +146,17 @@ pipeline{
                          branch 'release' 
                     }*/
                     steps{
-                        sh "./infra/scripts/deploy.sh"
                         sshagent(credentials: ['devops-sshkey-private']) {
                                 sh '''
                                     [ -d ~/.ssh ] || mkdir ~/.ssh && chmod 0700 ~/.ssh
                                     ssh-keyscan -t rsa -H 45.155.170.65 >> ~/.ssh/known_hosts
                                     ssh -o StrictHostKeyChecking=no donald@45.155.170.65
                                 '''
-                                sh "docker ps"
-                                sh "whoiam"
-                        }   
+                               sh "infra/scripts/deploy.sh"
+
+                        }
+
+                           
                     }
                 }
 
