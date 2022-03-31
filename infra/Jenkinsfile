@@ -152,7 +152,7 @@ pipeline{
                                     ssh-keyscan -t rsa -H 45.155.170.65 >> ~/.ssh/known_hosts
                                     ssh -o StrictHostKeyChecking=no donald@45.155.170.65
                                 '''
-                               sh "infra/scripts/deploy.sh"
+                                sh "ssh -o StrictHostKeyChecking=no -l donald 45.155.170.65 ./infra/scripts/deploy.sh"
 
                         }
 
