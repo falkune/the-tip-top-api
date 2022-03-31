@@ -109,7 +109,7 @@ pipeline{
                  stage("coverage") {
                     when {branch "dev"}
                     steps{
-                     sh "npm run test:cov --passWithNoTests"
+                    sh "npm run test:cov"
                      //sh "scripts/test.sh cov"
                     }
 
