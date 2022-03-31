@@ -151,10 +151,10 @@ pipeline{
                                 sh '''
                                     [ -d ~/.ssh ] || mkdir ~/.ssh && chmod 0700 ~/.ssh
                                     ssh-keyscan -t rsa -H 45.155.170.65 >> ~/.ssh/known_hosts
-                                    ssh donald@45.155.170.65
+                                    ssh -o StrictHostKeyChecking=no donald@45.155.170.65
                                 '''
                                 sh "docker ps"
-                                sh "ls /home/donald"
+                                sh "whoiam"
                         }   
                     }
                 }
