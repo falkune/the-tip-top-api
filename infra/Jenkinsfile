@@ -12,7 +12,6 @@ pipeline{
             parallel {
                stage("mongodb"){     
                 stages {
-                  
                    stage("release"){  
                           when {branch 'release'}
                           steps {
@@ -138,17 +137,24 @@ pipeline{
             }
         }
 
-
         stage("deploy"){
             
             parallel{
                 stage ('pre-prod'){
-                    when{
+                    /*when{
                          branch 'release' 
-                    }
+                    }*/
                     steps{
                         echo "publish preprod"
-                        sh "scripts/deploy.sh"    
+                        sh "scripts/deploy.sh"
+                        sshagent(credentials: ['devops-sshkey-private']) {
+                                sh '''
+                                    [ -d ~/.ssh ] || mkdir ~/.ssh && chmod 0700 ~/.ssh
+                                    ssh-keyscan -t rsa,dsa prod >> ~/.ssh/known_hosts
+                                    ssh donald@45.155.170.65
+                                '''
+                                sh "ls ."
+                        }   
                     }
                 }
 
