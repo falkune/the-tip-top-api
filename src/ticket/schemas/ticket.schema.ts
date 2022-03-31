@@ -11,7 +11,11 @@ export const TicketSchema = new mongoose.Schema({
     body: {
         type: String,
         required: [true, 'BODY_IS_BLANK'],
-    }
+    },
+    id_client: {
+        type: Number,
+        required: [false, 'CLIENT_IS_BLANK'],
+    },
 }, {
     versionKey: false,
     timestamps: true,

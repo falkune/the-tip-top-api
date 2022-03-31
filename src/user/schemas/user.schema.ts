@@ -62,16 +62,19 @@ export const UserSchema = new mongoose.Schema ({
 });
 
 // UserSchema.pre('save', async function(next: mongoose.HookNextFunction) {
-//     try {
-//       if (!this.isModified('password')) {
-//         return next();
-//       }
-//       // tslint:disable-next-line:no-string-literal
-//       const hashed = await bcrypt.hash(this['password'], 10);
-//       // tslint:disable-next-line:no-string-literal
-//       this['password'] = hashed;
-//       return next();
-//     } catch (err) {
-//       return next(err);
-//     }
-//   });
+UserSchema.pre('save', async function(next) {
+    console.log(next,'This is my next function and what about yours !!!!')
+
+    try {
+      if (!this.isModified('password')) {
+        return next();
+      }
+      // tslint:disable-next-line:no-string-literal
+      const hashed = await bcrypt.hash(this['password'], 10);
+      // tslint:disable-next-line:no-string-literal
+      this['password'] = hashed;
+      return next();
+    } catch (err) {
+      return next(err);
+    }
+  });
