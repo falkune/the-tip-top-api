@@ -17,7 +17,7 @@ pipeline{
                    stage("release"){  
                           //when {branch 'release'}
                           steps {
-                              sh "git log"
+                              sh "git tag"
                               sh "infra/scripts/build.sh db release"
                           }
                     }
