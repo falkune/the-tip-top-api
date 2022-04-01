@@ -17,7 +17,7 @@ pipeline{
                    stage("release"){  
                           //when {branch 'release'}
                           steps {
-                              sh "git tag --sort version:refname | tail -1"
+                              sh "git tag --sort version:refname"
                               sh "infra/scripts/build.sh db release"
                           }
                     }
