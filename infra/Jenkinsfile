@@ -4,12 +4,14 @@ pipeline{
       DOCKER_PROD_HOST="tcp://45.155.170.65:2375"
       DOCKER_PRIVATE_REGISTER="registry.dsp-archiwebo21-ct-df-an-cd.fr"
       REGISTRY_CRED=credentials('jenkins-registry-credential')
-      GIT_TAG_NAME = sh(returnStdout: true, script: "git tag --sort version:refname | tail -1").trim()
     }
       
     stages{
 
         stage("build") {
+            environment {
+              TAG_NAME = sh(returnStdout: true, script: "git tag --sort version:refname | tail -1").trim()
+            }
             parallel {
                stage("mongodb"){     
                 stages {
