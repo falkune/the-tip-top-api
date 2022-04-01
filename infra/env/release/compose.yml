@@ -1,24 +1,26 @@
 version: "3.8"
 
 networks:
-  dev:
+  preprod:
      external: true  
 
 volumes:
-  db-data-dev:
+  db-data-release:
     external: true
 
 services:
-  db-dev:
-    image: ${BASE_IMG}/db/dev:${DB_DEV_TAG}
-    container_name: db-dev
+  db-release:
+    image: ${BASE_IMG}/db/release:${DB_RELEASE_TAG}
+    container_name: db-release
     volumes:
-      - db-data-dev:/data/db
+      - db-data-release:/data/db
     networks:
-      - dev 
-  api-dev:
-    image: ${BASE_IMG}/api/dev:${API_DEV_TAG}
-    container_name: api-dev
+      - preprod
+  api-release:
+    image: ${BASE_IMG}/api/release:${API_RELEASE_TAG}
+    links:
+      - db:db-release
+    container_name: api-release
     labels:
         - traefik.enable=true
         - traefik.http.routers.api.rule=Host(`api.dev.${DOMAIN_BASE}`)
@@ -27,4 +29,4 @@ services:
         - traefik.http.routers.api.service=registry-web
         - traefik.http.services.api.loadbalancer.server.port=3000
     networks:
-      - prod
+      - preprod

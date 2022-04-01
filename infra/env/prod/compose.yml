@@ -10,14 +10,14 @@ volumes:
 
 services:
   db-prod:
-    image: ${BASE_IMG}/db/prod:${DB_PROD_TAG}
+    image: ${BASE_IMG}/db/stable:${DB_STABLE_TAG}
     container_name: db-prod
     volumes:
       - db-data-prod:/data/db
     networks:
       - prod 
   api-prod:
-    image: ${BASE_IMG}/api/prod:${API_PROD_TAG}
+    image: ${BASE_IMG}/api/stable:${API_STABLE_TAG}
     container_name: api-prod
     labels:
         - traefik.enable=true
