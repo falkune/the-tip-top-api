@@ -10,6 +10,6 @@
   
  scp -r infra/env/"${envr}" donald@45.155.170.65:~/app/api
                               
- ssh -o StrictHostKeyChecking=no -l donald 45.155.170.65 "chmod +x ./app/api/""${envr}""/deploy.sh"
+ ssh -o StrictHostKeyChecking=no -l donald 45.155.170.65 "chmod +x ./app/api/""${envr}""/start.sh"
                                
- ssh -o StrictHostKeyChecking=no -l donald 45.155.170.65 "./app/api/""${envr}""/deploy.sh" 
+ ssh -o StrictHostKeyChecking=no -l donald 45.155.170.65 "./app/api/""${envr}""/start.sh" 
