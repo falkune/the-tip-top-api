@@ -35,6 +35,7 @@ export class UserController {
     @ApiOperation({summary: 'Register user',})
     @ApiCreatedResponse({})
     async register(@Body() createUserDto: CreateUserDto) {
+        console.log('one here',CreateUserDto)
         return await this.userService.create(createUserDto);
     }
 
@@ -51,6 +52,8 @@ export class UserController {
     @ApiOperation({summary: 'Login User',})
     @ApiOkResponse({})
     async login(@Req() req: Request, @Body() loginUserDto: LoginUserDto) {
+        console.log('Two here',loginUserDto)
+
         return await this.userService.login(req, loginUserDto);
     }
 
