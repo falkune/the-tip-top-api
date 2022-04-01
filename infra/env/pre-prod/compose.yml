@@ -1,0 +1,30 @@
+version: "3.8"
+
+networks:
+  dev:
+     external: true  
+
+volumes:
+  db-data-dev:
+    external: true
+
+services:
+  db-dev:
+    image: ${BASE_IMG}/db/dev:${DB_DEV_TAG}
+    container_name: db-dev
+    volumes:
+      - db-data-dev:/data/db
+    networks:
+      - dev 
+  api-dev:
+    image: ${BASE_IMG}/api/dev:${API_DEV_TAG}
+    container_name: api-dev
+    labels:
+        - traefik.enable=true
+        - traefik.http.routers.api.rule=Host(`api.dev.${DOMAIN_BASE}`)
+        - traefik.http.routers.api.middlewares=myAdmin@docker
+        - traefik.http.routers.api.entrypoints=websecure
+        - traefik.http.routers.api.service=registry-web
+        - traefik.http.services.api.loadbalancer.server.port=3000
+    networks:
+      - prod

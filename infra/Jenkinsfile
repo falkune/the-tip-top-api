@@ -149,8 +149,8 @@ pipeline{
                                sh '''[ -d ~/.ssh ] || mkdir ~/.ssh && chmod 0700 ~/.ssh 
                                       ssh-keyscan -t rsa -H 45.155.170.65 >> ~/.ssh/known_hosts
                                     '''
-                               sh "scp infra/scripts/deploy.sh donald@45.155.170.65:~/scripts"
-                               sh "ssh -o StrictHostKeyChecking=no -l donald 45.155.170.65 './scripts/deploy.sh'" 
+                               sh "scp -R infra/env/pre-prod donald@45.155.170.65:~/app/api"
+                               sh "ssh -o StrictHostKeyChecking=no -l donald 45.155.170.65 './app/api/pre-prod/deploy.sh'" 
                         }
 
                            
@@ -162,8 +162,13 @@ pipeline{
                         branch 'main' 
                     }
                     steps {
-                        echo "publish to prod"
-                        sh "scripts/deploy.sh"    
+                        sshagent(credentials: ['devops-sshkey-private']) {
+                               sh '''[ -d ~/.ssh ] || mkdir ~/.ssh && chmod 0700 ~/.ssh 
+                                      ssh-keyscan -t rsa -H 45.155.170.65 >> ~/.ssh/known_hosts
+                                    '''
+                               sh "scp -R infra/env/prod donald@45.155.170.65:~/app/api"
+                               sh "ssh -o StrictHostKeyChecking=no -l donald 45.155.170.65 '.app/api/prod/deploy.sh'" 
+                        }    
                     }
                 }
 

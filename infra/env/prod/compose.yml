@@ -5,18 +5,20 @@ networks:
      external: true  
 
 volumes:
-  db-data:
+  db-data-prod:
+    external: true
 
 services:
-  db:
-    image: ${BASE_IMG}/db:${DB_PROD_TAG_IMG}
-    container_name: db
+  db-prod:
+    image: ${BASE_IMG}/db/prod:${DB_PROD_TAG}
+    container_name: db-prod
     volumes:
-      - db:data:/data/db
+      - db-data-prod:/data/db
     networks:
       - prod 
-  api:
-    image: ${BASE_IMG}/api:${API_PROD_TAG_IMG}
+  api-prod:
+    image: ${BASE_IMG}/api/prod:${API_PROD_TAG}
+    container_name: api-prod
     labels:
         - traefik.enable=true
         - traefik.http.routers.api.rule=Host(`api.${DOMAIN_BASE}`)
@@ -24,6 +26,5 @@ services:
         - traefik.http.routers.api.entrypoints=websecure
         - traefik.http.routers.api.service=registry-web
         - traefik.http.services.api.loadbalancer.server.port=3000
-    container_name: api
     networks:
       - prod

@@ -8,14 +8,14 @@ volumes:
 
 services:
   db:
-    image: ${BASE_IMG}/db:${DB_DEV_TAG_IMG}
+    image: ${BASE_IMG}/db/dev:${DB_DEV_TAG}
     container_name: db
     volumes:
-      - db:data:/data/db
+      - db-data:/data/db
     networks:
       - api-network 
   api:
-    image: ${BASE_IMG}/api:${API_DEV_TAG_IMG}
+    image: ${BASE_IMG}/api/dev:${API_DEV_TAG}
     container_name: api
     networks:
       - api-network
