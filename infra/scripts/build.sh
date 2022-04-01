@@ -14,6 +14,6 @@
 #docker build -t "${DOCKER_PRIVATE_REGISTER}"/"${docker_service}"/"${docker_version}" infra/build/"${docker_service}"/Dockerfile 
 
 #echo "The service is ""${docker_service}"" and the version of service is ""${docker_version}"""
-echo "This is the default tag ""${TAG_NAME}"""
+echo "This is the default tag ""${LATEST_TAG}"""
 
 printenv

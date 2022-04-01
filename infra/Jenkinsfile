@@ -9,8 +9,8 @@ pipeline{
     stages{
 
         stage("build") {
-            environment {
-              TAG_NAME = sh(returnStdout: true, script: "git tag --sort version:refname | tail -1")
+            parameters {
+              LATEST_TAG = sh(returnStdout:  true, script: "git tag --sort=-creatordate | head -n 1").trim()
             }
             parallel {
                stage("mongodb"){     
@@ -18,6 +18,7 @@ pipeline{
                    stage("release"){  
                           //when {branch 'release'}
                           steps {
+                              echo "${LATEST_TAG}"
                               sh "infra/scripts/build.sh db release"
                           }
                     }
