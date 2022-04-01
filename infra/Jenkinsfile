@@ -4,8 +4,7 @@ pipeline{
       DOCKER_PROD_HOST="tcp://45.155.170.65:2375"
       DOCKER_PRIVATE_REGISTER="registry.dsp-archiwebo21-ct-df-an-cd.fr"
       REGISTRY_CRED=credentials('jenkins-registry-credential')
-      LATEST_TAG=sh(returnStdout:true, script: "git tag --sort=-creatordate | head -n 1").trim()
-      TEST = "donald"
+      LATEST_TAG=sh(returnStdout: true, script: "git tag --sort=-creatordate | head -n 1").result
     }
       
     stages{
