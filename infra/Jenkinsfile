@@ -13,16 +13,16 @@ pipeline{
                stage("mongodb"){     
                 stages {
                    stage("release"){  
-                          when {branch 'release'}
+                          //when {branch 'release'}
                           steps {
-                              sh "scripts/build.sh"
+                              sh "infra/scripts/build.sh db release"
                           }
                     }
 
                    stage("stable"){
                        when{branch 'main'}
                        steps{
-                           sh "scripts/build.sh"
+                           sh "infra/scripts/build.sh db stable"
                        }
                     }
             
@@ -34,16 +34,16 @@ pipeline{
                     stages {
                   
                         stage("release"){  
-                                when {branch 'release'}
+                                //when {branch 'release'}
                                   steps{
-                                   sh "scripts/build.sh"  
+                                   sh "infra/scripts/build.sh api release"  
                                 }
                          }
 
                         stage("stable"){
                             when{branch 'main'}
                                steps{
-                                sh "scripts/build.sh"     
+                                sh "infra/scripts/build.sh api stable"     
                              } 
                         
                          }
@@ -141,35 +141,43 @@ pipeline{
         stage("deploy"){ 
             parallel{
                 stage ('release'){
-                    /*when{
-                         branch 'release' 
-                    }*/
+                    //when{ branch 'release'}
                     steps{
                         sshagent(credentials: ['devops-sshkey-private']) {
-                               sh '''[ -d ~/.ssh ] || mkdir ~/.ssh && chmod 0700 ~/.ssh 
+                               echo "Add prod host to the known host"
+                               echo "copy prod infra folder env  on remote"
+                               echo "Add execute permission to the file on remote"
+                               sh "infra/scrips/deploy.sh release"
+ 
+                              /*  sh '''[ -d ~/.ssh ] || mkdir ~/.ssh && chmod 0700 ~/.ssh 
                                       ssh-keyscan -t rsa -H 45.155.170.65 >> ~/.ssh/known_hosts
                                     '''
                                sh "scp -r infra/env/release donald@45.155.170.65:~/app/api"
                                sh "ssh -o StrictHostKeyChecking=no -l donald 45.155.170.65 'chmod +x ./app/api/release/deploy.sh'"
-                               sh "ssh -o StrictHostKeyChecking=no -l donald 45.155.170.65 './app/api/release/deploy.sh'" 
+                               sh "ssh -o StrictHostKeyChecking=no -l donald 45.155.170.65 './app/api/release/deploy.sh'" */
                         }
-
                            
                     }
                 }
 
                 stage('prod'){
-                    when {
-                        branch 'main' 
-                    }
+                    when { branch 'main' }
                     steps {
                         sshagent(credentials: ['devops-sshkey-private']) {
+                               echo "Add prod host to the known host "
                                sh '''[ -d ~/.ssh ] || mkdir ~/.ssh && chmod 0700 ~/.ssh 
                                       ssh-keyscan -t rsa -H 45.155.170.65 >> ~/.ssh/known_hosts
                                     '''
+                               echo "copy prod infra file on remote"
                                sh "scp -r infra/env/prod donald@45.155.170.65:~/app/api"
-                               sh "ssh -o StrictHostKeyChecking=no -l donald 45.155.170.65 '.app/api/prod/deploy.sh'" 
-                        }    
+                              
+                               echo "Add execute permission to the file on remote"
+                               sh "ssh -o StrictHostKeyChecking=no -l donald 45.155.170.65 'chmod +x ./app/api/prod/deploy.sh'"
+                               
+                               echo "Excute scripting deploy.sh on remote"
+                               sh "ssh -o StrictHostKeyChecking=no -l donald 45.155.170.65 './app/api/prod/deploy.sh'" 
+                        } 
+                          
                     }
                 }
 
