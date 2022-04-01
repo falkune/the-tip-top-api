@@ -10,14 +10,14 @@ volumes:
 
 services:
   db-release:
-    image: ${BASE_IMG}/db/release:${DB_RELEASE_TAG}
+    image: ${IMAGE_BASE}/db/release:${DB_RELEASE_TAG}
     container_name: db-release
     volumes:
       - db-data-release:/data/db
     networks:
       - preprod
   api-release:
-    image: ${BASE_IMG}/api/release:${API_RELEASE_TAG}
+    image: ${IMAGE_BASE}/api/release:${API_RELEASE_TAG}
     links:
       - db:db-release
     container_name: api-release
