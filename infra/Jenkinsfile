@@ -147,6 +147,7 @@ pipeline{
                                echo "Add prod host to the known host"
                                echo "copy prod infra folder env  on remote"
                                echo "Add execute permission to the file on remote"
+                               sh "pwd"
                                sh "infra/scrips/deploy.sh release"
  
                               /*  sh '''[ -d ~/.ssh ] || mkdir ~/.ssh && chmod 0700 ~/.ssh 
