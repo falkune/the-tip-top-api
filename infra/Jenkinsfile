@@ -12,12 +12,12 @@ pipeline{
                 LATEST_TAG=sh(returnStdout: true, script: "git tag --sort=-creatordate | head -n 1").trim()
             }
             parallel {
-               stage("mongodb"){     
+               stage("db"){     
                 stages {
                    stage("release"){  
                           //when {branch 'release'}
                           steps {
-                              sh "git tag --sort version:refname"
+                              sh "git tag"
                               sh "infra/scripts/build.sh db release"
                           }
                     }
@@ -72,7 +72,7 @@ pipeline{
 
                           parallel {
                           
-                                stage("mongodb"){   
+                                stage("db"){   
                                     steps{
                                         echo "push postgres image to the docker private registry"
                                          sh "scripts/registry.sh"    
