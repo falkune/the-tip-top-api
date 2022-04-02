@@ -16,7 +16,7 @@ pipeline{
                    stage("release"){  
                           //when {branch 'release'}
                           steps {
-                              sh "cat infra/build/version | tail -1"
+                              sh "pwd"
                               sh "infra/scripts/build.sh db release"
                           }
                     }
