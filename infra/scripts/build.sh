@@ -9,4 +9,4 @@ type=$2
 #The image tag
 tag=${IMAGE_TAG}
 
-docker build -t "${DOCKER_PRIVATE_REGISTER}"/"${type}"/"${image}":"${tag}" infra/build/"${image}"/Dockerfile . 
+docker build -t "${DOCKER_PRIVATE_REGISTER}"/"${type}"/"${image}":"${tag}" infra/build/"${image}"/Dockerfile 
