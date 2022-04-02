@@ -7,6 +7,7 @@ networks:
 volumes:
   db-data-release:
     external: true
+  #project:
 
 services:
   db-release:
@@ -18,9 +19,9 @@ services:
       - preprod
   api-release:
     image: ${IMAGE_BASE}/release/api:${API_RELEASE_TAG}
-    volumes:
-        - .:/usr/src/app
-        - /usr/src/app/node_modules
+    #volumes:
+    #    - project:/usr/src/app
+    #   - /usr/src/app/node_modules
     restart: unless-stopped
     links:
       - db:db-release
