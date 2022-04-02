@@ -26,4 +26,4 @@ COPY . .
 
 COPY --from=development /usr/src/app/dist ./dist
 
-CMD ["ls"]
+CMD ["npm run start:prod"]
