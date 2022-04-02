@@ -6,8 +6,6 @@ image=$1
 type=$2
 
 #The image tag
-#image_tag="latest"
+tag=${IMAGE_TAG}
 
-#docker build -t "${DOCKER_PRIVATE_REGISTER}"/"${docker_service}"/"${docker_version}" infra/build/"${docker_service}"/Dockerfile 
-
-#echo "The service is ""${docker_service}"" and the version of service is ""${docker_version}"""
+docker build -t "${DOCKER_PRIVATE_REGISTER}"/"${type}"/"${image}":"${tag}" infra/build/"${image}"/Dockerfile . 

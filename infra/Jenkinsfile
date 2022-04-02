@@ -4,7 +4,7 @@ pipeline{
       DOCKER_PROD_HOST="tcp://45.155.170.65:2375"
       DOCKER_PRIVATE_REGISTER="registry.dsp-archiwebo21-ct-df-an-cd.fr"
       REGISTRY_CRED=credentials('jenkins-registry-credential')
-      VERSION=sh(returnStdout: true, script: 'cat version | tail -1').trim()
+      IMAGE_TAG=sh(returnStdout: true, script: 'cat infra/build/version | tail -1').trim()
 
     }
     stages{
