@@ -54,7 +54,7 @@ pipeline{
             }
         }
 
-        stage("registry") {
+        stage("private docker hub") {
                 //when { expression { BRANCH_NAME ==~ /(main|release)/ } }
                 stages {
 
@@ -72,15 +72,15 @@ pipeline{
                           
                                 stage("db"){   
                                     steps{
-                                        echo "push postgres image to the docker private registry"
-                                         sh "scripts/registry.sh"    
+                                          echo "push postgres image to the docker private registry"
+                                          sh "infra/scripts/registry.sh db"    
                                         }
                                     }
 
                                 stage("api"){      
                                     steps{
                                         echo "push api image to the private registry"
-                                        sh "scripts/registry.sh"    
+                                        sh "infra/scripts/registry.sh api"    
                                     }
                                 }
                           }
