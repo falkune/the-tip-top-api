@@ -38,6 +38,7 @@ pipeline{
                          stage("release"){  
                                 //when {branch 'release'}
                                   steps{
+                                    echo "${IMAGE_TAG}"
                                     sh "infra/scripts/build.sh api release"  
                                  }
                          }
