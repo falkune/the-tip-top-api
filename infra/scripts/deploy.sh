@@ -1,4 +1,5 @@
 #!/bin/sh
+ #The environment where we want to deploy (release or prod)
  envr="$1"
 
  if [ -d ~/.ssh ]; then
