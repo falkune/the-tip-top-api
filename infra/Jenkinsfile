@@ -62,7 +62,7 @@ pipeline{
                          
                         steps{
                                echo "Login to the docker private registry"
-                               sh "docker login -u ${REGISTRY_CRED_USR} --password-stdin ${REGISTRY_CRED_PSW} https://${DOCKER_PRIVATE_REGISTER}"    
+                               sh "docker login -u ${REGISTRY_CRED_USR} -p ${REGISTRY_CRED_PSW} https://${DOCKER_PRIVATE_REGISTER}"    
                            }
                         }
                       
