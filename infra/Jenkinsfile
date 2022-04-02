@@ -4,20 +4,19 @@ pipeline{
       DOCKER_PROD_HOST="tcp://45.155.170.65:2375"
       DOCKER_PRIVATE_REGISTER="registry.dsp-archiwebo21-ct-df-an-cd.fr"
       REGISTRY_CRED=credentials('jenkins-registry-credential')
+      VERSION=sh(returnStdout: true, script: 'cat version').trim()
+
     }
     stages{
 
         stage("build") {
-            environment{
-                LATEST_TAG=sh(returnStdout: true, script: "git tag --sort=-creatordate | head -n 1").trim()
-            }
             parallel {
                stage("db"){     
                 stages {
                    stage("release"){  
                           //when {branch 'release'}
                           steps {
-                              sh "git tag"
+                              sh "cat version"
                               sh "infra/scripts/build.sh db release"
                           }
                     }
@@ -36,11 +35,11 @@ pipeline{
 
                     stages {
                   
-                        stage("release"){  
+                         stage("release"){  
                                 //when {branch 'release'}
                                   steps{
-                                   sh "infra/scripts/build.sh api release"  
-                                }
+                                    sh "infra/scripts/build.sh api release"  
+                                 }
                          }
 
                         stage("stable"){
@@ -62,10 +61,10 @@ pipeline{
 
                       stage("login"){
                          
-                           steps{
-                                  echo "Login to the docker private registry"
-                                  sh "scripts/login.sh"    
-                              }
+                        steps{
+                               echo "Login to the docker private registry"
+                               sh "docker login -u ${REGISTRY_CRED_USR} --password-stdin ${REGISTRY_CRED_PSW} https://${DOCKER_PRIVATE_REGISTER}"    
+                           }
                         }
                       
                       stage("push"){
