@@ -15,6 +15,8 @@ services:
     container_name: db-release
     volumes:
       - db-data-release:/data/db
+    expose:
+      - 27017
     networks:
       - preprod
   api-release:
@@ -26,6 +28,8 @@ services:
     links:
       - db-release:db
     container_name: api-release
+    depends_on:
+      - db
     labels:
         - traefik.enable=true
         - traefik.http.routers.api-release.rule=Host(`api.dev.${DOMAIN_BASE}`)
