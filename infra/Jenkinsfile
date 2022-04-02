@@ -55,7 +55,7 @@ pipeline{
         }
 
         stage("registry") {
-                when { expression { BRANCH_NAME ==~ /(main|release)/ } }
+                //when { expression { BRANCH_NAME ==~ /(main|release)/ } }
                 stages {
 
                       stage("login"){
