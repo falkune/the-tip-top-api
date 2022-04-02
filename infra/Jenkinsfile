@@ -142,7 +142,7 @@ pipeline{
         stage("deploy"){ 
             parallel{
                 stage ('release'){
-                    when{ branch 'release'}
+                    //when{ branch 'release'}
                     steps{
                         sshagent(credentials: ['devops-sshkey-private']) {
                                echo "copy release infra folder env on prod remote"
