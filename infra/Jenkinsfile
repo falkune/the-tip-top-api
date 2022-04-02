@@ -17,6 +17,7 @@ pipeline{
                           //when {branch 'release'}
                           steps {
                               sh "cat version"
+                              sh "echo ${VERSION}"
                               sh "infra/scripts/build.sh db release"
                           }
                     }
