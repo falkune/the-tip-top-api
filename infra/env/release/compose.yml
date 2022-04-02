@@ -28,10 +28,9 @@ services:
     container_name: api-release
     labels:
         - traefik.enable=true
-        - traefik.http.routers.api.rule=Host(`api.dev.${DOMAIN_BASE}`)
-        - traefik.http.routers.api.middlewares=myAdmin@docker
-        - traefik.http.routers.api.entrypoints=websecure
-        - traefik.http.routers.api.service=registry-web
-        - traefik.http.services.api.loadbalancer.server.port=3000
+        - traefik.http.routers.api-release.rule=Host(`api.dev.${DOMAIN_BASE}`)
+        - traefik.http.routers.api-release.middlewares=myAdmin@docker
+        - traefik.http.routers.api-release.entrypoints=websecure
+        - traefik.http.services.api-release.loadbalancer.server.port=3000
     networks:
       - preprod
