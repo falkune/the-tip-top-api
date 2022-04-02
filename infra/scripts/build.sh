@@ -1,7 +1,7 @@
 #!/bin/sh
 #The image name (db or api)
 echo "The current image version is ${IMAGE_TAG}" 
-pwd
+
 image=$1
 
 #type of image (stable or release)
