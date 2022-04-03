@@ -51,57 +51,6 @@ pipeline{
               
                      }
                }
-
-                 stage("test"){
-                    agent {
-                        docker {
-                            image "node:alpine"
-                        }
-                    }
-
-            stages {
-                 
-                  stage("build"){
-                    when {
-                         branch "dev"
-                     }
-                    steps{
-                            sh "node --version"
-                            sh "npm version"
-                            sh "npm install"
-                        }
-                   }
-                 stage("coverage") {
-                    when {branch "dev"}
-                    steps{
-                    sh "npm run test:cov"
-                     //sh "scripts/test.sh cov"
-                    }
-
-                 post{
-                     always{  
-                        clover(cloverReportDir: 'coverage', cloverReportFileName: 'clover.xml',
-                            // optional, default is: method=70, conditional=80, statement=80
-                            healthyTarget: [methodCoverage: 70, conditionalCoverage: 80, statementCoverage: 80],
-                            // optional, default is none
-                            unhealthyTarget: [methodCoverage: 50, conditionalCoverage: 50, statementCoverage: 50],
-                            // optional, default is none
-                            failingTarget: [methodCoverage: 0, conditionalCoverage: 0, statementCoverage: 0]
-                        )
-                    }
-                     
-                 }
-              }
-
-                 stage("e2e"){
-                     when {branch "dev"}
-                     steps{
-                        echo "handle e2e test"
-                        //sh "npm run test:e2e" 
-                     }
-                 }
-               }
-             }
           }
         }
 
@@ -142,6 +91,54 @@ pipeline{
                               }
                           }
                       }
+
+                       stage("test"){
+                    agent {
+                        docker {
+                            image "node:alpine"
+                        }
+                    }
+
+                     stages {
+                 
+                        stage("build"){
+                             when {branch "dev"}
+                              steps{
+                                sh "node --version"
+                                sh "npm version"
+                                sh "npm install"
+                            }
+                          }
+                 stage("coverage") {
+                    when {branch "dev"}
+                    steps{
+                    sh "npm run test:cov"
+                     //sh "scripts/test.sh cov"
+                    }
+                
+                   post{
+                     always{  
+                        clover(cloverReportDir: 'coverage', cloverReportFileName: 'clover.xml',
+                            // optional, default is: method=70, conditional=80, statement=80
+                            healthyTarget: [methodCoverage: 70, conditionalCoverage: 80, statementCoverage: 80],
+                            // optional, default is none
+                            unhealthyTarget: [methodCoverage: 50, conditionalCoverage: 50, statementCoverage: 50],
+                            // optional, default is none
+                            failingTarget: [methodCoverage: 0, conditionalCoverage: 0, statementCoverage: 0]
+                        )
+                    }             
+                 }
+              }
+
+                 stage("e2e"){
+                     when {branch "dev"}
+                     steps{
+                        echo "handle e2e test"
+                        //sh "npm run test:e2e" 
+                     }
+                 }
+               }
+             }
                  }
              }
 
