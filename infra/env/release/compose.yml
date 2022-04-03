@@ -7,7 +7,8 @@ networks:
 volumes:
   db-data-release:
     external: true
-  #code:
+  code_release:
+     
 
 services:
   db-release:
@@ -26,9 +27,9 @@ services:
     image: ${IMAGE_BASE}/release/api:${API_RELEASE_TAG}
     environment:
       - TZ=Europe/Paris
-    #volumes:
+    volumes:
     #    - /etc/localtime:/etc/localtime:ro
-    #   - code:/usr/src/app
+       - code_release:/usr/src/app
     #   - /usr/src/app/node_modules
     restart: unless-stopped
     links:

@@ -6,7 +6,7 @@ volumes:
 services:
   db:
     build: 
-      dockerfile: ./infra/build/db/Dockerfile
+      dockerfile: .
       context: .
     image: local/db:latest
     container_name: db
@@ -17,7 +17,7 @@ services:
     build: 
       context: .
       target: developpement
-      dockerfile: ./infra/build/api/Dockerfile
+      dockerfile: ../../build/api/Dockerfile
     command: npm run start:debug
     container_name: api
     image: local/api:latest

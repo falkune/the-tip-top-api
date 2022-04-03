@@ -7,23 +7,37 @@ networks:
 volumes:
   db-data-prod:
     external: true
+  #code:
 
 services:
-  db:
-    image: ${BASE_IMG}/stable/db:${DB_STABLE_TAG}
+  db-release:
+    image: ${IMAGE_BASE}/stable/db:${DB_STABLE_TAG}
     container_name: db
+    environment:
+      - TZ=Europe/Paris
     volumes:
       - db-data-prod:/data/db
+      #- /etc/localtime:/etc/localtime:ro
+    expose:
+      - 27017
     networks:
-      - prod 
+      - prod
   api:
-    image: ${BASE_IMG}/stable/api:${API_STABLE_TAG}
+    image: ${IMAGE_BASE}/stable/api:${API_STABLE_TAG}
+    environment:
+      - TZ=Europe/Paris
+    #volumes:
+    #    - /etc/localtime:/etc/localtime:ro
+    #   - code:/usr/src/app
+    #   - /usr/src/app/node_modules
+    restart: unless-stopped
     container_name: api
+    depends_on:
+      - db
     labels:
         - traefik.enable=true
         - traefik.http.routers.api.rule=Host(`api.${DOMAIN_BASE}`)
         - traefik.http.routers.api.entrypoints=websecure
-        - traefik.http.routers.api.service=registry-web
         - traefik.http.services.api.loadbalancer.server.port=3000
     networks:
       - prod
