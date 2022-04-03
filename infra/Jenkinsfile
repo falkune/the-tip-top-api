@@ -51,50 +51,8 @@ pipeline{
               
                      }
                }
-            }
-        }
 
-        stage("private docker hub") {
-                when { expression { BRANCH_NAME ==~ /(main|release)/ } }
-                stages {
-
-                      stage("login"){
-                         
-                        steps{
-                               echo "Login to the docker private registry"
-                               sh "docker login -u ${REGISTRY_CRED_USR} -p ${REGISTRY_CRED_PSW} https://${DOCKER_PRIVATE_REGISTER}"    
-                           }
-                        }
-                      
-                      stage("push"){
-
-                          parallel {
-                          
-                                stage("db"){   
-                                    steps{
-                                          echo "push postgres image to the docker private registry"
-                                          sh "infra/scripts/registry.sh db"    
-                                        }
-                                    }
-
-                                stage("api"){      
-                                    steps{
-                                        echo "push api image to the private registry"
-                                        sh "infra/scripts/registry.sh api"    
-                                    }
-                                }
-                          }
-
-                          post {
-                              always {
-                                 sh "docker system prune -af"
-                              }
-                          }
-                      }
-                 }
-             }
-
-        stage("test"){
+                 stage("test"){
             agent {
                 docker {
                     image "node:alpine"
@@ -144,6 +102,49 @@ pipeline{
                  }
             }
         }
+            }
+        }
+
+        stage("private docker hub") {
+                when { expression { BRANCH_NAME ==~ /(main|release)/ } }
+                stages {
+
+                      stage("login"){
+                         
+                        steps{
+                               echo "Login to the docker private registry"
+                               sh "docker login -u ${REGISTRY_CRED_USR} -p ${REGISTRY_CRED_PSW} https://${DOCKER_PRIVATE_REGISTER}"    
+                           }
+                        }
+                      
+                      stage("push"){
+
+                          parallel {
+                          
+                                stage("db"){   
+                                    steps{
+                                          echo "push postgres image to the docker private registry"
+                                          sh "infra/scripts/registry.sh db"    
+                                        }
+                                    }
+
+                                stage("api"){      
+                                    steps{
+                                        echo "push api image to the private registry"
+                                        sh "infra/scripts/registry.sh api"    
+                                    }
+                                }
+                          }
+
+                          post {
+                              always {
+                                 sh "docker system prune -af"
+                              }
+                          }
+                      }
+                 }
+             }
+
 
         stage("deploy"){ 
             parallel{
