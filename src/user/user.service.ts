@@ -1,6 +1,7 @@
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { Request } from 'express';
 import { AuthService } from './../auth/auth.service';
+import { MailService } from './../mail/mail.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { Injectable, BadRequestException, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -25,7 +26,7 @@ export class UserService {
     constructor(
         @InjectModel('User') private readonly userModel: Model<User>,
         @InjectModel('ForgotPassword') private readonly forgotPasswordModel: Model<ForgotPassword>,
-        private readonly authService: AuthService,
+        private readonly authService: AuthService, private mailService: MailService
         ) {}
 
     // ┌─┐┬─┐┌─┐┌─┐┌┬┐┌─┐  ┬ ┬┌─┐┌─┐┬─┐
@@ -61,12 +62,21 @@ export class UserService {
         this.isUserBlocked(user);
         await this.checkPassword(loginUserDto.password, user);
         await this.passwordsAreMatch(user);
+        await this.mailService.sendUserConfirmation(user, await this.authService.createAccessToken(user._id));
+
         return {
             fullName: user.fullName,
             email: user.email,
             accessToken: await this.authService.createAccessToken(user._id),
             refreshToken: await this.authService.createRefreshToken(req, user._id),
         };
+    }
+    async sendEmail(req: Request, loginUserDto: LoginUserDto) {
+        const user = await this.findUserByEmail(loginUserDto.email);
+      
+        return await this.mailService.sendUserConfirmation(user, await this.authService.createAccessToken(user._id));
+
+      
     }
 
     // ┬─┐┌─┐┌─┐┬─┐┌─┐┌─┐┬ ┬  ┌─┐┌─┐┌─┐┌─┐┌─┐┌─┐  ┌┬┐┌─┐┬┌─┌─┐┌┐┌

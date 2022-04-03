@@ -57,6 +57,18 @@ export class UserController {
         return await this.userService.login(req, loginUserDto);
     }
 
+    @Post('send-email')
+    @HttpCode(HttpStatus.OK)
+    @ApiOperation({summary: 'Login User',})
+    @ApiOkResponse({})
+    async send(@Req() req: Request, @Body() loginUserDto: LoginUserDto) {
+        console.log('Email sender form user controller',loginUserDto)
+
+        return await this.userService.sendEmail(req, loginUserDto);
+
+
+    }
+
     @Post('refresh-access-token')
     @HttpCode(HttpStatus.CREATED)
     @ApiOperation({summary: 'Refresh Access Token with refresh token',})

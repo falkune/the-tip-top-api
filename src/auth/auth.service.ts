@@ -6,6 +6,7 @@ import { Model } from 'mongoose';
 import { sign } from 'jsonwebtoken';
 import { User } from 'src/user/interfaces/user.interface';
 import { RefreshToken } from './interfaces/refresh-token.interface';
+import { MailService } from './../mail/mail.service';
 import { v4 } from 'uuid';
 import { Request } from 'express';
 import { getClientIp } from 'request-ip';
