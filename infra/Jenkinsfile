@@ -14,7 +14,7 @@ pipeline{
                stage("db"){     
                 stages {
                    stage("release"){  
-                          //when {branch 'release'}
+                          when {branch 'release'}
                           steps {
                               sh "infra/scripts/build.sh db release"
                           }
@@ -35,7 +35,7 @@ pipeline{
                     stages {
                   
                          stage("release"){  
-                                //when {branch 'release'}
+                                when {branch 'release'}
                                   steps{
                                     sh "infra/scripts/build.sh api release"  
                                  }
@@ -55,7 +55,7 @@ pipeline{
         }
 
         stage("private docker hub") {
-                //when { expression { BRANCH_NAME ==~ /(main|release)/ } }
+                when { expression { BRANCH_NAME ==~ /(main|release)/ } }
                 stages {
 
                       stage("login"){
@@ -148,7 +148,7 @@ pipeline{
         stage("deploy"){ 
             parallel{
                 stage ('release'){
-                    //when{ branch 'release'}
+                    when{ branch 'release'}
                     steps{
                         sshagent(credentials: ['devops-sshkey-private']) {
                                echo "copy release infra folder env on prod remote"
