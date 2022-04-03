@@ -95,16 +95,13 @@ pipeline{
              }
         
            stage("test"){
-                    agent {
-                        docker {
-                            image "node:alpine"
-                        }
-                    }
+                    agent { docker { image "node:alpine"}}
+                    when {branch "dev"}
 
                      stages {
-                 
+
                         stage("build"){
-                             when {branch "dev"}
+                             
                               steps{
                                 sh "node --version"
                                 sh "npm version"
@@ -112,7 +109,6 @@ pipeline{
                             }
                           }
                  stage("coverage") {
-                    when {branch "dev"}
                     steps{
                     sh "npm run test:cov"
                      //sh "scripts/test.sh cov"
