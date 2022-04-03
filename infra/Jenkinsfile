@@ -84,6 +84,14 @@ pipeline{
                                     }
                                 }
                           }
+
+                          post {
+                              always {
+                                  steps {
+                                      sh "docker system prune -af"
+                                  }
+                              }
+                          }
                       }
                  }
              }

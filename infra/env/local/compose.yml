@@ -1,23 +1,30 @@
 version: "3.8"
 
-networks:
-  api-network:
-
 volumes:
   db-data:
 
 services:
   db:
-    image: ${IMAGE_BASE}/release/db:${DB_TAG}
+    build: 
+      dockerfile: ./infra/build/db/Dockerfile
+      context: .
+    image: local/db:latest
     container_name: db
     volumes:
       - db-data:/data/db
-    networks:
-      - api-network 
+
   api:
-    image: ${IMAGE_BASE}/release/api:${API_TAG}
+    build: 
+      context: .
+      target: developpement
+      dockerfile: ./infra/build/api/Dockerfile
+    command: npm run start:debug
     container_name: api
+    image: local/api:latest
+    volumes:
+      - ./:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - db
     ports:
       - 80:3000
-    networks:
-      - api-network

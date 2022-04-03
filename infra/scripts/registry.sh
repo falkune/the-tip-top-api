@@ -22,4 +22,3 @@ fi
 
 docker push "${formated}"
 docker push "${formated_latest}"
-docker rmi "${formated}" "${formated_latest}"
