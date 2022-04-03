@@ -95,9 +95,8 @@ pipeline{
              }
         
            stage("test"){
-                    agent { docker { image "node:alpine"}}
                     when {branch "dev"}
-
+                    agent { docker { image "node:alpine"}}
                      stages {
 
                         stage("build"){
