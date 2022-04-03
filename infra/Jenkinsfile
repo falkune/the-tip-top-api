@@ -91,8 +91,10 @@ pipeline{
                               }
                           }
                       }
-
-                       stage("test"){
+                 }
+             }
+        
+           stage("test"){
                     agent {
                         docker {
                             image "node:alpine"
@@ -138,8 +140,6 @@ pipeline{
                      }
                  }
                }
-             }
-                 }
              }
 
 
