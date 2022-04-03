@@ -13,17 +13,21 @@ services:
   db-release:
     image: ${IMAGE_BASE}/release/db:${DB_RELEASE_TAG}
     container_name: db-release
+    environment:
+      - TZ=Europe/Paris
     volumes:
       - db-data-release:/data/db
-      - /etc/localtime:/etc/localtime:ro
+      #- /etc/localtime:/etc/localtime:ro
     expose:
       - 27017
     networks:
       - preprod
   api-release:
     image: ${IMAGE_BASE}/release/api:${API_RELEASE_TAG}
-    volumes:
-        - /etc/localtime:/etc/localtime:ro
+    environment:
+      - TZ=Europe/Paris
+    #volumes:
+    #    - /etc/localtime:/etc/localtime:ro
     #   - code:/usr/src/app
     #   - /usr/src/app/node_modules
     restart: unless-stopped
