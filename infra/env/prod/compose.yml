@@ -10,7 +10,7 @@ volumes:
   code:
 
 services:
-  db-release:
+  db:
     image: ${IMAGE_BASE}/stable/db:${DB_STABLE_TAG}
     container_name: db
     environment:
