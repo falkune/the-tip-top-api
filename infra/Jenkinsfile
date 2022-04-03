@@ -105,7 +105,7 @@ pipeline{
           }
         }
 
-        stage("private docker hub") {
+        stage("registry") {
                 when { expression { BRANCH_NAME ==~ /(main|release)/ } }
                 stages {
 
@@ -175,7 +175,7 @@ pipeline{
 
         stage("end") {
             steps {
-                echo "Succesful end"
+                echo "Succesfull end"
             }
         }
     }
