@@ -7,6 +7,7 @@ networks:
 volumes:
   db-data-release:
     external: true
+  #project:
 
 services:
   db-release:
@@ -14,19 +15,25 @@ services:
     container_name: db-release
     volumes:
       - db-data-release:/data/db
+    expose:
+      - 27017
     networks:
       - preprod
   api-release:
     image: ${IMAGE_BASE}/release/api:${API_RELEASE_TAG}
+    #volumes:
+    #    - project:/usr/src/app
+    #   - /usr/src/app/node_modules
+    restart: unless-stopped
     links:
-      - db:db-release
+      - db-release:db
     container_name: api-release
+    depends_on:
+      - db
     labels:
         - traefik.enable=true
-        - traefik.http.routers.api.rule=Host(`api.dev.${DOMAIN_BASE}`)
-        - traefik.http.routers.api.middlewares=myAdmin@docker
-        - traefik.http.routers.api.entrypoints=websecure
-        - traefik.http.routers.api.service=registry-web
-        - traefik.http.services.api.loadbalancer.server.port=3000
+        - traefik.http.routers.api-release.rule=Host(`api.dev.${DOMAIN_BASE}`)
+        - traefik.http.routers.api-release.entrypoints=websecure
+        - traefik.http.services.api-release.loadbalancer.server.port=3000
     networks:
       - preprod

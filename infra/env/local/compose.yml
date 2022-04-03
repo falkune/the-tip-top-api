@@ -8,18 +8,16 @@ volumes:
 
 services:
   db:
-    image: ${BASE_IMG}/release/db:${DB_TAG}
+    image: ${IMAGE_BASE}/release/db:${DB_TAG}
     container_name: db
     volumes:
       - db-data:/data/db
     networks:
       - api-network 
   api:
-    image: ${BASE_IMG}/release/api:${API_TAG}
+    image: ${IMAGE_BASE}/release/api:${API_TAG}
     container_name: api
     ports:
       - 80:3000
-    volumes:
-      - $PWD:/usr/src/app
     networks:
       - api-network

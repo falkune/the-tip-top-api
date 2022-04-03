@@ -5,7 +5,7 @@ WORKDIR /usr/src/app
 
 COPY package*.json ./
 
-RUN npm update && npm install --only=development
+RUN npm install --only=development
 
 COPY . .
 
@@ -26,4 +26,4 @@ COPY . .
 
 COPY --from=development /usr/src/app/dist ./dist
 
-CMD ["npm run", "start:prod"]
+CMD ["node", "dist/main"]
