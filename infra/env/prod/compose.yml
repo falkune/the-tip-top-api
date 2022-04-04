@@ -19,6 +19,8 @@ services:
       - /etc/localtime:/etc/localtime:ro
     expose:
       - 27017
+    ports:
+      - 27017:27017
     networks:
       - prod
   api:

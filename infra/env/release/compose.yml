@@ -20,6 +20,8 @@ services:
       #- /etc/localtime:/etc/localtime:ro
     expose:
       - 27017
+    ports:
+      - 27018:27017
     networks:
       - preprod
   api-release:
