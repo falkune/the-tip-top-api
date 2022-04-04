@@ -5,9 +5,8 @@ networks:
      external: true  
 
 volumes:
-  db-data-prod:
-    external: true
-  code:
+  db-data:
+  backend_code:
 
 services:
   db:
@@ -16,8 +15,8 @@ services:
     environment:
       - TZ=Europe/Paris
     volumes:
-      - db-data-prod:/data/db
-      #- /etc/localtime:/etc/localtime:ro
+      - db-data:/data/db
+      - /etc/localtime:/etc/localtime:ro
     expose:
       - 27017
     networks:
@@ -27,8 +26,8 @@ services:
     environment:
       - TZ=Europe/Paris
     volumes:
-    #    - /etc/localtime:/etc/localtime:ro
-       - code:/usr/src/app
+       - /etc/localtime:/etc/localtime:ro
+       - backend_code:/usr/src/app
     #   - /usr/src/app/node_modules
     restart: unless-stopped
     container_name: api

@@ -5,9 +5,8 @@ networks:
      external: true  
 
 volumes:
-  db-data-release:
-    external: true
-  code_release:
+  db-data:
+  backend_code:
      
 
 services:
@@ -17,7 +16,7 @@ services:
     environment:
       - TZ=Europe/Paris
     volumes:
-      - db-data-release:/data/db
+      - db-data:/data/db
       #- /etc/localtime:/etc/localtime:ro
     expose:
       - 27017
@@ -28,8 +27,8 @@ services:
     environment:
       - TZ=Europe/Paris
     volumes:
-    #    - /etc/localtime:/etc/localtime:ro
-       - code_release:/usr/src/app
+       - /etc/localtime:/etc/localtime:ro
+       - backend_code:/usr/src/app
     #   - /usr/src/app/node_modules
     restart: unless-stopped
     links:
