@@ -1,0 +1,42 @@
+version: "3.8"
+
+networks:
+  prod:
+     external: true  
+
+volumes:
+  db-data:
+  backend_code:
+
+services:
+  db:
+    image: ${IMAGE_BASE}/stable/db:${DB_STABLE_TAG}
+    container_name: db
+    environment:
+      - TZ=Europe/Paris
+    volumes:
+      - db-data:/data/db
+      - /etc/localtime:/etc/localtime:ro
+    expose:
+      - 27017
+    networks:
+      - prod
+  api:
+    image: ${IMAGE_BASE}/stable/api:${API_STABLE_TAG}
+    environment:
+      - TZ=Europe/Paris
+    volumes:
+       - /etc/localtime:/etc/localtime:ro
+       - backend_code:/usr/src/app
+    #   - /usr/src/app/node_modules
+    restart: unless-stopped
+    container_name: api
+    depends_on:
+      - db
+    labels:
+        - traefik.enable=true
+        - traefik.http.routers.api.rule=Host(`api.${DOMAIN_BASE}`)
+        - traefik.http.routers.api.entrypoints=websecure
+        - traefik.http.services.api.loadbalancer.server.port=3000
+    networks:
+      - prod
