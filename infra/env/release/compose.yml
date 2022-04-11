@@ -13,6 +13,10 @@ services:
   db-release:
     image: ${IMAGE_BASE}/release/db:${DB_RELEASE_TAG}
     container_name: db-release
+    logging:
+      driver: gelf
+      options:
+        gelf-address: udp://${DEVOPS_HOST}:12201
     environment:
       - TZ=Europe/Paris
     volumes:
@@ -26,6 +30,10 @@ services:
       - preprod
   api-release:
     image: ${IMAGE_BASE}/release/api:${API_RELEASE_TAG}
+    logging:
+      driver: gelf
+      options:
+        gelf-address: udp://${DEVOPS_HOST}:12201
     environment:
       - TZ=Europe/Paris
     volumes:
