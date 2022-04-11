@@ -12,6 +12,7 @@ services:
   db:
     image: ${IMAGE_BASE}/stable/db:${DB_STABLE_TAG}
     container_name: db
+    entrypoint: ["mongod", "--auth", "--config", "/etc/mongod.conf"]
     logging:
       driver: gelf
       options:
