@@ -20,11 +20,12 @@ services:
       - TZ=Europe/Paris
     volumes:
       - db-data:/data/db
+      - ./mongod.conf:/etc/mongod.conf:ro
       - /etc/localtime:/etc/localtime:ro
     expose:
       - 27017
     ports:
-      - 27017:27017
+      - 27117:27017
     networks:
       - prod
   api:

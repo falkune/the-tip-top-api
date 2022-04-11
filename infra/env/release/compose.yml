@@ -13,6 +13,7 @@ services:
   db-release:
     image: ${IMAGE_BASE}/release/db:${DB_RELEASE_TAG}
     container_name: db-release
+    command: "--auth --config /etc/mongod.conf"
     logging:
       driver: gelf
       options:
@@ -21,11 +22,12 @@ services:
       - TZ=Europe/Paris
     volumes:
       - db-data:/data/db
+      - ./mongod.conf:/etc/mongod.conf:ro
       #- /etc/localtime:/etc/localtime:ro
     expose:
       - 27017
     ports:
-      - 27018:27017
+      - 27118:27017
     networks:
       - preprod
   api-release:
