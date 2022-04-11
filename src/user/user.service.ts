@@ -61,8 +61,7 @@ export class UserService {
         const user = await this.findUserByEmail(loginUserDto.email);
         this.isUserBlocked(user);
         await this.checkPassword(loginUserDto.password, user);
-        await this.passwordsAreMatch(user);
-        await this.mailService.sendUserConfirmation(user, await this.authService.createAccessToken(user._id));
+        await this.passwordsAreMatch(user); 
 
         return {
             fullName: user.fullName,
