@@ -1,1 +1,1 @@
-FROM "mvertes/alpine-mongo:latest"
+FROM "mongo:latest"
