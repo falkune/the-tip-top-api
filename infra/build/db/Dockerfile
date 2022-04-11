@@ -1,2 +1,1 @@
-FROM "mongo:5.0"
-ENV MONGO_INITDB_DATABASE="thetiptop"
+FROM "mvertes/alpine-mongo:latest"
