@@ -19,6 +19,8 @@ services:
         gelf-address: udp://${DEVOPS_HOST}:12201
     environment:
       - TZ=Europe/Paris
+      - MONGO_INITDB_ROOT_USERNAME=f2i-o21-admin 
+      - MONGO_INITDB_ROOT_PASSWORD=f2i-o21-admin-pass
     volumes:
       - db-data:/data/db
       - ./mongod.conf:/etc/mongod.conf:ro
