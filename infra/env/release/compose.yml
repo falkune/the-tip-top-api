@@ -14,6 +14,7 @@ services:
     image: ${IMAGE_BASE}/release/db:${DB_RELEASE_TAG}
     container_name: db-release
     entrypoint: ["mongod", "--auth", "--config", "/etc/mongod.conf"]
+    command: "--sslDisabledProtocols 'none'"
     logging:
       driver: gelf
       options:
