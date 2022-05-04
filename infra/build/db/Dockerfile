@@ -1,1 +1,2 @@
-FROM "mongo:latest"
+FROM "mvertes/alpine-mongo"
+ENV key=value

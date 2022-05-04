@@ -21,7 +21,7 @@ services:
       TZ: Europe/Paris
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_DB_ADMIN_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_DB_ADMIN_PASSWD}
-      MONGO_INITDB_DATABASE: ${MONGO_DB_NAME}
+      MONGO_INITDB_DATABASE: ${MONGO_DB_DATABASE}
     volumes:
       - db-data:/data/db
       - ./mongod.conf:/etc/mongod.conf:ro

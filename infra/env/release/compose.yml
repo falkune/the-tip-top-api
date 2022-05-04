@@ -20,7 +20,7 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_DB_ADMIN_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_DB_ADMIN_PASSWD}
-      MONGO_INITDB_DATABASE: ${}
+      MONGO_INITDB_DATABASE: ${MONGO_DB_DATABASE}
       TZ: Europe/Paris
     volumes:
       - db-data:/data/db
