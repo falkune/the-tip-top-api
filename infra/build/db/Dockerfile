@@ -1,2 +1,1 @@
-FROM "mvertes/alpine-mongo"
-ENV key=value
+FROM "mongo"
