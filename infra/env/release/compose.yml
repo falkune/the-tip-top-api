@@ -18,9 +18,9 @@ services:
       options:
         gelf-address: udp://${DEVOPS_HOST}:12201
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: secret
-      MONGO_INITDB_DATABASE: thetiptop
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_DB_ADMIN_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_DB_ADMIN_PASSWD}
+      MONGO_INITDB_DATABASE: ${}
       TZ: Europe/Paris
     volumes:
       - db-data:/data/db
