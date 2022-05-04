@@ -8,24 +8,24 @@ volumes:
   db-data:
   backend_code:
      
-
 services:
   db-release:
     image: ${IMAGE_BASE}/release/db:${DB_RELEASE_TAG}
     container_name: db-release
-    entrypoint: ["mongod", "--auth", "--config", "/etc/mongod.conf"]
+   # entrypoint: ["--config", "/etc/mongod.conf"]
     logging:
       driver: gelf
       options:
         gelf-address: udp://${DEVOPS_HOST}:12201
     environment:
-      - TZ=Europe/Paris
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_DB_ADMIN_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_DB_ADMIN_PASSWD}
+      MONGO_INITDB_DATABASE: ${MONGO_DB_DATABASE}
+      TZ: Europe/Paris
     volumes:
       - db-data:/data/db
-      - ./mongod.conf:/etc/mongod.conf:ro
+      #- ./mongod.conf:/etc/mongod.conf:ro
       #- /etc/localtime:/etc/localtime:ro
-    expose:
-      - 27017
     ports:
       - 27118:27017
     networks:
