@@ -40,9 +40,10 @@ services:
         gelf-address: udp://${DEVOPS_HOST}:12201
     environment:
       - TZ=Europe/Paris
-      - DB_USER=dsp-dbuser
-      - DB_PASSWORD=EPrnNjaHgCWA1FpPZCCAWsrM3
-      - DB_HOST=db:27017
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=${DB_HOST}
+      - MONGO_URI=mongodb://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/thetiptop
 
     volumes:
        - /etc/localtime:/etc/localtime:ro
