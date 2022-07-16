@@ -6,7 +6,7 @@ networks:
 
 volumes:
   db-data:
-  backend_code:
+ # backend_code:
 
 services:
   db:
@@ -40,9 +40,13 @@ services:
         gelf-address: udp://${DEVOPS_HOST}:12201
     environment:
       - TZ=Europe/Paris
+      - DB_USER=dsp-dbuser
+      - DB_PASSWORD=EPrnNjaHgCWA1FpPZCCAWsrM3
+      - DB_HOST=db:27017
+
     volumes:
        - /etc/localtime:/etc/localtime:ro
-       - backend_code:/usr/src/app
+    #   - backend_code:/usr/src/app
     #  - /usr/src/app/node_modules
     restart: unless-stopped
     container_name: api
