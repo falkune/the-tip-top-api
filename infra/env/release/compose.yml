@@ -26,6 +26,8 @@ services:
       - db-data:/data/db
       #- ./mongod.conf:/etc/mongod.conf:ro
       #- /etc/localtime:/etc/localtime:ro
+    expose:
+      - 27017
     ports:
       - 27118:27017
     networks:
@@ -39,9 +41,10 @@ services:
   
     environment:
       - TZ=Europe/Paris
-      - DB_USER=dsp-dbuser
-      - DB_PASSWORD=EPrnNjaHgCWA1FpPZCCAWsrM3
-      - DB_HOST=db-release:27017
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=${DB_HOST}
+      - MONGO_URI=mongodb://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/thetiptop
 
     volumes:
        - /etc/localtime:/etc/localtime:ro
