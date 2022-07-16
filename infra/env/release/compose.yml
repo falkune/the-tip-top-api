@@ -6,7 +6,7 @@ networks:
 
 volumes:
   db-data:
-  backend_code:
+ # backend_code:
      
 services:
   db-release:
@@ -41,9 +41,11 @@ services:
       - TZ=Europe/Paris
       - DB_USER=dsp-dbuser
       - DB_PASSWORD=EPrnNjaHgCWA1FpPZCCAWsrM3
+      - DB_RELEASE_HOST=db-release:27017
+
     volumes:
        - /etc/localtime:/etc/localtime:ro
-       - backend_code:/usr/src/app
+    #   - backend_code:/usr/src/app
     #   - /usr/src/app/node_modules
     restart: unless-stopped
     container_name: api-release
