@@ -41,7 +41,7 @@ services:
       - TZ=Europe/Paris
       - DB_USER=dsp-dbuser
       - DB_PASSWORD=EPrnNjaHgCWA1FpPZCCAWsrM3
-      - DB_RELEASE_HOST=db-release:27017
+      - DB_HOST=db-release:27017
 
     volumes:
        - /etc/localtime:/etc/localtime:ro
