@@ -39,6 +39,8 @@ services:
   
     environment:
       - TZ=Europe/Paris
+      - DB_USER=dsp-dbuser
+      - DB_PASSWORD=EPrnNjaHgCWA1FpPZCCAWsrM3
     volumes:
        - /etc/localtime:/etc/localtime:ro
        - backend_code:/usr/src/app
