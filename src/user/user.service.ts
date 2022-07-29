@@ -101,7 +101,7 @@ export class UserService {
   // ├┬┘├┤ ├┤ ├┬┘├┤ └─┐├─┤  ├─┤│  │  ├┤ └─┐└─┐   │ │ │├┴┐├┤ │││
   // ┴└─└─┘└  ┴└─└─┘└─┘┴ ┴  ┴ ┴└─┘└─┘└─┘└─┘└─┘   ┴ └─┘┴ ┴└─┘┘└┘
   async refreshAccessToken(refreshAccessTokenDto: RefreshAccessTokenDto) {
-    console.log('Acesss id hherer', refreshAccessTokenDto);
+    // console.log('Acesss id hherer', refreshAccessTokenDto);
     const userId = await this.authService.findRefreshToken(
       refreshAccessTokenDto.refreshToken,
     );

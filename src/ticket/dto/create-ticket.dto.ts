@@ -34,7 +34,7 @@ export class CreateTicketDto {
     description: 'ticketNumber of the ticket',
     format: 'string',
   })
-  ticketNumber: number;
+  ticketNumber: String;
 
   @ApiProperty({
     example: 'InGroup exmaple ... 032752375705450273450723047',

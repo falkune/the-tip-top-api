@@ -16,7 +16,7 @@ export const TicketSchema = new mongoose.Schema(
       type: String,
     },
     ticketNumber: {
-      type: Number,
+      type: String,
     },
     idGroup: {
       type: String,

@@ -31,22 +31,22 @@ export class TicketService {
     const maxTicketForSession = await this.getMaxTicketFoSession(
       createTicketDto?.idSession,
     );
-    createTicketDto.ticketNumber = this.getRandomInt();
-
-    console.log(maxTicketForSession, 'Maximum number for session');
-    console.log(numberOfCreatedTickets, 'Number of created tickets');
-    let ticketFound = await this.getTicketByNumber(
-      createTicketDto.ticketNumber,
-    );
-    let randGroup = await this.getRandomGroup();
-
-    console.log(randGroup, 'Le rendom');
-    var trying = maxTicketForSession;
-
-    console.log(createTicketDto.ticketNumber);
-    createTicketDto.idGroup = randGroup;
 
     if (numberOfCreatedTickets < maxTicketForSession) {
+      createTicketDto.ticketNumber = this.getRandomInt();
+
+      // console.log(maxTicketForSession, 'Maximum number for session');
+      // console.log(numberOfCreatedTickets, 'Number of created tickets');
+      let ticketFound = await this.getTicketByNumber(
+        createTicketDto.ticketNumber,
+      );
+      let randGroup = await this.getRandomGroup();
+
+      // console.log(randGroup, 'Le rendom');
+      var trying = maxTicketForSession;
+
+      // console.log(createTicketDto.ticketNumber);
+      createTicketDto.idGroup = randGroup;
       while (
         ticketFound?.ticketNumber?.toString() ==
           createTicketDto?.ticketNumber?.toString() &&
@@ -57,13 +57,13 @@ export class TicketService {
           createTicketDto.ticketNumber,
         );
         trying--;
-        console.log(trying, 'Essai');
+        // console.log(trying, 'Essai');
       }
 
       if (trying == 0) {
         throw new ServiceUnavailableException('Limit of numbers exceeded');
       } else {
-        console.log('Savaing ...');
+        // console.log('Savaing ...');
 
         const ticket = new this.ticketModel(createTicketDto);
         await ticket.save();
@@ -94,8 +94,16 @@ export class TicketService {
    * GET TICKET WHITH PARAMS *
    ***************************/
 
-  async getTicketByNumber(ticketNumber: number): Promise<Ticket> {
+  async getTicketByNumber(ticketNumber: String): Promise<Ticket> {
     return await this.ticketModel.findOne({ ticketNumber: ticketNumber });
+  }
+
+  /*************************
+   * GET TICKET BY GROUPID *
+   *************************/
+
+  async getAllTicketForGroup(idGroup: string): Promise<number> {
+    return await this.ticketModel.find({ idGroup: { $eq: idGroup } }).count();
   }
 
   /***************************************
@@ -153,7 +161,7 @@ export class TicketService {
   ): Promise<any> {
     let userId = await this.authService.findRefreshToken(refreshToken);
     assignTicketDto.idClient = userId.valueOf().toString();
-    await this.isTicketClaimed(parseInt(assignTicketDto.ticketNumber));
+    await this.isTicketClaimed(assignTicketDto.ticketNumber);
     let ticket;
     try {
       ticket = await this.ticketModel.findOneAndUpdate(
@@ -165,7 +173,7 @@ export class TicketService {
     }
 
     let group = await this.groupService.getOneGroup(ticket.idGroup);
-    console.log(group, 'RRRRRRRRRRRRRRRRRRRRRRR');
+    // console.log(group, 'RRRRRRRRRRRRRRRRRRRRRRR');
     return group;
     // return null;
   }
@@ -174,7 +182,7 @@ export class TicketService {
    * VERIFY TICKETNUMBER *
    ***********************/
 
-  async verifyTicket(ticketNumber: number): Promise<any> {
+  async verifyTicket(ticketNumber: String): Promise<any> {
     let ticket = await this.getTicketByNumber(ticketNumber);
 
     if (ticket?.idGroup) {
@@ -215,48 +223,63 @@ export class TicketService {
    * GENERATE RANDOM NUMBER OF 10 CARATERS *
    *****************************************/
 
-  private getRandomInt(): number {
-    var str = '',
-      i = 0,
-      max = 10,
-      len = 10,
-      min = 0;
-    for (; i++ < len; ) {
-      var r = (Math.random() * (max - min) + min) << 0;
-      str += String.fromCharCode((r += r > 9 ? (r < 36 ? 55 : 61) : 48));
+  private getRandomInt(): String {
+    var str = '';
+    for (let i = 0; i++ < 10; ) {
+      var r = Math.floor(Math.random() * 9);
+
+      str += r.toString();
     }
-    return parseInt(str);
+    // console.log('Generated Code', str, 'Parsed Code: ', parseInt(str));
+    return str;
   }
 
   /******************************************************
    * GET RANDOM GROUP IN ORDER TO AFFECT IT TO A TICKET *
    ******************************************************/
 
-  private async getRandomGroup(): Promise<string> {
+  private async getRandomGroup(i = 0): Promise<string> {
     // return await this.GroupModel.aggregate([{ $sample: { size: 1 } }]);
+    // console.log('Start at ' + i); //
 
-    return await this.groupService.getAllGroups().then((groups) => {
+    return await this.groupService.getAllGroups().then(async (groups) => {
       let num = Math.random() * 100,
         s = 0;
+      i = i == groups.length ? 0 : i;
 
-      for (let i = 0; i < groups.length; ++i) {
+      for (; i < groups.length; ++i) {
         s += groups[i]?.percentage;
-        if (num < s) {
-          // console.log('Group ' + groups[i] + ' is used for' + num);
-          return groups[i]._id.valueOf();
+        let ticketsForGroup = await this.getAllTicketForGroup(
+          groups[i]._id.valueOf(),
+        );
+        // console.log(ticketsForGroup, ' FOR the group', groups[i]?.description);
+        if (ticketsForGroup < groups[i]?.limitTicket) {
+          if (num < s) {
+            return groups[i]._id.valueOf();
+          } else {
+            // console.log('Send to the last group');
+            return this.getAllTicketForGroup(groups.pop()._id.valueOf()) <
+              groups.pop()?.limitTicket
+              ? groups.pop()._id.valueOf()
+              : this.getRandomGroup(0);
+          }
+        } else {
+          // console.log(groups[i]?.description + 'is FULL');
+          return this.getAllTicketForGroup(groups.pop()._id.valueOf()) <
+            groups.pop()?.limitTicket
+            ? groups.pop()._id.valueOf()
+            : this.getRandomGroup(i + 1);
         }
       }
-
-      return groups.pop()._id.valueOf();
     });
   }
 
   /*********************
    * IS TIKET CLAIMBED *
    *********************/
-  private async isTicketClaimed(ticketNumber: number): Promise<any> {
+  private async isTicketClaimed(ticketNumber: String): Promise<any> {
     let ticket = await this.getTicketByNumber(ticketNumber);
-    console.log(ticket, 'FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF');
+    // console.log(ticket, 'FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF');
 
     if (ticket != null) {
       if (ticket.idClient) {

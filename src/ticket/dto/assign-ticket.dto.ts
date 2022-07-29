@@ -19,10 +19,10 @@ export class AssignTicketDto {
   @ApiProperty({
     example: '6546h4e4h6df65h46tu5',
     description: 'ticketNumber of the ticket which will be assigned to the client',
-    format: 'string',
+    format: 'String',
   })
   @IsNotEmpty()
-  @IsNumber() 
-  readonly ticketNumber: string;
+  @IsString() 
+  readonly ticketNumber: String;
 
 }

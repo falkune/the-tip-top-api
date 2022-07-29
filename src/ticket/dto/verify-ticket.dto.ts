@@ -6,9 +6,9 @@ export class VerifyTicketDto {
     example: '6546h4e4h6df65h46tu5',
     description:
       'ticketNumber of the ticket which will be assigned to the client',
-    format: 'string',
+    format: 'String',
   })
   @IsNotEmpty()
-  @IsNumber()
-  readonly ticketNumber: number;
+  @IsString()
+  readonly ticketNumber: String;
 }
