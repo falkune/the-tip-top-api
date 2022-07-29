@@ -60,6 +60,14 @@ export class AuthService {
   //   return refreshToken.userId;
   // }
 
+
+
+  /****************************
+ * FIND USER BY ACCESSTOKEN *
+ ****************************/
+
+ 
+
   async validateUser(jwtPayload: JwtPayload): Promise<any> {
     const user = await this.userModel.findOne({_id: jwtPayload.userId, verified: true});
     if (!user) {

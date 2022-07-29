@@ -2,79 +2,85 @@ import * as mongoose from 'mongoose';
 import * as validator from 'validator';
 import * as bcrypt from 'bcrypt';
 
-export const UserSchema = new mongoose.Schema ({
+export const UserSchema = new mongoose.Schema(
+  {
     fullName: {
-        type: String,
-        minlength: 6,
-        maxlength: 255,
-        required: [true, 'NAME_IS_BLANK'],
+      type: String,
+      minlength: 6,
+      maxlength: 255,
+      required: [true, 'NAME_IS_BLANK'],
     },
     email: {
-        type: String,
-        lowercase: true,
-        validate: validator.isEmail,
-        maxlength: 255,
-        minlength: 6,
-        required: [true, 'EMAIL_IS_BLANK'],
+      type: String,
+      lowercase: true,
+      validate: validator.isEmail,
+      maxlength: 255,
+      minlength: 6,
+      required: [true, 'EMAIL_IS_BLANK'],
     },
     password: {
-        type: String,
-        minlength: 5,
-        maxlength: 1024,
-        required: [true, 'PASSWORD_IS_BLANK'],
+      type: String,
+      minlength: 5,
+      maxlength: 1024,
+      required: [true, 'PASSWORD_IS_BLANK'],
     },
     bankAccountNumber: {
-        type: String,
-        maxlength: 32,
+      type: String,
+      maxlength: 32,
     },
     bankAccountOwnerName: {
-        type: String,
-        minlength: 6,
-        maxlength: 255,
+      type: String,
+      minlength: 6,
+      maxlength: 255,
     },
     roles: {
-        type: [String],
-        default: ['user'],
+      type: [String],
+      default: ['user'],
+    },
+    birthday: {
+      type: String,
     },
     verification: {
-        type: String,
-        validate: validator.isUUID,
+      type: String,
+      validate: validator.isUUID,
     },
     verified: {
-        type: Boolean,
-        default: true,
+      type: Boolean,
+      default: true,
     },
     verificationExpires: {
-        type: Date,
-        default: Date.now,
+      type: Date,
+      default: Date.now,
     },
     loginAttempts: {
-        type: Number,
-        default: 0,
+      type: Number,
+      default: 0,
     },
     blockExpires: {
       type: Date,
       default: Date.now,
     },
-}, {
+  },
+  {
     versionKey: false,
     timestamps: true,
-});
+  },
+);
 
 // UserSchema.pre('save', async function(next: mongoose.HookNextFunction) {
-UserSchema.pre('save', async function(next) {
-    console.log(next,'This is my next function and what about yours !!!!')
+UserSchema.pre('save', async function (next) {
+  console.log(next, 'This is my next function and what about yours !!!!');
 
-    try {
-      if (!this.isModified('password')) {
-        return next();
-      }
-      // tslint:disable-next-line:no-string-literal
-      const hashed = await bcrypt.hash(this['password'], 10);
-      // tslint:disable-next-line:no-string-literal
-      this['password'] = hashed;
+  try {
+    if (!this.isModified('password')) {
       return next();
-    } catch (err) {
-      return next(err);
     }
-  });
+    // tslint:disable-next-line:no-string-literal
+    const hashed = await bcrypt.hash(this['password'], 10);
+    // tslint:disable-next-line:no-string-literal
+    this['password'] = hashed;
+    return next();
+  } catch (err) {
+    return next(err);
+  }
+});

@@ -6,6 +6,8 @@ import { AppModule } from './app.module';
 import { warn } from 'console';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
+import { GroupModule } from './group/group.module';
+import { SessionModule } from './session/session.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -24,7 +26,7 @@ async function bootstrap() {
   
   const options = new DocumentBuilder()
     .setTitle('API')
-    .setDescription('API description')
+    .setDescription('API de thetiptop')
     .setVersion('1.0')
     .addTag('API')
     .build();
@@ -32,6 +34,8 @@ async function bootstrap() {
     include: [
       UserModule,
       TicketModule,
+      GroupModule,
+      SessionModule,
   ],
   });
   SwaggerModule.setup('api', app, document);
