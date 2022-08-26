@@ -72,15 +72,15 @@ export class UserController {
     return await this.userService.login(req, loginUserDto);
   }
 
-  @Post('send-email')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Login User' })
-  @ApiOkResponse({})
-  async send(@Req() req: Request, @Body() user: UserEntity) {
-    // console.log('Email sender form user controller',loginUserDto)
+  // @Post('send-email')
+  // @HttpCode(HttpStatus.OK)
+  // @ApiOperation({ summary: 'Login User' })
+  // @ApiOkResponse({})
+  // async send(@Req() req: Request, @Body() user: UserEntity) {
+  //   // console.log('Email sender form user controller',loginUserDto)
 
-    return await this.userService.sendEmail(user);
-  }
+  //   return await this.userService.sendEmail(user);
+  // }
 
   @Post('refresh-access-token')
   @HttpCode(HttpStatus.CREATED)
