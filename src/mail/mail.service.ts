@@ -1,25 +1,23 @@
 import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
-import { User } from '../user/interfaces/user.interface';
+import { UserEntity } from '../user/user.entity';
 
 @Injectable()
 export class MailService {
   constructor(private mailerService: MailerService) {}
 
-  async sendUserConfirmation(user: User, token: string) {
-
-    console.log(token,'Hello')
-    const url = `example.com/auth/confirm?token=${token}`;
-
+  async sendUserConfirmation(user) {
+    const url = `http://localhost:3000/user/verify-email?verification=${user.verification}`;
+    var html = '<p>Hey ' +user.name+',</p><p>Please click below to confirm your email</p><p><a href="'+url+'">Confirm</a></p><p>If you did not request this email you can safely ignore it.</p>';
     await this.mailerService.sendMail({
       to: user.email,
-      // from: '"Support Team" <support@example.com>', // override default from
-      subject: 'Welcome to Nice App! Confirm your Email',
-      template: '../confirmation', // `.hbs` extension is appended automatically
-      context: { // ✏️ filling curly brackets with content
-        name: user.fullName,
-        url,
-      },
+      from: 'cheikhthiam95g@gmail.com', // override default from
+      subject: 'Bienvenue au jeu de thétiptop. Confirmer votre email',
+      html: html, // `.hbs` extension is appended automatically
+      // context: { // ✏️ filling curly brackets with content
+      //   name: user.name,
+      //   url,
+      // },
     });
   }
 }

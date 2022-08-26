@@ -9,7 +9,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 @Module({
   imports: [
     MailerModule.forRootAsync({
-      imports: [ConfigModule], // import module if not enabled globally
+      // imports: [ConfigModule], // import module if not enabled globally
       useFactory: async (config: ConfigService) => ({
         // transport: config.get("MAIL_TRANSPORT"),
         // or
@@ -24,13 +24,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         defaults: {
           from: `"No Reply" <${config.get('MAIL_FROM')}>`,
         },
-        template: {
-          dir: join(__dirname, 'templates'),
-          adapter: new HandlebarsAdapter(),
-          options: {
-            strict: true,
-          },
-        },
+        text: 'Please enter your email address here     and try again.'
       }),
       inject: [ConfigService],
     }),

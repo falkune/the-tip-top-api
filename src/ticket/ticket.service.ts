@@ -195,6 +195,21 @@ export class TicketService {
     }
   }
 
+
+
+/*****************************
+ * GET TICKETS BY SESSION_ID *
+ *****************************/
+
+ async getTicketBySession(idSession: string): Promise<Array<Ticket>> {
+  return await this.ticketModel.find( { idSession: { $eq: idSession } });
+}
+
+
+
+
+
+
   /******************
    * CLAIMED TICKETS *
    ******************/

@@ -31,6 +31,7 @@ import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { AssignTicketDto } from './dto/assign-ticket.dto';
 import { VerifyTicketDto } from './dto/verify-ticket.dto';
+import { GetTicketBySessionDto } from './dto/get-tickets-by-session.dto';
 
 @ApiTags('Ticket')
 @Controller('ticket')
@@ -158,6 +159,24 @@ export class TicketController {
   @ApiOkResponse({})
   async getNotClaimedTickets() {
     return await this.ticketService.getNotClaimedTickets();
+  }
+  @Get('/tickets-by-session')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard('jwt'))
+  @Roles('admin')
+  @ApiOperation({ summary: 'Update one ticket by id ( all params )' })
+  @ApiBearerAuth()
+  @ApiHeader({
+    name: 'Bearer',
+    description: 'the token we need for auth.',
+  })
+  @ApiOkResponse({})
+  async getTicketBySession(
+    @Body() getTicketBySessionDto: GetTicketBySessionDto,
+  ) {
+    return await this.ticketService.getTicketBySession(
+      getTicketBySessionDto.idSession,
+    );
   }
 
   @Delete(':id')

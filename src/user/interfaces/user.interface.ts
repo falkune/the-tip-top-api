@@ -6,7 +6,7 @@ export interface User extends Document {
     email: string;
     password: string;
     roles: [string];
-    verification: string;
+    verification: string; 
     verified: boolean;
     verificationExpires: Date;
     loginAttempts?: number;

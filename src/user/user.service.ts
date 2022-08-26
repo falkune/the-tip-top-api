@@ -19,7 +19,9 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { VerifyUuidDto } from './dto/verify-uuid.dto';
 import { RefreshAccessTokenDto } from './dto/refresh-access-token.dto';
 import { ForgotPassword } from './interfaces/forgot-password.interface';
+import { Ticket } from '../ticket/interfaces/ticket.interface';
 import { User } from './interfaces/user.interface';
+import { UserEntity } from './user.entity';
 
 @Injectable()
 export class UserService {
@@ -29,8 +31,11 @@ export class UserService {
 
   constructor(
     @InjectModel('User') private readonly userModel: Model<User>,
+    @InjectModel('Ticket') private readonly ticketModel: Model<Ticket>,
     @InjectModel('ForgotPassword')
+    @InjectModel('Ticket')
     private readonly forgotPasswordModel: Model<ForgotPassword>,
+
     private readonly authService: AuthService,
     private mailService: MailService,
   ) {}
@@ -49,8 +54,8 @@ export class UserService {
   // ┬  ┬┌─┐┬─┐┬┌─┐┬ ┬  ┌─┐┌┬┐┌─┐┬┬
   // └┐┌┘├┤ ├┬┘│├┤ └┬┘  ├┤ │││├─┤││
   //  └┘ └─┘┴└─┴└   ┴   └─┘┴ ┴┴ ┴┴┴─┘
-  async verifyEmail(req: Request, verifyUuidDto: VerifyUuidDto) {
-    const user = await this.findByVerification(verifyUuidDto.verification);
+  async verifyEmail(req: Request, verification: string) {
+    const user = await this.findByVerification(verification);
     await this.setUserAsVerified(user);
     return {
       fullName: user.fullName,
@@ -80,15 +85,9 @@ export class UserService {
       userId: await user._id,
     };
   }
-  async sendEmail(req: Request, loginUserDto: LoginUserDto) {
-    const user = await this.findUserByEmail(loginUserDto.email);
-
-    return await this.mailService.sendUserConfirmation(
-      user,
-      await this.authService.createAccessToken(user._id),
-    );
+  async sendEmail(user) {
+    return await this.mailService.sendUserConfirmation(user);
   }
-  
 
   private _calculateAge(birthday) {
     // birthday is a date
@@ -155,6 +154,15 @@ export class UserService {
       message: 'password successfully changed.',
     };
   }
+
+  /*****************************
+   * GET TICKETS BY SESSION_ID *
+   *****************************/
+
+  async getUsersBySession(idSession: string): Promise<Array<User>> {
+    return await this.userModel.find({ idSession: { $eq: idSession } });
+  }
+
   // ┌─┐┬─┐┌┬┐┌─┐┌─┐┌┬┐┌─┐┌┬┐  ┌─┐┌─┐┬─┐┬  ┬┬┌─┐┌─┐
   // ├─┘├┬┘ │ ├┤ │   │ ├┤  ││  └─┐├┤ ├┬┘└┐┌┘││  ├┤
   // ┴  ┴└─ ┴ └─┘└─┘ ┴ └─┘─┴┘  └─┘└─┘┴└─ └┘ ┴└─┘└─┘
@@ -186,6 +194,12 @@ export class UserService {
       email: user.email,
       verified: user.verified,
     };
+
+    this.sendEmail({
+      email: user.email,
+      name: user.fullName,
+      token: user.verification,
+    });
     return userRegistrationInfo;
   }
 

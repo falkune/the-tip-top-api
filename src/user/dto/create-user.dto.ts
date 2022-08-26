@@ -61,13 +61,5 @@ export class CreateUserDto {
   }) 
   @IsNotEmpty()
   @IsString()
-  readonly birthday: string;
-
-  // Id of the session
-  @ApiProperty({
-    example: '656565465465465464',
-    description: 'Id of the session of the User',
-    format: 'string',
-  }) 
-  IdSession: string;
+  readonly birthday: string; 
 }
