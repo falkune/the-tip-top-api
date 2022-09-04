@@ -1,5 +1,8 @@
 import {
+  ConflictException,
+  ImATeapotException,
   Injectable,
+  NotAcceptableException,
   ServiceUnavailableException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -191,7 +194,7 @@ export class TicketService {
         lot: group.description,
       };
     } else {
-      throw new UnauthorizedException('Sorry, this ticket number is invalid.');
+      throw new ImATeapotException('Sorry, this ticket number is invalid.');
     }
   }
 
@@ -207,23 +210,23 @@ export class TicketService {
    * GET CLAIMBED TICKETS BY SESSION *
    ***********************************/
 
-   async getClaimbedTicketsBySession(idSession: string): Promise<Array<Ticket>> {
-    return await this.ticketModel.find({ idSession: { $eq: idSession } });
-  }
-
-  // async getClaimbedTicketsBySession(idSession: string): Promise<Array<Ticket>> {
-
+  //  async getClaimbedTicketsBySession(idSession: string): Promise<Array<Ticket>> {
   //   return await this.ticketModel.find({ idSession: { $eq: idSession } });
-
-    // return await this.ticketModel.find({
-    //   idSession: { $eq: idSession }
-      // $and: [
-      //   {
-          // $or: [{ idClient: { $exists: true } }, { idClient: { $ne: null } }],
-
-      // ],
-    // });
   // }
+
+  async getClaimbedTicketsBySession(idSession: string): Promise<Array<Ticket>> {
+
+    // return await this.ticketModel.find({ idSession: { $eq: idSession } });
+
+    return await this.ticketModel.find({
+      idSession: { $eq: idSession },
+      $and: [
+        {
+          $or: [{ idClient: { $exists: true } }, { idClient: { $ne: null } }]},
+
+      ],
+    });
+  }
 
 // },
 // { idSession: { $eq: idSession } },
@@ -333,14 +336,14 @@ export class TicketService {
 
     if (ticket != null) {
       if (ticket.idClient) {
-        throw new UnauthorizedException(
+        throw new  ConflictException (
           'the number is already used by the a client',
         );
       } else {
         return ticket;
       }
     } else {
-      throw new UnauthorizedException('the ticket number is not correct');
+      throw new NotAcceptableException('the ticket number is not correct');
     }
   }
 }
