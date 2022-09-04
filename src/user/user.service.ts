@@ -83,7 +83,7 @@ export class UserService {
       birthday: birthday,
       accessToken: await this.authService.createAccessToken(user._id),
       refreshToken: await this.authService.createRefreshToken(req, user._id),
-      userId: await user._id,
+     
     };
   }
   async sendEmail(user) {
@@ -183,9 +183,15 @@ export class UserService {
   // ┌─┐┬─┐┌┬┐┌─┐┌─┐┌┬┐┌─┐┌┬┐  ┌─┐┌─┐┬─┐┬  ┬┬┌─┐┌─┐
   // ├─┘├┬┘ │ ├┤ │   │ ├┤  ││  └─┐├┤ ├┬┘└┐┌┘││  ├┤
   // ┴  ┴└─ ┴ └─┘└─┘ ┴ └─┘─┴┘  └─┘└─┘┴└─ └┘ ┴└─┘└─┘
-  findAll(): any {
-    return { hello: 'Welcome admin' };
-  }
+ 
+    /******************
+   * GET ALL users *
+   ******************/
+
+     async findAll(): Promise<Array<User>> {
+      console.log('findAll called with ' );
+      return await this.userModel.find({},{ idClient:1,fullName: 1,email:1,birthday:1});
+    }
 
   // ********************************************
   // ╔═╗╦═╗╦╦  ╦╔═╗╔╦╗╔═╗  ╔╦╗╔═╗╔╦╗╦ ╦╔═╗╔╦╗╔═╗

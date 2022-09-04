@@ -165,16 +165,16 @@ export class UserController {
     );
   }
 
-  @Get('data')
+  @Get()
+  @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard('jwt'))
   @Roles('admin')
+  @ApiOperation({ summary: 'Get all users by sessionId ' })
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'A private route for check the auth' })
   @ApiHeader({
     name: 'Bearer',
     description: 'the token we need for auth.',
   })
-  @HttpCode(HttpStatus.OK)
   @ApiOkResponse({})
   findAll() {
     return this.userService.findAll();
