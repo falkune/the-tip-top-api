@@ -7,4 +7,5 @@ export interface RefreshToken extends Document {
     ip: string;
     browser: string;
     country: string;
+    userLocation: Object;
 }

@@ -177,7 +177,7 @@ export class UserService {
       });
     }
 
-    return await this.userModel.find({ _id: { $in: idClients } });
+    return await this.userModel.find({ _id: { $in: idClients } },{ idClient:1,fullName: 1,email:1,birthday:1});
   }
 
   // ┌─┐┬─┐┌┬┐┌─┐┌─┐┌┬┐┌─┐┌┬┐  ┌─┐┌─┐┬─┐┬  ┬┬┌─┐┌─┐
