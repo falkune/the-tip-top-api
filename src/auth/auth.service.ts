@@ -131,7 +131,7 @@ export class AuthService {
     let ip = await getClientIp(req);
 
     const ipinfo = new IPinfoWrapper('cec88b6b1d6573');
-    return ipinfo.lookupIp(ip).then((response) => response);
+    return ipinfo.lookupIp(ip);
   }
 
   getBrowserInfo(req: Request): string {
