@@ -160,7 +160,7 @@ export class TicketController {
   async getNotClaimedTickets() {
     return await this.ticketService.getNotClaimedTickets();
   }
-  @Get('/tickets-by-session')
+  @Post('/tickets-by-session')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard('jwt'))
   @Roles('admin')
@@ -174,7 +174,53 @@ export class TicketController {
   async getTicketBySession(
     @Body() getTicketBySessionDto: GetTicketBySessionDto,
   ) {
+
+    console.log('getTicketBySession', getTicketBySessionDto);
     return await this.ticketService.getTicketBySession(
+      getTicketBySessionDto.idSession,
+    );
+  }
+
+
+
+  @Post('/claimbed-tickets-by-session')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard('jwt'))
+  @Roles('admin')
+  @ApiOperation({ summary: 'Update one ticket by id ( all params )' })
+  @ApiBearerAuth()
+  @ApiHeader({
+    name: 'Bearer',
+    description: 'the token we need for auth.',
+  })
+  @ApiOkResponse({})
+  async getClaimbedTicketsBySession(
+    @Body() getTicketBySessionDto: GetTicketBySessionDto,
+  ) {
+
+    console.log('getClaimbedTicketsBySession', getTicketBySessionDto);
+    return await this.ticketService.getClaimbedTicketsBySession(
+      getTicketBySessionDto.idSession,
+    );
+  } 
+  
+  @Post('/tickets-not-claimbed-by-session')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard('jwt'))
+  @Roles('admin')
+  @ApiOperation({ summary: 'Update one ticket by id ( all params )' })
+  @ApiBearerAuth()
+  @ApiHeader({
+    name: 'Bearer',
+    description: 'the token we need for auth.',
+  })
+  @ApiOkResponse({})
+  async getNotClaimbedTicketsBySession(
+    @Body() getTicketBySessionDto: GetTicketBySessionDto,
+  ) {
+
+    console.log('getNotClaimbedTicketsBySession', getTicketBySessionDto);
+    return await this.ticketService.getNotClaimbedTicketsBySession(
       getTicketBySessionDto.idSession,
     );
   }

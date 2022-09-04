@@ -158,6 +158,8 @@ export class UserController {
   async getTicketBySession(
     @Body() getTicketBySessionDto: GetTicketBySessionDto,
   ) {
+
+    console.log("getTicketBySessionDto.description");
     return await this.userService.getUsersBySession(
       getTicketBySessionDto.idSession,
     );

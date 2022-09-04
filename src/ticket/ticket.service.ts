@@ -195,20 +195,55 @@ export class TicketService {
     }
   }
 
+  /*****************************
+   * GET TICKETS BY SESSION_ID *
+   *****************************/
 
+  async getTicketBySession(idSession: string): Promise<Array<Ticket>> {
+    return await this.ticketModel.find({ idSession: { $eq: idSession } });
+  }
 
-/*****************************
- * GET TICKETS BY SESSION_ID *
- *****************************/
+  /***********************************
+   * GET CLAIMBED TICKETS BY SESSION *
+   ***********************************/
 
- async getTicketBySession(idSession: string): Promise<Array<Ticket>> {
-  return await this.ticketModel.find( { idSession: { $eq: idSession } });
-}
+   async getClaimbedTicketsBySession(idSession: string): Promise<Array<Ticket>> {
+    return await this.ticketModel.find({ idSession: { $eq: idSession } });
+  }
 
+  // async getClaimbedTicketsBySession(idSession: string): Promise<Array<Ticket>> {
 
+  //   return await this.ticketModel.find({ idSession: { $eq: idSession } });
 
+    // return await this.ticketModel.find({
+    //   idSession: { $eq: idSession }
+      // $and: [
+      //   {
+          // $or: [{ idClient: { $exists: true } }, { idClient: { $ne: null } }],
 
+      // ],
+    // });
+  // }
 
+// },
+// { idSession: { $eq: idSession } },
+
+  /***********************************
+   * GET CLAIMBED NOT TICKETS BY SESSION *
+   ***********************************/
+
+  async getNotClaimbedTicketsBySession(
+    idSession: string,
+  ): Promise<Array<Ticket>> {
+    return await this.ticketModel.find({
+      $and: [
+        {
+          $or: [{ idClient: { $exists: false } }, { idClient: { $eq: null } }],
+        },    
+        { idSession: { $eq: idSession } }
+      ],
+    });
+  }
 
   /******************
    * CLAIMED TICKETS *
