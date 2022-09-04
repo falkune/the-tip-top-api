@@ -104,6 +104,7 @@ export class TicketService {
   /*************************
    * GET TICKET BY GROUPID *
    *************************/
+  
 
   async getAllTicketForGroup(idGroup: string): Promise<number> {
     return await this.ticketModel.find({ idGroup: { $eq: idGroup } }).count();
@@ -347,22 +348,3 @@ export class TicketService {
     }
   }
 }
-
-// let min = 1000000000,
-//   max = maxTicketForSession + 1000000000;
-// return Math.floor(Math.random() * (max - min)) + min;
-// return 8507773157;
-// max = 1001500000;
-
-// function randomString(len, an) {
-//   an = an && an.toLowerCase();
-//   var str = "",
-//     i = 0,
-//     min = an == "a" ? 10 : 0,
-//     max = an == "n" ? 10 : 62;
-//   for (; i++ < len;) {
-//     var r = Math.random() * (max - min) + min << 0;
-//     str += String.fromCharCode(r += r > 9 ? r < 36 ? 55 : 61 : 48);
-//   }
-//   return str;
-// }

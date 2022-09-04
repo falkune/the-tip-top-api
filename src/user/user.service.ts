@@ -22,6 +22,7 @@ import { ForgotPassword } from './interfaces/forgot-password.interface';
 import { Ticket } from '../ticket/interfaces/ticket.interface';
 import { User } from './interfaces/user.interface';
 import { UserEntity } from './user.entity';
+import { listenerCount } from 'process';
 
 @Injectable()
 export class UserService {
@@ -160,7 +161,23 @@ export class UserService {
    *****************************/
 
   async getUsersBySession(idSession: string): Promise<Array<User>> {
-    return await this.userModel.find({ idSession: { $eq: idSession } });
+    let tickets = await this.ticketModel.find({
+      idSession: { $eq: idSession },
+      $and: [
+        {
+          $or: [{ idClient: { $exists: true } }, { idClient: { $ne: null } }],
+        },
+      ],
+    });
+
+    var idClients = [];
+    for (var n = 1; n < tickets.length; ++n) {
+      tickets.forEach((ticket) => {
+        idClients.push(ticket.idClient);
+      });
+    }
+
+    return await this.userModel.find({ _id: { $in: idClients } });
   }
 
   // ┌─┐┬─┐┌┬┐┌─┐┌─┐┌┬┐┌─┐┌┬┐  ┌─┐┌─┐┬─┐┬  ┬┬┌─┐┌─┐
