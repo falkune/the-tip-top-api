@@ -80,6 +80,7 @@ export class UserService {
       fullName: user.fullName,
       email: user.email,
       age: this._calculateAge(birthday),
+      roles: user.roles,
       birthday: birthday,
       accessToken: await this.authService.createAccessToken(user._id),
       refreshToken: await this.authService.createRefreshToken(req, user._id),
