@@ -7,6 +7,7 @@ import { GroupSchema } from './schemas/group.schema';
 import { SessionModule } from 'src/session/session.module';
 import { SessionSchema } from 'src/session/schemas/session.schema';
 import { SessionService } from 'src/session/session.service';
+import { LoggerModule } from 'src/logger/logger.module';
 
 
 @Module({
@@ -14,7 +15,7 @@ import { SessionService } from 'src/session/session.service';
     MongooseModule.forFeature([{ name: 'Group', schema: GroupSchema }]),
     MongooseModule.forFeature([{ name: 'Session', schema: SessionSchema}]),
 
-    SessionModule
+    SessionModule,LoggerModule
   ],
   controllers: [GroupController],
   providers: [GroupService,SessionService],

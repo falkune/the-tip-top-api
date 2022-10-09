@@ -21,8 +21,8 @@ import { RefreshAccessTokenDto } from './dto/refresh-access-token.dto';
 import { ForgotPassword } from './interfaces/forgot-password.interface';
 import { Ticket } from '../ticket/interfaces/ticket.interface';
 import { User } from './interfaces/user.interface';
-import { UserEntity } from './user.entity';
-import { listenerCount } from 'process';
+import { LoggerService } from 'src/logger/logger.service';
+ 
 
 @Injectable()
 export class UserService {
@@ -39,6 +39,7 @@ export class UserService {
 
     private readonly authService: AuthService,
     private mailService: MailService,
+    private readonly logger  : LoggerService
   ) {}
 
   // ┌─┐┬─┐┌─┐┌─┐┌┬┐┌─┐  ┬ ┬┌─┐┌─┐┬─┐
@@ -75,7 +76,7 @@ export class UserService {
     await this.checkPassword(loginUserDto.password, user);
     await this.passwordsAreMatch(user);
     const birthday = new Date(user.birthday);
-
+    this.logger.log('User loggedin','UserService');
     return {
       fullName: user.fullName,
       email: user.email,
@@ -224,6 +225,9 @@ export class UserService {
       name: user.fullName,
       token: user.verification,
     });
+
+
+    this.logger.log('User creaded','UserService');
     return userRegistrationInfo;
   }
 

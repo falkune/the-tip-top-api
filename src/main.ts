@@ -7,7 +7,8 @@ import { warn } from 'console';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import { GroupModule } from './group/group.module';
-import { SessionModule } from './session/session.module';
+import { SessionModule } from './session/session.module'; 
+import { LoggerModule } from './logger/logger.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -36,6 +37,7 @@ async function bootstrap() {
       TicketModule,
       GroupModule,
       SessionModule,
+      LoggerModule
   ],
   });
   SwaggerModule.setup('api', app, document);

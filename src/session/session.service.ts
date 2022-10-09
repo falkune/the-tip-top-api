@@ -1,14 +1,15 @@
 import { Injectable, ServiceUnavailableException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-
 import { Session } from './interfaces/session.interface';
 import { CreateSessionDto } from './dto/create-session.dto'; 
+import { LoggerService } from 'src/logger/logger.service';
 
 @Injectable()
 export class SessionService {
   constructor(
     @InjectModel('Session') private readonly SessionModel: Model<Session>,
+       private readonly logger  : LoggerService
  
   ) {}
 

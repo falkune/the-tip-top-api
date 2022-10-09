@@ -6,7 +6,8 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserSchema } from 'src/user/schemas/user.schema';
-import { RefreshTokenSchema } from './schemas/refresh-token.schema';
+import { RefreshTokenSchema } from './schemas/refresh-token.schema'; 
+import { LoggerService } from 'src/logger/logger.service';
 
 @Module({
   imports: [
@@ -18,9 +19,9 @@ import { RefreshTokenSchema } from './schemas/refresh-token.schema';
     JwtModule.register({
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: process.env.JWT_EXPIRATION },
-    }),
+    }) 
   ],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy,LoggerService],
   exports: [AuthService],
 })
 export class AuthModule {}

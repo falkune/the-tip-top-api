@@ -8,6 +8,7 @@ import { ForgotPasswordSchema } from './schemas/forgot-password.schema';
 import { TicketSchema } from '../ticket/schemas/ticket.schema';
 import { TicketModule } from '../ticket/ticket.module';
 import { MailModule } from 'src/mail/mail.module';
+import { LoggerService } from 'src/logger/logger.service';
 
 @Module({
   imports: [
@@ -21,6 +22,6 @@ import { MailModule } from 'src/mail/mail.module';
     MailModule,
   ],
   controllers: [UserController],
-  providers: [UserService],
+  providers: [UserService,LoggerService],
 })
 export class UserModule {}

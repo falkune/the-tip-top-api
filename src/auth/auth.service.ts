@@ -3,7 +3,7 @@ import {
   Injectable,
   UnauthorizedException,
   NotFoundException,
-  BadRequestException,
+  BadRequestException
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
@@ -18,6 +18,7 @@ import { getClientIp } from 'request-ip';
 import { IPinfoWrapper } from 'node-ipinfo';
 
 import * as Cryptr from 'cryptr';
+import { LoggerService } from 'src/logger/logger.service';
 
 @Injectable()
 export class AuthService {
@@ -27,20 +28,23 @@ export class AuthService {
     @InjectModel('User') private readonly userModel: Model<User>,
     @InjectModel('RefreshToken')
     private readonly refreshTokenModel: Model<RefreshToken>,
-    private readonly jwtService: JwtService,
+    private readonly jwtService: JwtService, 
+    private readonly logger  : LoggerService,
   ) {
     this.cryptr = new Cryptr(process.env.ENCRYPT_JWT_SECRET);
   }
-
+ 
   async createAccessToken(userId: string) {
-    // const accessToken = this.jwtService.sign({userId});
+    // const accessToken = this.jwtService.sign({userId}); 
     const accessToken = sign({ userId }, process.env.JWT_SECRET, {
       expiresIn: process.env.JWT_EXPIRATION,
     });
     return this.encryptText(accessToken);
   }
 
-  async createRefreshToken(req: Request, userId) {
+  async createRefreshToken(req: Request, userId) { 
+ 
+    this.logger.log('Alert! Access token is already associated',AuthService.name);
     var UserLocation = await this.getLocationInfo(req);
     const refreshToken = new this.refreshTokenModel({
       userId,

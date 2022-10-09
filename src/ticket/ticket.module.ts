@@ -10,6 +10,9 @@ import { GroupModule } from 'src/group/group.module';
 import { SessionSchema } from 'src/session/schemas/session.schema';
 import { SessionModule } from 'src/session/session.module';
 import { SessionService } from 'src/session/session.service';
+import { LoggerService } from 'src/logger/logger.service';
+
+
 
 @Module({
   imports: [
@@ -18,6 +21,6 @@ import { SessionService } from 'src/session/session.service';
     MongooseModule.forFeature([{ name: 'Session', schema: SessionSchema}]),SessionModule,AuthModule
   ],
   controllers: [TicketController],
-  providers: [TicketService,GroupService,SessionService]
+  providers: [TicketService,GroupService,SessionService,LoggerService]
 })
 export class TicketModule {}
