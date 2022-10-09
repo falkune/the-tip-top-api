@@ -59,7 +59,7 @@ export class TicketController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @UseGuards(AuthGuard('jwt'))
-  @Roles('pro')
+  @Roles('admin')
   @ApiOperation({ summary: 'Create one ticket' })
   @ApiBearerAuth()
   @ApiHeader({
