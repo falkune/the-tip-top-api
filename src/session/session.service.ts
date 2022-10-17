@@ -65,8 +65,8 @@ export class SessionService {
     id: string,
     createSessionDto: CreateSessionDto,
   ): Promise<Session> {
-    // return await this.SessionModel.updateOne({_id: id}, createSessionDto);
-    return null;
+  return await this.SessionModel.findOneAndUpdate({_id: id}, createSessionDto);
+  
   }
 
   /*****************

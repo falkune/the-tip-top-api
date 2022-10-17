@@ -12,7 +12,9 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { ConfigModule } from '@nestjs/config';
 @Module({
   imports: [
-    MongooseModule.forRoot(process.env.MONGO_URI),
+   // MongooseModule.forRoot("mongodb://localhost:27017/thetiptop"),
+   MongooseModule.forRoot(process.env.MONGO_URI),
+
     MailerModule.forRoot({
       transport: {
         host: 'smtp.sendgrid.net',

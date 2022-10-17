@@ -33,7 +33,7 @@ export class GroupService {
 
     if (totalProbabilities + createGroupDto.percentage <= 100) {
   
-      createGroupDto.limitTicket = 100*createGroupDto.percentage/100;
+      createGroupDto.limitTicket = await this.getLimitTicket(createGroupDto.sessionId,createGroupDto.percentage);
       await this.isDescriptionUniq(createGroupDto.description);
       const Group = new this.GroupModel(createGroupDto);
       await Group.save();

@@ -82,7 +82,7 @@ export class UserService {
       email: user.email,
       age: this._calculateAge(birthday),
       roles: user.roles,
-      birthday: birthday,
+      birthday: this.formatDate(birthday.toString()),
       accessToken: await this.authService.createAccessToken(user._id),
       refreshToken: await this.authService.createRefreshToken(req, user._id),
      
@@ -368,4 +368,19 @@ export class UserService {
     user.password = resetPasswordDto.password;
     await user.save();
   }
+
+  private  formatDate( date: string) {
+    var d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+    if (month.length < 2) 
+        month = '0' + month;
+    if (day.length < 2) 
+        day = '0' + day;
+
+    return [ day,month, year].join('/');
+}
+ 
 }

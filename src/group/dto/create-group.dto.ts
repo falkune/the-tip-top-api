@@ -32,5 +32,14 @@ export class CreateGroupDto {
         format: 'number',
     })
      limitTicket:number;  
+     @ApiProperty({
+        example: '36524652346345631675',
+        description: 'id of the session of Group',
+        format: 'number',
+    })
+    @IsNotEmpty()
+    @IsString()
+    readonly sessionId:string;  
+
  
 }
