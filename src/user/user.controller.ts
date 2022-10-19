@@ -165,6 +165,23 @@ export class UserController {
     );
   }
 
+  @Get('/registration-by-day')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard('jwt'))
+  @Roles('admin')
+  @ApiOperation({ summary: 'Get number of registration by day ' })
+  @ApiBearerAuth()
+  @ApiHeader({
+    name: 'Bearer',
+    description: 'the token we need for auth.',
+  })
+  @ApiOkResponse({})
+  async getNumberOfRegistrationByDay() {
+    console.log("getNumberOfRegistrationByDay.getNumberOfRegistrationByDay");
+    return await this.userService.getNumberOfRegistrationByDay();
+  }
+
+
   @Get()
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard('jwt'))

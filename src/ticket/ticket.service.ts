@@ -15,6 +15,7 @@ import { CreateTicketDto } from './dto/create-ticket.dto';
 import { AssignTicketDto } from './dto/assign-ticket.dto';
 import { AuthService } from 'src/auth/auth.service';
 import { SessionService } from 'src/session/session.service';
+ 
 
 @Injectable()
 export class TicketService {
@@ -199,6 +200,30 @@ export class TicketService {
     }
   }
 
+
+   /***********************
+   * CHECK TICKETNUMBER *
+   ***********************/
+
+    async checkTicket(ticketNumber: String): Promise<any> {
+      let ticket = await this.getTicketByNumber(ticketNumber);
+  
+      if (ticket?.idGroup) {
+        let group = await this.groupService.getOneGroup(ticket.idGroup);
+        return {
+          lot: group.description,
+          idClient: ticket.idClient,
+          idSession: ticket.idSession,
+          createdAt: ticket.createdAt,
+          updatedAt: ticket.updatedAt
+
+        };
+      } else {
+        throw new UnauthorizedException("Sorry, this ticket is not associated with  group.");
+      }
+    }
+  
+
   /*****************************
    * GET TICKETS BY SESSION_ID *
    *****************************/
@@ -308,6 +333,13 @@ export class TicketService {
         );
         // console.log(ticketsForGroup, ' FOR the group', groups[i]?.description);
         if (ticketsForGroup < groups[i]?.limitTicket) {
+
+         // console.log(num,"NUL_M");
+        //  console.log(s,"SSS");
+        //  console.log("ticket nupber",ticketsForGroup);
+           
+          
+
           if (num < s) {
             return groups[i]._id.valueOf();
           } else {

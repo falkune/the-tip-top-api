@@ -53,9 +53,10 @@ export class UserService {
     return this.buildRegistrationInfo(user);
   }
 
-  // ┬  ┬┌─┐┬─┐┬┌─┐┬ ┬  ┌─┐┌┬┐┌─┐┬┬
-  // └┐┌┘├┤ ├┬┘│├┤ └┬┘  ├┤ │││├─┤││
-  //  └┘ └─┘┴└─┴└   ┴   └─┘┴ ┴┴ ┴┴┴─┘
+/****************
+ * VERIFY EMAIL *
+ ****************/
+
   async verifyEmail(req: Request, verification: string) {
     const user = await this.findByVerification(verification);
     await this.setUserAsVerified(user);
@@ -67,9 +68,9 @@ export class UserService {
     };
   }
 
-  // ┬  ┌─┐┌─┐┬┌┐┌
-  // │  │ ││ ┬││││
-  // ┴─┘└─┘└─┘┴┘└┘
+/*********
+ * LOGIN *
+ *********/
   async login(req: Request, loginUserDto: LoginUserDto) {
     const user = await this.findUserByEmail(loginUserDto.email);
     this.isUserBlocked(user);
@@ -88,9 +89,18 @@ export class UserService {
      
     };
   }
+
+/**************
+ * SEND EMAIL *
+ **************/
+
   async sendEmail(user) {
     return await this.mailService.sendUserConfirmation(user);
   }
+
+/*****************
+ * _CALCULATEAGE *
+ *****************/
 
   private _calculateAge(birthday) {
     // birthday is a date
@@ -99,9 +109,10 @@ export class UserService {
     return Math.abs(ageDate.getUTCFullYear() - 1970);
   }
 
-  // ┬─┐┌─┐┌─┐┬─┐┌─┐┌─┐┬ ┬  ┌─┐┌─┐┌─┐┌─┐┌─┐┌─┐  ┌┬┐┌─┐┬┌─┌─┐┌┐┌
-  // ├┬┘├┤ ├┤ ├┬┘├┤ └─┐├─┤  ├─┤│  │  ├┤ └─┐└─┐   │ │ │├┴┐├┤ │││
-  // ┴└─└─┘└  ┴└─└─┘└─┘┴ ┴  ┴ ┴└─┘└─┘└─┘└─┘└─┘   ┴ └─┘┴ ┴└─┘┘└┘
+/*****************
+ * REFRESH TOKEN *
+ *****************/
+
   async refreshAccessToken(refreshAccessTokenDto: RefreshAccessTokenDto) {
     // console.log('Acesss id hherer', refreshAccessTokenDto);
     const userId = await this.authService.findRefreshToken(
@@ -116,9 +127,10 @@ export class UserService {
     };
   }
 
-  // ┌─┐┌─┐┬─┐┌─┐┌─┐┌┬┐  ┌─┐┌─┐┌─┐┌─┐┬ ┬┌─┐┬─┐┌┬┐
-  // ├┤ │ │├┬┘│ ┬│ │ │   ├─┘├─┤└─┐└─┐││││ │├┬┘ ││
-  // └  └─┘┴└─└─┘└─┘ ┴   ┴  ┴ ┴└─┘└─┘└┴┘└─┘┴└──┴┘
+/*******************
+ * FORGET PASSWORD *
+ *******************/
+
   async forgotPassword(
     req: Request,
     createForgotPasswordDto: CreateForgotPasswordDto,
@@ -131,9 +143,10 @@ export class UserService {
     };
   }
 
-  // ┌─┐┌─┐┬─┐┌─┐┌─┐┌┬┐  ┌─┐┌─┐┌─┐┌─┐┬ ┬┌─┐┬─┐┌┬┐  ┬  ┬┌─┐┬─┐┬┌─┐┬ ┬
-  // ├┤ │ │├┬┘│ ┬│ │ │   ├─┘├─┤└─┐└─┐││││ │├┬┘ ││  └┐┌┘├┤ ├┬┘│├┤ └┬┘
-  // └  └─┘┴└─└─┘└─┘ ┴   ┴  ┴ ┴└─┘└─┘└┴┘└─┘┴└──┴┘   └┘ └─┘┴└─┴└   ┴
+/*******************
+ * FORGET PASSWORD VERIFY*
+ *******************/
+
   async forgotPasswordVerify(req: Request, verifyUuidDto: VerifyUuidDto) {
     const forgotPassword = await this.findForgotPasswordByUuid(verifyUuidDto);
     await this.setForgotPasswordFirstUsed(req, forgotPassword);
@@ -143,9 +156,10 @@ export class UserService {
     };
   }
 
-  // ┬─┐┌─┐┌─┐┌─┐┌┬┐  ┌─┐┌─┐┌─┐┌─┐┬ ┬┌─┐┬─┐┌┬┐
-  // ├┬┘├┤ └─┐├┤  │   ├─┘├─┤└─┐└─┐││││ │├┬┘ ││
-  // ┴└─└─┘└─┘└─┘ ┴   ┴  ┴ ┴└─┘└─┘└┴┘└─┘┴└──┴┘
+/******************
+ * RESET PASSWORD *
+ ******************/
+
   async resetPassword(resetPasswordDto: ResetPasswordDto) {
     const forgotPassword = await this.findForgotPasswordByEmail(
       resetPasswordDto,
@@ -182,9 +196,9 @@ export class UserService {
     return await this.userModel.find({ _id: { $in: idClients } },{ idClient:1,fullName: 1,email:1,birthday:1});
   }
 
-  // ┌─┐┬─┐┌┬┐┌─┐┌─┐┌┬┐┌─┐┌┬┐  ┌─┐┌─┐┬─┐┬  ┬┬┌─┐┌─┐
-  // ├─┘├┬┘ │ ├┤ │   │ ├┤  ││  └─┐├┤ ├┬┘└┐┌┘││  ├┤
-  // ┴  ┴└─ ┴ └─┘└─┘ ┴ └─┘─┴┘  └─┘└─┘┴└─ └┘ ┴└─┘└─┘
+/*********************
+ * PROTECTED SERVICE *
+ *********************/
  
     /******************
    * GET ALL users *
@@ -195,11 +209,29 @@ export class UserService {
       return await this.userModel.find({},{ idClient:1,fullName: 1,email:1,birthday:1});
     }
 
-  // ********************************************
-  // ╔═╗╦═╗╦╦  ╦╔═╗╔╦╗╔═╗  ╔╦╗╔═╗╔╦╗╦ ╦╔═╗╔╦╗╔═╗
-  // ╠═╝╠╦╝║╚╗╔╝╠═╣ ║ ║╣   ║║║║╣  ║ ╠═╣║ ║ ║║╚═╗
-  // ╩  ╩╚═╩ ╚╝ ╩ ╩ ╩ ╚═╝  ╩ ╩╚═╝ ╩ ╩ ╩╚═╝═╩╝╚═╝
-  // ********************************************
+    async getNumberOfRegistrationByDay(): Promise<Array<User>>{
+      return await this.userModel.aggregate(
+    [
+      {
+        $group: {
+        _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+           nombreofRegitration: {
+            $count: {}
+          }
+
+        }
+      }
+    ],);
+
+    }
+
+/*******************
+ * PRIVATE METHODS *
+ *******************/
+
+/********************
+ * IS EMAIL UNIQUE *
+ ********************/
 
   private async isEmailUnique(email: string) {
     const user = await this.userModel.findOne({ email, verified: true });
@@ -208,10 +240,18 @@ export class UserService {
     }
   }
 
+/*************************
+ * SET REGISTRATION INFO *
+ *************************/
+
   private setRegistrationInfo(user): any {
     user.verification = v4();
     user.verificationExpires = addHours(new Date(), this.HOURS_TO_VERIFY);
   }
+
+/***************************
+ * BUILD REGISTRATION INFO *
+ ***************************/
 
   private buildRegistrationInfo(user): any {
     const userRegistrationInfo = {

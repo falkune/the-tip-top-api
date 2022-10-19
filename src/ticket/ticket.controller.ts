@@ -131,6 +131,23 @@ export class TicketController {
     return await this.ticketService.verifyTicket(verifyTicketDto?.ticketNumber);
   }
 
+  @Post('/check-ticket')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard('jwt'))
+  @Roles('admin')
+  @ApiOperation({ summary: 'check ticket by ticket number' })
+  @ApiBearerAuth()
+  @ApiHeader({
+    name: 'Bearer',
+    description: 'the token we need for auth.',
+  })
+  @ApiOkResponse({})
+  async checkTicket(@Body() verifyTicketDto: VerifyTicketDto) {
+    console.log(verifyTicketDto);
+
+    return await this.ticketService.checkTicket(verifyTicketDto?.ticketNumber);
+  }
+
   @Post('/claimbed-tickets')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard('jwt'))
@@ -145,6 +162,8 @@ export class TicketController {
   async getClaimbedTickets() {
     return await this.ticketService.getClaimbedTickets();
   }
+
+  
 
   @Post('/not-claimbed-tickets')
   @HttpCode(HttpStatus.OK)

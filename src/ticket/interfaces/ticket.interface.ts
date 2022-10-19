@@ -1,10 +1,11 @@
 import { Document } from 'mongoose';
 
 export interface Ticket extends Document {
-    // title: string,
-    // body: string,
+   
     idClient: number,
-    ticketNumber: String,
+    ticketNumber: string,
     idGroup: string,
-    idSession: string
+    idSession: string,
+    createdAt: Date,
+    updatedAt: Date
 };

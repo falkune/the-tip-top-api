@@ -16,6 +16,7 @@ import { SessionService } from './session.service';
 import { CreateSessionDto } from './dto/create-session.dto';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { SetCurrentSessionDto } from './dto/set-current-session.dto';
 
 @ApiTags('Session')
 @Controller('Session')
@@ -92,4 +93,20 @@ export class SessionController {
     async deleteOneSession(@Param() params) {
         return await this.SessionService.deleteSession(params.id);
     }
+
+/*    @Post('set-current-session')
+    @HttpCode(HttpStatus.OK)
+    @UseGuards(AuthGuard('jwt'))
+    @Roles('admin')
+    @ApiOperation({summary: 'Set an session as cureent session',})
+    @ApiBearerAuth() 
+    @ApiHeader({
+        name: 'Bearer',
+        description: 'the token we need for auth.'
+    })
+    @ApiOkResponse({})
+
+     async setCurrentSession(@Param() params, @Body() setCurrentSessionDto: SetCurrentSessionDto) {
+        return await this.SessionService.updateSessionPut(setCurrentSessionDto);
+    }*/
 }
