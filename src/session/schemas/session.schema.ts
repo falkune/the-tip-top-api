@@ -26,6 +26,11 @@ export const SessionSchema = new mongoose.Schema(
       required: [true, 'LIMIT_TICKET_IS_BLANK'],
 
     },
+    isCurrent: {
+      type: Boolean,
+      default: false,
+
+    },
   },
   {
     versionKey: false,

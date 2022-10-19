@@ -1,9 +1,10 @@
-import { Injectable, ServiceUnavailableException } from '@nestjs/common';
+import { Injectable, ServiceUnavailableException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Session } from './interfaces/session.interface';
 import { CreateSessionDto } from './dto/create-session.dto'; 
 import { LoggerService } from 'src/logger/logger.service';
+import { SetCurrentSessionDto } from './dto/set-current-session.dto';
 
 @Injectable()
 export class SessionService {
@@ -32,6 +33,15 @@ export class SessionService {
   async getAllSessions(): Promise<any> {
     return await this.SessionModel.find({});
   }
+
+    /********************
+   * GET CURRENT SESSION *
+   **********************/
+
+     async getCurrentSession(): Promise<any> {
+      return await this.SessionModel.find({isCurrent: true});
+    }
+  
 
   /******************
    * GET ONE Session *
@@ -69,9 +79,28 @@ export class SessionService {
   
   }
 
-  /*****************
+/***********************
+ * SET CURRENT SESSION *
+ ***********************/
+
+ async setCurrentSession(
+  setCurrentSessionDto: SetCurrentSessionDto
+): Promise<Session> {
+  let ticket;
+  try {
+    ticket = await  this.SessionModel.findOneAndUpdate({_id: setCurrentSessionDto.idSession}, {isCurrent:setCurrentSessionDto?.isCurrent})
+    
+  } catch (error) {
+    throw new UnauthorizedException('Sorry the TicketNumber is Wrong', error);
+  }
+ 
+return ticket;
+
+}
+
+  /******************
    * DELETE Session *
-   *****************/
+   *******************/
 
   async deleteSession(id: string): Promise<Session> {
     return await this.SessionModel.findByIdAndDelete(id);

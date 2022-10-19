@@ -5,5 +5,6 @@ export interface Session extends Document {
     endDate: string,
     name: string,
     description: string,
-    limitTicket: number
+    limitTicket: number,
+    isCurrent: boolean,
 };

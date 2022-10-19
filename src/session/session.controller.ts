@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, HttpCode, HttpStatus, UseGuards, Patch } from '@nestjs/common';
 import {
     ApiCreatedResponse,
     ApiOkResponse,
@@ -34,6 +34,16 @@ export class SessionController {
         return await this.SessionService.getAllSessions();
     }
 
+
+    @Get('get-current-session')
+    @HttpCode(HttpStatus.OK)
+    @ApiOperation({summary: 'Get the current session',})
+    @ApiOkResponse({})
+    async getCurrentSession() {
+        return await this.SessionService.getCurrentSession();
+    }
+
+
     @Get(':id')
     @HttpCode(HttpStatus.OK)
     @ApiOperation({summary: 'Get One Session',})
@@ -57,7 +67,7 @@ export class SessionController {
     
     async createSession(@Body() createSessionDto: CreateSessionDto) {
 
-        console.log(ApiHeaders.name,"Hello chiekh depuis");
+      
         return await this.SessionService.createSession(createSessionDto);
     }
 
@@ -94,7 +104,7 @@ export class SessionController {
         return await this.SessionService.deleteSession(params.id);
     }
 
-/*    @Post('set-current-session')
+    @Patch('set-current-session')
     @HttpCode(HttpStatus.OK)
     @UseGuards(AuthGuard('jwt'))
     @Roles('admin')
@@ -106,7 +116,7 @@ export class SessionController {
     })
     @ApiOkResponse({})
 
-     async setCurrentSession(@Param() params, @Body() setCurrentSessionDto: SetCurrentSessionDto) {
-        return await this.SessionService.updateSessionPut(setCurrentSessionDto);
-    }*/
+     async setCurrentSession(@Body() setCurrentSessionDto: SetCurrentSessionDto) {
+        return await this.SessionService.setCurrentSession(setCurrentSessionDto);
+    } 
 }

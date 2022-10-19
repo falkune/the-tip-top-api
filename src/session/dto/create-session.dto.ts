@@ -1,4 +1,4 @@
-import { IsNotEmpty, MinLength, MaxLength, IsEmail, IsString,IsNumber, IsDate } from 'class-validator';
+import { IsNotEmpty, MinLength, MaxLength, IsEmail, IsString,IsNumber, IsDate, IsBoolean } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Date } from 'mongoose';
 
@@ -38,7 +38,6 @@ export class CreateSessionDto {
         description: 'Description of the Session',
         format: 'string',
     }) 
-    
      description: string;
 
      @ApiProperty({
@@ -48,6 +47,6 @@ export class CreateSessionDto {
     }) 
     @IsNotEmpty()
     @IsNumber()
+    readonly limitTicket: number;  
     
-    readonly limitTicket: number; 
 }
