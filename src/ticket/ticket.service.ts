@@ -194,8 +194,10 @@ export class TicketService {
    *************************/
 
 
-     async getTicketByIdClient(idClient: string): Promise<Ticket> {
-      return await this.ticketModel.findOne({ idClient: { $eq: idClient } });
+     async getTicketByIdClient(idClient: string): Promise<Array<Ticket>> {
+      let userId = await this.authService.findRefreshToken(idClient);
+      idClient = userId.valueOf().toString();
+      return await this.ticketModel.find({ idClient: { $eq: idClient } });
     }
 
   /***************************************

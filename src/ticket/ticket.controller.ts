@@ -217,7 +217,7 @@ export class TicketController {
     );
   }
 
-  @Get('/tickets-by-client')
+  @Post('tickets-by-client')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard('jwt'))
   @Roles('admin')
