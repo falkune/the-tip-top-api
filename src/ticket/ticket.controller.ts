@@ -32,6 +32,10 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { AssignTicketDto } from './dto/assign-ticket.dto';
 import { VerifyTicketDto } from './dto/verify-ticket.dto';
 import { GetTicketBySessionDto } from './dto/get-tickets-by-session.dto';
+import { GetTicketByClientDto } from './dto/get-tickets-by-client.dto';
+
+
+
 
 @ApiTags('Ticket')
 @Controller('ticket')
@@ -212,6 +216,28 @@ export class TicketController {
       getTicketBySessionDto.idSession,
     );
   }
+
+  @Get('/tickets-by-client')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard('jwt'))
+  @Roles('admin')
+  @ApiOperation({ summary: 'Get ticket by clientId' })
+  @ApiBearerAuth()
+  @ApiHeader({
+    name: 'Bearer',
+    description: 'the token we need for auth.',
+  })
+  @ApiOkResponse({})
+  async getTicketByIdClient(
+    @Body() getTicketByClientDto: GetTicketByClientDto,
+  ) {
+
+    console.log('getTicketByClientDto', getTicketByClientDto);
+    return await this.ticketService.getTicketByIdClient(
+      getTicketByClientDto.idClient
+    );
+  }
+
 
 
 
