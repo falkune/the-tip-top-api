@@ -202,7 +202,7 @@ export class UserService {
       });
     }
 
-    return await this.userModel.find({ _id: { $in: idClients } },{ idClient:1,fullName: 1,email:1,birthday:1});
+    return await this.userModel.find({ _id: { $in: idClients } },{ idClient:1,fullName: 1,email:1,birthday:1,userLocation:1});
   }
 
 /*********************
@@ -215,7 +215,7 @@ export class UserService {
 
      async findAll(): Promise<Array<User>> {
       console.log('findAll called with ' );
-      return await this.userModel.find({},{ idClient:1,fullName: 1,email:1,birthday:1});
+      return await this.userModel.find({},{ idClient:1,fullName: 1,email:1,birthday:1,userLocation:1});
     }
 
 /*****************************
