@@ -33,7 +33,7 @@ export class GroupService {
 
     if (totalProbabilities + createGroupDto.percentage <= 100) {
   
-      createGroupDto.limitTicket = await this.getLimitTicket(createGroupDto.sessionId,createGroupDto.percentage);
+     // createGroupDto.limitTicket = await this.getLimitTicket(createGroupDto.sessionId,createGroupDto.percentage);
       await this.isDescriptionUniq(createGroupDto.description);
       const Group = new this.GroupModel(createGroupDto);
       await Group.save();
@@ -50,7 +50,7 @@ export class GroupService {
    ******************/
 
   async getAllGroups(): Promise<any> {
-    return await this.GroupModel.find({});
+    return await this.GroupModel.find({}).sort({"percentage":1});
   }
 
   /******************
@@ -116,14 +116,14 @@ export class GroupService {
    * CHECK IF THE GROUP DESCRIPTION IS ALREADY USED *
    **************************************************/
   private async isDescriptionUniq(description: string) {
-    const user = await this.GroupModel.findOne({ description });
-    if (user) {
+    const group = await this.GroupModel.findOne({ description });
+    if (group) {
       throw new BadRequestException('Description most be unique.');
     } 
   }
 
 
-  private getLimitTicket(id: String, percentage: number) : Promise<number> {
+ /* private getLimitTicket(id: String, percentage: number) : Promise<number> {
       try {
         return this.sessionService.getOneSession(id).then((session) => {
           console.log('Session: ', session, percentage);
@@ -133,6 +133,6 @@ export class GroupService {
       } catch (error) {
         throw new BadRequestException("Not session found for this id: " + id );
       }
-  }
+  }*/
 
 }

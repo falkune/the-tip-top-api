@@ -209,19 +209,23 @@ export class UserService {
       return await this.userModel.find({},{ idClient:1,fullName: 1,email:1,birthday:1});
     }
 
+/*****************************
+ * GET NUMBER OF USER BY DAY *
+ *****************************/
+
     async getNumberOfRegistrationByDay(): Promise<Array<User>>{
       return await this.userModel.aggregate(
     [
       {
         $group: {
         _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
-           nombreofRegitration: {
+           nomberOfRegitration: {
             $count: {}
           }
 
         }
       }
-    ],);
+    ],).sort({_id:1});
 
     }
 

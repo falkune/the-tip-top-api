@@ -47,6 +47,19 @@ export class TicketController {
     return await this.ticketService.getAllTickets();
   }
 
+/************************
+ * GET TICKET STATICTIS *
+ ************************/
+
+  @Get("get-ticket-stats")
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get all tickets and statics' })
+  @ApiOkResponse({})
+  async getTicketStats() {
+    return await this.ticketService.getTicketStats();
+  }
+
+
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get One ticket' })
@@ -117,7 +130,7 @@ export class TicketController {
   @Post('/verify-ticket')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard('jwt'))
-  @Roles('admin')
+  @Roles('client')
   @ApiOperation({ summary: 'Update one ticket by id ( all params )' })
   @ApiBearerAuth()
   @ApiHeader({

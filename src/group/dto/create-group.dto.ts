@@ -26,12 +26,12 @@ export class CreateGroupDto {
     @IsNumber()
     readonly percentage:number;  
 
-    @ApiProperty({
+   /* @ApiProperty({
         example: '1654665',
         description: 'limitTicket which can hosted in this group according to the limitTicket of the session',
         format: 'number',
     })
-     limitTicket:number;  
+     limitTicket:number;  */
      @ApiProperty({
         example: '36524652346345631675',
         description: 'id of the session of Group',
