@@ -144,7 +144,7 @@ export class UserController {
 
 
 
-  @Get('users-by-session')
+  @Post('users-by-session')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard('jwt'))
   @Roles('admin')
