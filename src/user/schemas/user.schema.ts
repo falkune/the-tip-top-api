@@ -24,6 +24,11 @@ export const UserSchema = new mongoose.Schema(
       maxlength: 1024,
       required: [true, 'PASSWORD_IS_BLANK'],
     },
+
+    userLocation: {
+      type: Object,
+     
+    },
     bankAccountNumber: {
       type: String,
       maxlength: 32,

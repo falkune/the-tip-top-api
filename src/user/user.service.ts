@@ -3,11 +3,15 @@ import { Request } from 'express';
 import { AuthService } from './../auth/auth.service';
 import { MailService } from './../mail/mail.service';
 import { LoginUserDto } from './dto/login-user.dto';
+import { getClientIp } from 'request-ip';
+import { IPinfoWrapper } from 'node-ipinfo';
 import {
   Injectable,
   BadRequestException,
   NotFoundException,
   ConflictException,
+  UnauthorizedException,
+  ConsoleLogger,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -22,6 +26,7 @@ import { ForgotPassword } from './interfaces/forgot-password.interface';
 import { Ticket } from '../ticket/interfaces/ticket.interface';
 import { User } from './interfaces/user.interface';
 import { LoggerService } from 'src/logger/logger.service';
+import { UpdateUserLocationDto } from './dto/update-user-location.dto';
  
 
 @Injectable()
@@ -42,9 +47,10 @@ export class UserService {
     private readonly logger  : LoggerService
   ) {}
 
-  // ┌─┐┬─┐┌─┐┌─┐┌┬┐┌─┐  ┬ ┬┌─┐┌─┐┬─┐
-  // │  ├┬┘├┤ ├─┤ │ ├┤   │ │└─┐├┤ ├┬┘
-  // └─┘┴└─└─┘┴ ┴ ┴ └─┘  └─┘└─┘└─┘┴└─
+/***************
+ * UPDATE USER *
+ ***************/
+
   async create(createUserDto: CreateUserDto): Promise<User> {
     const user = new this.userModel(createUserDto);
     await this.isEmailUnique(user.email);
@@ -78,6 +84,9 @@ export class UserService {
     await this.passwordsAreMatch(user);
     const birthday = new Date(user.birthday);
     this.logger.log('User loggedin','UserService');
+    var userLocation = await this.getLocationInfo(req);
+  
+    this.updateUserLocation({userId:user.id.valueOf().toString(),userLocation:userLocation})
     return {
       fullName: user.fullName,
       email: user.email,
@@ -227,7 +236,33 @@ export class UserService {
       }
     ],).sort({_id:1});
 
+
     }
+
+/************************
+ * UPDATE USER LOCATION *
+ ************************/
+
+ async updateUserLocation(
+  updateUserLocation: UpdateUserLocationDto
+): Promise<User> {
+
+  console.log(updateUserLocation);
+  let user;
+  try {
+    user = await this.userModel.findOneAndUpdate({_id: updateUserLocation.userId}, {userLocation:updateUserLocation?.userLocation})
+
+    console.log("Updater");
+    console.log(user); 
+
+     console.log("Updater");
+  } catch (error) {
+    throw new UnauthorizedException('Sorry the userId is Wrong', error);
+  }
+ 
+return user;
+
+}
 
 /*******************
  * PRIVATE METHODS *
@@ -425,6 +460,14 @@ export class UserService {
         day = '0' + day;
 
     return [ day,month, year].join('/');
+}
+
+
+async getLocationInfo(req: Request): Promise<Object> {
+  let ip = await getClientIp(req);
+
+  const ipinfo = new IPinfoWrapper('cec88b6b1d6573');
+  return ipinfo.lookupIp(ip);
 }
  
 }

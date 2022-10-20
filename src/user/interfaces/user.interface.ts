@@ -11,6 +11,8 @@ export interface User extends Document {
     verificationExpires: Date;
     loginAttempts?: number;
     blockExpires?: Date;
+    userLocation: Object;
     bankAccountNumber?: string;
     bankAccountName?: string;
+
 }
