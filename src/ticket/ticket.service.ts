@@ -189,6 +189,15 @@ export class TicketService {
     return await this.ticketModel.find({ idGroup: { $eq: idGroup } }).count();
   }
 
+    /*************************
+   * GET TICKET BY CLIENTID *
+   *************************/
+
+
+     async getTicketByIdClient(idClient: string): Promise<Ticket> {
+      return await this.ticketModel.findOne({ idClient: { $eq: idClient } });
+    }
+
   /***************************************
    * COUNT THE NUMBER OF CREATED TICKETS *
    ***************************************/
