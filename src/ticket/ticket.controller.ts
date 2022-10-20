@@ -220,7 +220,7 @@ export class TicketController {
   @Post('tickets-by-client')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard('jwt'))
-  @Roles('admin')
+  @Roles('client','admin')
   @ApiOperation({ summary: 'Get ticket by clientId' })
   @ApiBearerAuth()
   @ApiHeader({
