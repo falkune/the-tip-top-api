@@ -17,7 +17,7 @@ import { CreateSessionDto } from './dto/create-session.dto';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { SetCurrentSessionDto } from './dto/set-current-session.dto';
-// à enlever 
+ 
 @ApiTags('Session')
 @Controller('Session')
 @UseGuards(RolesGuard)
