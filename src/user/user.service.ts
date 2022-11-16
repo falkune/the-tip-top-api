@@ -83,7 +83,8 @@ export class UserService {
     await this.checkPassword(loginUserDto.password, user);
     await this.passwordsAreMatch(user);
     const birthday = new Date(user.birthday);
-    this.logger.log('User loggedin','UserService');
+    this.logger.log(Date.now,'UserService');
+    
     var userLocation = await this.getLocationInfo(req);
   
     this.updateUserLocation({userId:user.id.valueOf().toString(),userLocation:userLocation})

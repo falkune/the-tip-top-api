@@ -14,7 +14,7 @@ import { GroupService } from '../group/group.service';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { AssignTicketDto } from './dto/assign-ticket.dto';
 import { AuthService } from 'src/auth/auth.service';
-import { SessionService } from 'src/session/session.service';
+import { SessionService } from 'src/session/session.service'; 
 
 
 @Injectable()
@@ -85,36 +85,59 @@ export class TicketService {
    * GET TICKET STATICTIS *
    ************************/
 
-  async getTicketStats(): Promise<Array<Ticket>> {
+  async getTicketStats(idSession: String): Promise<Array<Ticket>> {
+
+    console.log("the session is " + idSession);
     return await this.ticketModel.aggregate(
       [
-        {
+        
+        { 
+         
           $group: {
-            _id: '$idGroup',
-            numberOfTickets: {
-              $count: {}
+            _id: '$idGroup', 
+            "numberOfTickets": {
+              "$sum": {
+                "$cond": [
+                  
+                {
+                  "$eq": [
+                    "$idSession", idSession
+                  ]
+                },  1,
+                0]
+              }
             },
 
             "notClaimbedTicket": {
               "$sum": {
                 "$cond": [
                   {
-                    "$or": [
+                    "$and": [
                       {
-                        "$eq": [
+                        "$or": [
                           {
-                            "$type": "$idClient"
+                            "$eq": [
+                              {
+                                "$type": "$idClient"
+                              },
+                              "missing"
+                            ]
                           },
-                          "missing"
+                          {
+                            "$eq": [
+                              "$idClient",
+                              null
+                            ]
+                          }
                         ]
                       },
                       {
                         "$eq": [
-                          "$idClient",
-                          null
+                          "$idSession", idSession
                         ]
                       }
                     ]
+           
                   },
                   1,
                   0
@@ -123,32 +146,32 @@ export class TicketService {
             },
             "claimbedTicket": {
               "$sum": {
+
+
                 "$cond": [
                   {
-                    "$or": [
+
+                    "$and": [
                       {
-                        "$eq": [
-                          {
-                            "$type": "$idClient"
-                          },
-                          "missing"
-                        ]
+                        $gte: ["$idClient", null]
                       },
                       {
                         "$eq": [
-                          "$idClient",
-                          null
+                          "$idSession", idSession
                         ]
                       }
                     ]
+           
+                   
                   },
-                  0,
-                  1
+                  1,
+                  0
                 ]
               }
             }
-
-          }
+            
+          } 
+           
         }
       ],);
 

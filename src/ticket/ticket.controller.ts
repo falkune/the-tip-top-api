@@ -33,6 +33,8 @@ import { AssignTicketDto } from './dto/assign-ticket.dto';
 import { VerifyTicketDto } from './dto/verify-ticket.dto';
 import { GetTicketBySessionDto } from './dto/get-tickets-by-session.dto';
 import { GetTicketByClientDto } from './dto/get-tickets-by-client.dto';
+import { GroupService } from 'src/group/group.service';
+import { takeCoverage } from 'v8';
 
 
 
@@ -41,7 +43,7 @@ import { GetTicketByClientDto } from './dto/get-tickets-by-client.dto';
 @Controller('ticket')
 @UseGuards(RolesGuard)
 export class TicketController {
-  constructor(private readonly ticketService: TicketService) {}
+  constructor(private readonly ticketService: TicketService,private readonly groupeService: GroupService) {}
 
   @Get()
   @HttpCode(HttpStatus.OK)
@@ -55,12 +57,20 @@ export class TicketController {
  * GET TICKET STATICTIS *
  ************************/
 
-  @Get("get-ticket-stats")
+  @Get("get-ticket-stats/:id")
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get all tickets and statics' })
+  @ApiOperation({ summary: 'Get all tickets and statics by sessionId' })
+  @ApiParam({ name: 'id', description: 'id of the sesssion' })
   @ApiOkResponse({})
-  async getTicketStats() {
-    return await this.ticketService.getTicketStats();
+  async getTicketStats(@Param() params) { 
+ console.log('heikh');
+ 
+ console.log(params);
+
+ console.log('heikh');
+
+
+  return await this.ticketService.getTicketStats(params.id);
   }
 
 
