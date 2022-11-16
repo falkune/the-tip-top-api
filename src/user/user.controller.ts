@@ -5,6 +5,7 @@ import { Request } from 'express';
 import { LoginUserDto } from './dto/login-user.dto';
 import {
   Controller,
+  Param,
   Get,
   Post,
   Body,
@@ -26,11 +27,11 @@ import {
   ApiBearerAuth,
   ApiHeader,
   ApiOperation,
+  ApiParam,
 } from '@nestjs/swagger';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { GetTicketBySessionDto } from 'src/ticket/dto/get-tickets-by-session.dto';
-import { MailerService } from '@nestjs-modules/mailer';
-import { UserEntity } from './user.entity';
+import { MailerService } from '@nestjs-modules/mailer'; 
 
 @ApiTags('User')
 @Controller('user')
@@ -165,7 +166,7 @@ export class UserController {
     );
   }
 
-  @Get('registration-by-day')
+  @Get('registration-by-day/:idSession')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard('jwt'))
   @Roles('admin')
@@ -175,10 +176,12 @@ export class UserController {
     name: 'Bearer',
     description: 'the token we need for auth.',
   })
+  @ApiParam({ name: 'id', description: 'id of the sesssion' })
   @ApiOkResponse({})
-  async getNumberOfRegistrationByDay() {
-    console.log("getNumberOfRegistrationByDay.getNumberOfRegistrationByDay");
-    return await this.userService.getNumberOfRegistrationByDay();
+  async getNumberOfRegistrationByDay(@Param() params) {
+
+    console.log("getNumberOfRegistrationByDay.getNumberOfRegistrationByDay",params);
+    return await this.userService.getNumberOfRegistrationByDay(params);
   }
 
 

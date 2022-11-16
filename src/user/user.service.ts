@@ -16,7 +16,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { v4 } from 'uuid';
-import { addHours } from 'date-fns';
+import { addHours, isThursday } from 'date-fns';
 import * as bcrypt from 'bcrypt';
 import { CreateForgotPasswordDto } from './dto/create-forgot-password.dto';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -27,7 +27,8 @@ import { Ticket } from '../ticket/interfaces/ticket.interface';
 import { User } from './interfaces/user.interface';
 import { LoggerService } from 'src/logger/logger.service';
 import { UpdateUserLocationDto } from './dto/update-user-location.dto';
- 
+import { SessionService } from 'src/session/session.service';
+
 
 @Injectable()
 export class UserService {
@@ -43,13 +44,14 @@ export class UserService {
     private readonly forgotPasswordModel: Model<ForgotPassword>,
 
     private readonly authService: AuthService,
+    private readonly sessionService: SessionService,
     private mailService: MailService,
-    private readonly logger  : LoggerService
-  ) {}
+    private readonly logger: LoggerService
+  ) { }
 
-/***************
- * UPDATE USER *
- ***************/
+  /***************
+   * UPDATE USER *
+   ***************/
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     const user = new this.userModel(createUserDto);
@@ -59,9 +61,9 @@ export class UserService {
     return this.buildRegistrationInfo(user);
   }
 
-/****************
- * VERIFY EMAIL *
- ****************/
+  /****************
+   * VERIFY EMAIL *
+   ****************/
 
   async verifyEmail(req: Request, verification: string) {
     const user = await this.findByVerification(verification);
@@ -74,20 +76,20 @@ export class UserService {
     };
   }
 
-/*********
- * LOGIN *
- *********/
+  /*********
+   * LOGIN *
+   *********/
   async login(req: Request, loginUserDto: LoginUserDto) {
     const user = await this.findUserByEmail(loginUserDto.email);
     this.isUserBlocked(user);
     await this.checkPassword(loginUserDto.password, user);
     await this.passwordsAreMatch(user);
     const birthday = new Date(user.birthday);
-    this.logger.log(Date.now,'UserService');
-    
+    this.logger.log(Date.now, 'UserService');
+
     var userLocation = await this.getLocationInfo(req);
-  
-    this.updateUserLocation({userId:user.id.valueOf().toString(),userLocation:userLocation})
+
+    this.updateUserLocation({ userId: user.id.valueOf().toString(), userLocation: userLocation })
     return {
       fullName: user.fullName,
       email: user.email,
@@ -96,21 +98,21 @@ export class UserService {
       birthday: this.formatDate(birthday.toString()),
       accessToken: await this.authService.createAccessToken(user._id),
       refreshToken: await this.authService.createRefreshToken(req, user._id),
-     
+
     };
   }
 
-/**************
- * SEND EMAIL *
- **************/
+  /**************
+   * SEND EMAIL *
+   **************/
 
   async sendEmail(user) {
     return await this.mailService.sendUserConfirmation(user);
   }
 
-/*****************
- * _CALCULATEAGE *
- *****************/
+  /*****************
+   * _CALCULATEAGE *
+   *****************/
 
   private _calculateAge(birthday) {
     // birthday is a date
@@ -119,9 +121,9 @@ export class UserService {
     return Math.abs(ageDate.getUTCFullYear() - 1970);
   }
 
-/*****************
- * REFRESH TOKEN *
- *****************/
+  /*****************
+   * REFRESH TOKEN *
+   *****************/
 
   async refreshAccessToken(refreshAccessTokenDto: RefreshAccessTokenDto) {
     // console.log('Acesss id hherer', refreshAccessTokenDto);
@@ -137,9 +139,9 @@ export class UserService {
     };
   }
 
-/*******************
- * FORGET PASSWORD *
- *******************/
+  /*******************
+   * FORGET PASSWORD *
+   *******************/
 
   async forgotPassword(
     req: Request,
@@ -153,9 +155,9 @@ export class UserService {
     };
   }
 
-/*******************
- * FORGET PASSWORD VERIFY*
- *******************/
+  /*******************
+   * FORGET PASSWORD VERIFY*
+   *******************/
 
   async forgotPasswordVerify(req: Request, verifyUuidDto: VerifyUuidDto) {
     const forgotPassword = await this.findForgotPasswordByUuid(verifyUuidDto);
@@ -166,9 +168,9 @@ export class UserService {
     };
   }
 
-/******************
- * RESET PASSWORD *
- ******************/
+  /******************
+   * RESET PASSWORD *
+   ******************/
 
   async resetPassword(resetPasswordDto: ResetPasswordDto) {
     const forgotPassword = await this.findForgotPasswordByEmail(
@@ -203,75 +205,130 @@ export class UserService {
       });
     }
 
-    return await this.userModel.find({ _id: { $in: idClients } },{ idClient:1,fullName: 1,email:1,birthday:1,userLocation:1});
+    return await this.userModel.find({ _id: { $in: idClients } }, { idClient: 1, fullName: 1, email: 1, birthday: 1, userLocation: 1 });
   }
 
-/*********************
- * PROTECTED SERVICE *
- *********************/
- 
-    /******************
-   * GET ALL users *
-   ******************/
+  /*********************
+   * PROTECTED SERVICE *
+   *********************/
 
-     async findAll(): Promise<Array<User>> {
-      console.log('findAll called with ' );
-      return await this.userModel.find({},{ idClient:1,fullName: 1,email:1,birthday:1,userLocation:1});
-    }
+  /******************
+ * GET ALL users *
+ ******************/
 
-/*****************************
- * GET NUMBER OF USER BY DAY *
- *****************************/
+  async findAll(): Promise<Array<User>> {
+    console.log('findAll called with ');
+    return await this.userModel.find({}, { idClient: 1, fullName: 1, email: 1, birthday: 1, userLocation: 1 });
+  }
 
-    async getNumberOfRegistrationByDay(): Promise<Array<User>>{
-      return await this.userModel.aggregate(
-    [
-      {
-        $group: {
-        _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
-           nomberOfRegitration: {
-            $count: {}
-          }
+  /*****************************
+   * GET NUMBER OF USER BY DAY *
+   *****************************/
 
-        }
+  async getNumberOfRegistrationByDay(params): Promise<Array<User>> {
+    console.log('params', params);
+    let user;
+    try {
+      user = this.sessionService.getOneSession(params.idSession).then(async (session) => {
+
+        return await this.userModel.aggregate(
+          [
+  
+  
+            {
+              $group: {
+  
+                _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+                "nomberOfRegitration": {
+                  "$sum": {
+                    "$cond": [
+                      {
+  
+                        "$and": [
+                          {
+  
+  
+                            $gte: ["$createdAt", new Date(session.startDate)]
+  
+  
+                          },
+                          {
+                            $lte: ["$createdAt", new Date(session.endDate)]
+                          },
+                        ]
+  
+  
+                      },
+                      1,
+                      0
+                    ]
+                  }
+                },
+  
+  
+  
+              }
+            }
+            /*  {
+                $group: {
+                _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+                   nomberOfRegitration: {
+                    $count: {}
+                  }
+        
+                }
+              }*/
+          ]).sort({ _id: 1 });
       }
-    ],).sort({_id:1});
-
-
+      )
+    } catch (error) {
+      throw new UnauthorizedException('Sorry the sesssionId is Wrong', error);
     }
 
-/************************
- * UPDATE USER LOCATION *
- ************************/
 
- async updateUserLocation(
-  updateUserLocation: UpdateUserLocationDto
-): Promise<User> {
+    return user;
 
-  console.log(updateUserLocation);
-  let user;
-  try {
-    user = await this.userModel.findOneAndUpdate({_id: updateUserLocation.userId}, {userLocation:updateUserLocation?.userLocation})
+   
 
-    console.log("Updater");
-    console.log(user); 
 
-     console.log("Updater");
-  } catch (error) {
-    throw new UnauthorizedException('Sorry the userId is Wrong', error);
+
+
+
+
   }
- 
-return user;
 
-}
+  /************************
+   * UPDATE USER LOCATION *
+   ************************/
 
-/*******************
- * PRIVATE METHODS *
- *******************/
+  async updateUserLocation(
+    updateUserLocation: UpdateUserLocationDto
+  ): Promise<User> {
 
-/********************
- * IS EMAIL UNIQUE *
- ********************/
+    console.log(updateUserLocation);
+    let user;
+    try {
+      user = await this.userModel.findOneAndUpdate({ _id: updateUserLocation.userId }, { userLocation: updateUserLocation?.userLocation })
+
+      console.log("Updater");
+      console.log(user);
+
+      console.log("Updater");
+    } catch (error) {
+      throw new UnauthorizedException('Sorry the userId is Wrong', error);
+    }
+
+    return user;
+
+  }
+
+  /*******************
+   * PRIVATE METHODS *
+   *******************/
+
+  /********************
+   * IS EMAIL UNIQUE *
+   ********************/
 
   private async isEmailUnique(email: string) {
     const user = await this.userModel.findOne({ email, verified: true });
@@ -280,18 +337,18 @@ return user;
     }
   }
 
-/*************************
- * SET REGISTRATION INFO *
- *************************/
+  /*************************
+   * SET REGISTRATION INFO *
+   *************************/
 
   private setRegistrationInfo(user): any {
     user.verification = v4();
     user.verificationExpires = addHours(new Date(), this.HOURS_TO_VERIFY);
   }
 
-/***************************
- * BUILD REGISTRATION INFO *
- ***************************/
+  /***************************
+   * BUILD REGISTRATION INFO *
+   ***************************/
 
   private buildRegistrationInfo(user): any {
     const userRegistrationInfo = {
@@ -307,7 +364,7 @@ return user;
     });
 
 
-    this.logger.log('User creaded','UserService');
+    this.logger.log('User creaded', 'UserService');
     return userRegistrationInfo;
   }
 
@@ -449,26 +506,26 @@ return user;
     await user.save();
   }
 
-  private  formatDate( date: string) {
+  private formatDate(date: string) {
     var d = new Date(date),
-        month = '' + (d.getMonth() + 1),
-        day = '' + d.getDate(),
-        year = d.getFullYear();
+      month = '' + (d.getMonth() + 1),
+      day = '' + d.getDate(),
+      year = d.getFullYear();
 
-    if (month.length < 2) 
-        month = '0' + month;
-    if (day.length < 2) 
-        day = '0' + day;
+    if (month.length < 2)
+      month = '0' + month;
+    if (day.length < 2)
+      day = '0' + day;
 
-    return [ day,month, year].join('/');
-}
+    return [day, month, year].join('/');
+  }
 
 
-async getLocationInfo(req: Request): Promise<Object> {
-  let ip = await getClientIp(req);
+  async getLocationInfo(req: Request): Promise<Object> {
+    let ip = await getClientIp(req);
 
-  const ipinfo = new IPinfoWrapper('cec88b6b1d6573');
-  return ipinfo.lookupIp(ip);
-}
- 
+    const ipinfo = new IPinfoWrapper('cec88b6b1d6573');
+    return ipinfo.lookupIp(ip);
+  }
+
 }
