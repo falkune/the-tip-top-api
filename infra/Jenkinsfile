@@ -109,16 +109,19 @@ pipeline{
                     when {branch "dev"}
                     environment {
                       SCANNER_HOME = tool 'SonarQubeScanner'
+                      NODEJS_HOME = "${tool 'Node 14.21.1'}"
+                      // on linux / mac
+                      PATH="${env.NODEJS_HOME}/bin:${env.PATH}"    
                    }
-                    agent { docker { 
+                   /*  agent { docker { 
                         image "node:alpine"
-                      }}
+                      }} */
                      stages {
                         stage("Setup Test Env"){
                               steps{
-                                sh "node --version"
-                                sh "npm version"
-                                sh "npm install"
+                                 sh "node --version"
+                                 sh "npm version"
+                                 sh "npm install"    
                             }
                           }
                 
