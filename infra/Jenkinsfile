@@ -94,6 +94,16 @@ pipeline{
                       }
                  }
              }
+
+            stage("Node Js"){
+                steps{
+                    nodejs(nodeJSInstallationName: 'Node 14.21.1') {
+                    sh 'npm config ls'
+                    echo "node -v"
+                    sh 'ls .'
+                }
+                }
+            }
         
            stage("test"){
                     when {branch "dev"}
@@ -102,8 +112,7 @@ pipeline{
                    }
                     agent { docker { 
                         image "node:alpine"
-                        args '-v ${SCANNER_HOME}:${SCANNER_HOME}'
-                    }}
+                      }}
                      stages {
                         stage("Setup Test Env"){
                               steps{
