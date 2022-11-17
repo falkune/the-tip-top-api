@@ -134,14 +134,10 @@ pipeline{
               }
 
               stage("SonarQube Analysis"){              
-                  steps{
-                 
-                     withSonarQubeEnv('sonarqube') {
-
-                         sh "echo ${scannerHome}"
-                      
+                  steps{  
+                     withSonarQubeEnv('sonarqube', envOnly: true) {
+                        println ${env.SONAR_HOST_URL}
                      }
-              
                  }
               }
                  stage("e2e"){
