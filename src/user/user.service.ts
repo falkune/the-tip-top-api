@@ -83,7 +83,7 @@ export class UserService {
     const birthday = new Date(user.birthday);
     this.logger.log(Date.now, 'UserService');
 
-    var userLocation = await this.getLocationInfo(req);
+    let userLocation = await this.getLocationInfo(req);
 
     this.updateUserLocation({ userId: user.id.valueOf().toString(), userLocation: userLocation })
     return {
@@ -112,8 +112,8 @@ export class UserService {
 
   private _calculateAge(birthday) {
     // birthday is a date
-    var ageDifMs = Date.now() - birthday.getTime();
-    var ageDate = new Date(ageDifMs); // miliseconds from epoch
+    let ageDifMs = Date.now() - birthday.getTime();
+    let ageDate = new Date(ageDifMs); // miliseconds from epoch
     return Math.abs(ageDate.getUTCFullYear() - 1970);
   }
 
@@ -121,8 +121,7 @@ export class UserService {
    * REFRESH TOKEN *
    *****************/
 
-  async refreshAccessToken(refreshAccessTokenDto: RefreshAccessTokenDto) {
-    // console.log('Acesss id hherer', refreshAccessTokenDto);
+  async refreshAccessToken(refreshAccessTokenDto: RefreshAccessTokenDto) { 
     const userId = await this.authService.findRefreshToken(
       refreshAccessTokenDto.refreshToken,
     );
@@ -194,8 +193,8 @@ export class UserService {
       ],
     });
 
-    var idClients = [];
-    for (var n = 1; n < tickets.length; ++n) {
+    let idClients = [];
+    for (let n = 1; n < tickets.length; ++n) {
       tickets.forEach((ticket) => {
         idClients.push(ticket.idClient);
       });
@@ -265,15 +264,7 @@ export class UserService {
 
               }
             }
-            /*  {
-                $group: {
-                _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
-                   nomberOfRegitration: {
-                    $count: {}
-                  }
-        
-                }
-              }*/
+           
           ]).sort({ _id: 1 });
       }
       )

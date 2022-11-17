@@ -8,8 +8,7 @@ import {
   Param,
   HttpCode,
   HttpStatus,
-  UseGuards,
-  ServiceUnavailableException,
+  UseGuards, 
   Patch,
   Headers,
 } from '@nestjs/common';
@@ -21,7 +20,6 @@ import {
   ApiHeader,
   ApiOperation,
   ApiParam,
-  ApiHeaders,
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 
@@ -33,8 +31,7 @@ import { AssignTicketDto } from './dto/assign-ticket.dto';
 import { VerifyTicketDto } from './dto/verify-ticket.dto';
 import { GetTicketBySessionDto } from './dto/get-tickets-by-session.dto';
 import { GetTicketByClientDto } from './dto/get-tickets-by-client.dto';
-import { GroupService } from 'src/group/group.service';
-import { takeCoverage } from 'v8';
+import { GroupService } from 'src/group/group.service'; 
 
 
 

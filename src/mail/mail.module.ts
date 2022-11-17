@@ -1,9 +1,7 @@
-import { MailerModule } from '@nestjs-modules/mailer';
-import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { MailerModule } from '@nestjs-modules/mailer'; 
 import { Global, Module } from '@nestjs/common';
-import { MailService } from './mail.service';
-import { join } from 'path';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { MailService } from './mail.service'; 
+import { ConfigService } from '@nestjs/config';
 
 @Global() // 👈 global module
 @Module({
