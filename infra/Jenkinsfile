@@ -108,15 +108,6 @@ pipeline{
                                 sh "npm install"
                             }
                           }
-
-                          stage('SonarQube analysis') {
-                              steps{
-                            withSonarQubeEnv('sonarqube',envOnly: true) { 
-                         // If you have configured more than one global server connection, you can specify its name
-                             sh "${scannerHome}/bin/sonar-scanner"
-                            }
-                              }
-                        }
                 
                     stage("unit"){         
                               steps{
@@ -142,6 +133,12 @@ pipeline{
                         )
                     }             
                  }
+              }
+
+              stage("SonarQube Analysis"){              
+                  steps{
+                     sh "npm run sonar"
+                  }
               }
 
                  stage("e2e"){

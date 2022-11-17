@@ -10,8 +10,10 @@ sonarqubeScanner(
             'sonar.tests':  'src',
             'sonar.inclusions':  'src/**/*.ts', // Entry point of your code
             'sonar.test.inclusions':'src/**/*.spec.ts,src/**/*.spec.jsx,src/**/*.test.js,src/**/*.test.jsx',
-            'sonar.javascript.lcov.reportPaths': 'coverage/lcov.info',
-            'sonar.testExecutionReportPaths': 'coverage/test-reporter.xml'
+            'sonar.typescript.lcov.reportPaths': 'coverage/lcov.info',
+            'sonar.testExecutionReportPaths': 'coverage/test-reporter.xml',
+            'sonar.log.level': 'DEBUG',
+            'sonar.verbose': 'true'
         }
     }, () => { console.log('Error Occurred while scanning');}
     );
