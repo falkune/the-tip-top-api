@@ -94,28 +94,15 @@ pipeline{
                       }
                  }
              }
-
-            stage("Node Js"){
-                steps{
-                    nodejs(nodeJSInstallationName: 'Node 14.21.1') {
-                    sh 'npm config ls'
-                    echo "node -v"
-                    sh 'ls .'
-                }
-                }
-            }
         
            stage("test"){
                     when {branch "dev"}
                     environment {
                       SCANNER_HOME = tool 'SonarQubeScanner'
                       NODEJS_HOME = "${tool 'Node 14.21.1'}"
-                      // on linux / mac
                       PATH="${env.NODEJS_HOME}/bin:${env.PATH}"    
                    }
-                   /*  agent { docker { 
-                        image "node:alpine"
-                      }} */
+                  
                      stages {
                         stage("Setup Test Env"){
                               steps{
@@ -134,7 +121,6 @@ pipeline{
                  stage("coverage") {
                     steps{
                       sh "npm run test:cov"
-                       //sh "scripts/test.sh cov"
                      }
                 
                    post{
@@ -154,8 +140,7 @@ pipeline{
               stage("SonarQube Analysis"){              
                   steps{  
                      withSonarQubeEnv('SonarQube') {
-                        sh "ls"
-                        sh "${SCANNER_HOME}/bin/sonar-scanner --help"
+                        sh "${SCANNER_HOME}/bin/sonar-scanner"
                      }
                  }
               }
