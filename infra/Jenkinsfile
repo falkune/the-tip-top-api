@@ -99,7 +99,7 @@ pipeline{
                     when {branch "dev"}
                     environment {
                       SCANNER_HOME = tool 'SonarQubeScanner'
-                      NODEJS_HOME = "${tool 'Node 14.21.1'}"
+                      NODEJS_HOME = "${tool 'Node 18.12.1'}"
                       PATH="${env.NODEJS_HOME}/bin:${env.PATH}"    
                    }
                   
@@ -117,25 +117,13 @@ pipeline{
                                 sh "npm run test"
                               }
                            }
+                  
+                    stage("coverage") {
+                       steps{
+                        sh "npm run test:cov"
+                      }
                 
-                 stage("coverage") {
-                    steps{
-                      sh "npm run test:cov"
-                     }
-                
-                   post{
-                     always{  
-                        clover(cloverReportDir: 'coverage', cloverReportFileName: 'clover.xml',
-                            // optional, default is: method=70, conditional=80, statement=80
-                            healthyTarget: [methodCoverage: 70, conditionalCoverage: 80, statementCoverage: 80],
-                            // optional, default is none
-                            unhealthyTarget: [methodCoverage: 50, conditionalCoverage: 50, statementCoverage: 50],
-                            // optional, default is none
-                            failingTarget: [methodCoverage: 0, conditionalCoverage: 0, statementCoverage: 0]
-                        )
-                    }             
-                 }
-              }
+                    }
 
               stage("SonarQube Analysis"){              
                   steps{  
