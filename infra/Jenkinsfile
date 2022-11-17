@@ -133,9 +133,12 @@ pipeline{
                  }
               }
 
-              stage("SonarQube Analysis"){              
+              stage("SonarQube Analysis"){
+                  environment {
+                   SCANNER_HOME = tool 'SonarQubeScanner'
+                  }              
                   steps{  
-                     withSonarQubeEnv('sonarqube', envOnly: true) {
+                     withSonarQubeEnv('SonarQube', envOnly: true) {
                         println "${env.SONAR_HOST_URL}"
                      }
                  }
