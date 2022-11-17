@@ -97,7 +97,13 @@ pipeline{
         
            stage("test"){
                     when {branch "dev"}
-                    agent { docker { image "node:alpine"}}
+                    environment {
+                      SCANNER_HOME = tool 'SonarQubeScanner'
+                   }
+                    agent { docker { 
+                        image "node:alpine"
+                        args '-v ${SCANNER_HOME}:${SCANNER_HOME}'
+                    }}
                      stages {
                         stage("Setup Test Env"){
                               steps{
@@ -133,10 +139,7 @@ pipeline{
                  }
               }
 
-              stage("SonarQube Analysis"){
-                  environment {
-                   SCANNER_HOME = tool 'SonarQubeScanner'
-                  }              
+              stage("SonarQube Analysis"){              
                   steps{  
                      withSonarQubeEnv('SonarQube') {
                         sh "ls"
