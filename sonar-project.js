@@ -4,6 +4,8 @@ sonarqubeScanner(
         serverUrl:  'https://sonarqube.dsp-archiwebo21-ct-df-an-cd.fr/',
         token:"squ_8e56bbb33748be5aaaf3294c2d4a1c56afdebf04",
         options : {
+            'sonar.projectName': 'TheTipTop API',
+            'sonar.projectDescription': 'API For TheTipTop',
             'sonar.sources':  './src',
             'sonar.tests':  'src',
             'sonar.inclusions':  'src/**/*.ts', // Entry point of your code
@@ -11,4 +13,5 @@ sonarqubeScanner(
             'sonar.javascript.lcov.reportPaths': 'coverage/lcov.info',
             'sonar.testExecutionReportPaths': 'coverage/test-reporter.xml'
         }
-    }, () => {});
+    }, () => { console.log('Error Occurred while scanning');}
+    );
