@@ -381,8 +381,7 @@ export class UserService {
   }
 
   private async findUserByEmail(email: string): Promise<User> {
-    const user = await this.userModel.findOne({ email, verified: true });
-    //  const user = await this.userModel.findOne({email, verified: false});
+    const user = await this.userModel.findOne({ email, verified: true }); 
     if (!user) {
       throw new NotFoundException('Wrong email or password.');
     }
@@ -494,7 +493,7 @@ export class UserService {
   }
 
   private formatDate(date: string) {
-    var d = new Date(date),
+    let d = new Date(date),
       month = '' + (d.getMonth() + 1),
       day = '' + d.getDate(),
       year = d.getFullYear();

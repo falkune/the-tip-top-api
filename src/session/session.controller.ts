@@ -6,9 +6,7 @@ import {
     ApiBearerAuth,
     ApiHeader,
     ApiOperation,
-    ApiParam, 
-    ApiHeaders
-    
+    ApiParam 
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 

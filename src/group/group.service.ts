@@ -26,13 +26,10 @@ export class GroupService {
     let totalProbabilities = await this.sumProbabilities().then((t) =>
       t && t[0] ? t[0].percentage : 0,
     ); 
-    console.table('Total probabilities: ' + totalProbabilities);
-
-    // console.log(createGroupDto.GroupNumber);
+    console.table('Total probabilities: ' + totalProbabilities); 
 
     if (totalProbabilities + createGroupDto.percentage <= 100) {
-  
-     // createGroupDto.limitTicket = await this.getLimitTicket(createGroupDto.sessionId,createGroupDto.percentage);
+   
       await this.isDescriptionUniq(createGroupDto.description);
       const Group = new this.GroupModel(createGroupDto);
       await Group.save();
@@ -62,7 +59,7 @@ export class GroupService {
   }
 
   /***************************
-   * GET Group WHITH PARAMS *
+   * GET Group WITH PARAMS *
    ***************************/
 
   async getGroup(id: number): Promise<Group> {
@@ -84,8 +81,7 @@ export class GroupService {
   async updateGroupPut(
     id: string,
     createGroupDto: CreateGroupDto,
-  ): Promise<Group> {
-    // return await this.GroupModel.updateOne({_id: id}, createGroupDto);
+  ): Promise<Group> { 
     return null;
   }
 
@@ -122,16 +118,6 @@ export class GroupService {
   }
 
 
- /* private getLimitTicket(id: String, percentage: number) : Promise<number> {
-      try {
-        return this.sessionService.getOneSession(id).then((session) => {
-          console.log('Session: ', session, percentage);
-          return (session?.limitTicket*percentage)/100;
-          
-        });
-      } catch (error) {
-        throw new BadRequestException("Not session found for this id: " + id );
-      }
-  }*/
+ 
 
 }

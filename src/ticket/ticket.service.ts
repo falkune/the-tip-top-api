@@ -77,7 +77,7 @@ export class TicketService {
         return ticket;
       }
     } else {
-      throw new ServiceUnavailableException('Limit of tickets atempted');
+      throw new ServiceUnavailableException('Limit of tickets attempted');
     }
   }
 
@@ -314,7 +314,7 @@ export class TicketService {
   * CHECK TICKETNUMBER *
   ***********************/
 
-  async checkTicket(ticketNumber: String): Promise<any> {
+  async checkTicket(ticketNumber: string): Promise<any> {
     let ticket = await this.getTicketByNumber(ticketNumber);
 
     if (ticket?.idGroup) {
@@ -477,7 +477,7 @@ export class TicketService {
   /*********************
    * IS TIKET CLAIMBED *
    *********************/
-  private async isTicketClaimed(ticketNumber: String): Promise<any> {
+  private async isTicketClaimed(ticketNumber: string): Promise<any> {
     let ticket = await this.getTicketByNumber(ticketNumber);
 
     if (ticket != null) {

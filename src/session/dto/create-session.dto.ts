@@ -25,7 +25,7 @@ export class CreateSessionDto {
 
 
     @ApiProperty({
-        example: 'Name exmaple ...',
+        example: 'Name example ...',
         description: 'Name  of Session',
         format: 'string',
     })
@@ -34,7 +34,7 @@ export class CreateSessionDto {
     readonly name: string;
 
     @ApiProperty({
-        example: 'Description exmaple ...',
+        example: 'Description example ...',
         description: 'Description of the Session',
         format: 'string',
     }) 

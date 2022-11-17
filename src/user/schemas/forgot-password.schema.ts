@@ -4,13 +4,12 @@ import * as validator from 'validator';
 export const ForgotPasswordSchema = new Schema ({
     email: {
         required: [true, 'EMAIL_IS_BLANK'],
-        type: String,
-        requierd: true,
+        type: String
     },
     verification: {
         type: String,
         validate: validator.isUUID,
-        requierd: true,
+        required: true,
     },
     firstUsed: {
         type: Boolean,
@@ -22,19 +21,19 @@ export const ForgotPasswordSchema = new Schema ({
     },
     expires: {
         type: Date,
-        requierd: true,
+        required: true,
     },
     ip: {
         type: String,
-        requierd: true,
+        required: true,
     },
     browser: {
         type: String,
-        requierd: true,
+        required: true,
     },
     country: {
         type: String,
-        requierd: true,
+        required: true,
     },
     ipChanged: {
         type: String,
