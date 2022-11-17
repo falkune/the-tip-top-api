@@ -4,6 +4,9 @@
 package-lock.json 
 yarn.lock
 
+# Scanner 
+.scannerwork
+
 # Logs
 logs
 *.log
