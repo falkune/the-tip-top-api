@@ -140,6 +140,7 @@ pipeline{
                   steps{  
                      withSonarQubeEnv('SonarQube') {
                         println "${env.SONAR_HOST_URL}"
+                        println "${SCANNER_HOME}"
                      }
                  }
               }
