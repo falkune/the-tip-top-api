@@ -1,6 +1,5 @@
 import {
-  IsNotEmpty, 
-  IsNumber, 
+  IsNotEmpty,  
   IsString, 
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
@@ -23,6 +22,6 @@ export class AssignTicketDto {
   })
   @IsNotEmpty()
   @IsString() 
-  readonly ticketNumber: String;
+  readonly ticketNumber: string;
 
 }

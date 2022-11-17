@@ -14,7 +14,7 @@ import { GroupService } from '../group/group.service';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { AssignTicketDto } from './dto/assign-ticket.dto';
 import { AuthService } from 'src/auth/auth.service';
-import { SessionService } from 'src/session/session.service'; 
+import { SessionService } from 'src/session/session.service';
 
 
 @Injectable()
@@ -49,10 +49,10 @@ export class TicketService {
       );
       let randGroup = await this.getRandomGroup(0, createTicketDto.idSession);
 
-      // console.log(randGroup, 'Le rendom');
-      var trying = maxTicketForSession;
 
-      // console.log(createTicketDto.ticketNumber);
+      let trying = maxTicketForSession;
+
+
       createTicketDto.idGroup = randGroup;
       while (
         ticketFound?.ticketNumber?.toString() ==
@@ -64,20 +64,20 @@ export class TicketService {
           createTicketDto.ticketNumber,
         );
         trying--;
-        // console.log(trying, 'Essai');
+
       }
 
       if (trying == 0) {
         throw new ServiceUnavailableException('Limit of numbers exceeded');
       } else {
-        // console.log('Savaing ...');
+
 
         const ticket = new this.ticketModel(createTicketDto);
         await ticket.save();
         return ticket;
       }
     } else {
-      throw new ServiceUnavailableException('Limit of tickets atempted');
+      throw new ServiceUnavailableException('Limit of tickets attempted');
     }
   }
 
@@ -85,26 +85,26 @@ export class TicketService {
    * GET TICKET STATICTIS *
    ************************/
 
-  async getTicketStats(idSession: String): Promise<Array<Ticket>> {
+  async getTicketStats(idSession: string): Promise<Array<Ticket>> {
 
     console.log("the session is " + idSession);
     return await this.ticketModel.aggregate(
       [
-        
-        { 
-         
+
+        {
+
           $group: {
-            _id: '$idGroup', 
+            _id: '$idGroup',
             "numberOfTickets": {
               "$sum": {
                 "$cond": [
-                  
-                {
-                  "$eq": [
-                    "$idSession", idSession
-                  ]
-                },  1,
-                0]
+
+                  {
+                    "$eq": [
+                      "$idSession", idSession
+                    ]
+                  }, 1,
+                  0]
               }
             },
 
@@ -137,7 +137,7 @@ export class TicketService {
                         ]
                       }
                     ]
-           
+
                   },
                   1,
                   0
@@ -161,17 +161,17 @@ export class TicketService {
                         ]
                       }
                     ]
-           
-                   
+
+
                   },
                   1,
                   0
                 ]
               }
             }
-            
-          } 
-           
+
+          }
+
         }
       ],);
 
@@ -212,16 +212,16 @@ export class TicketService {
     return await this.ticketModel.find({ idGroup: { $eq: idGroup } }).count();
   }
 
-    /*************************
-   * GET TICKET BY CLIENTID *
-   *************************/
+  /*************************
+ * GET TICKET BY CLIENTID *
+ *************************/
 
 
-     async getTicketByIdClient(idClient: string): Promise<Array<Ticket>> {
-      let userId = await this.authService.findRefreshToken(idClient);
-      idClient = userId.valueOf().toString();
-      return await this.ticketModel.find({ idClient: { $eq: idClient } });
-    }
+  async getTicketByIdClient(idClient: string): Promise<Array<Ticket>> {
+    let userId = await this.authService.findRefreshToken(idClient);
+    idClient = userId.valueOf().toString();
+    return await this.ticketModel.find({ idClient: { $eq: idClient } });
+  }
 
   /***************************************
    * COUNT THE NUMBER OF CREATED TICKETS *
@@ -256,7 +256,6 @@ export class TicketService {
     id: string,
     createTicketDto: CreateTicketDto,
   ): Promise<Ticket> {
-    // return await this.ticketModel.updateOne({_id: id}, createTicketDto);
     return null;
   }
 
@@ -290,9 +289,7 @@ export class TicketService {
     }
 
     let group = await this.groupService.getOneGroup(ticket.idGroup);
-    // console.log(group, 'RRRRRRRRRRRRRRRRRRRRRRR');
     return group;
-    // return null;
   }
 
   /***********************
@@ -317,7 +314,7 @@ export class TicketService {
   * CHECK TICKETNUMBER *
   ***********************/
 
-  async checkTicket(ticketNumber: String): Promise<any> {
+  async checkTicket(ticketNumber: string): Promise<any> {
     let ticket = await this.getTicketByNumber(ticketNumber);
 
     if (ticket?.idGroup) {
@@ -348,13 +345,9 @@ export class TicketService {
    * GET CLAIMBED TICKETS BY SESSION *
    ***********************************/
 
-  //  async getClaimbedTicketsBySession(idSession: string): Promise<Array<Ticket>> {
-  //   return await this.ticketModel.find({ idSession: { $eq: idSession } });
-  // }
-
   async getClaimbedTicketsBySession(idSession: string): Promise<Array<Ticket>> {
 
-    // return await this.ticketModel.find({ idSession: { $eq: idSession } });
+
 
     return await this.ticketModel.find({
       idSession: { $eq: idSession },
@@ -367,8 +360,6 @@ export class TicketService {
     });
   }
 
-  // },
-  // { idSession: { $eq: idSession } },
 
   /***********************************
    * GET CLAIMBED NOT TICKETS BY SESSION *
@@ -416,13 +407,12 @@ export class TicketService {
    *****************************************/
 
   private getRandomInt(): String {
-    var str = '';
+    let str = '';
     for (let i = 0; i++ < 10;) {
-      var r = Math.floor(Math.random() * 9);
+      let r = Math.floor(Math.random() * 9);
 
       str += r.toString();
     }
-    // console.log('Generated Code', str, 'Parsed Code: ', parseInt(str));
     return str;
   }
 
@@ -430,7 +420,7 @@ export class TicketService {
    * GET RANDOM GROUP IN ORDER TO AFFECT IT TO A TICKET *
    ******************************************************/
 
-  private async getRandomGroup(i: number, idSession: String): Promise<string> {
+  private async getRandomGroup(i: number, idSession: string): Promise<string> {
 
 
     return await this.groupService.getAllGroups().then(async (groups) => {
@@ -452,30 +442,18 @@ export class TicketService {
 
         let totalTicketForGroup = (group?.percentage * session.limitTicket) / 100;
 
-
-
         if (ticketsForGroup < totalTicketForGroup) {
-
-
 
           if (num < s) {
             return group._id.valueOf();
           } else {
 
-            var tmp_alllTicket, tmp_limitTicket;
+            let tmp_alllTicket, tmp_limitTicket;
             await this.getAllTicketForGroup(lastGroup._id.valueOf()).then((val) => {
               tmp_alllTicket = val;
             });
 
-
-
-
-
             let limitticketOfTheLastGroup = (lastGroup?.percentage * session.limitTicket) / 100
-
-
-
-
             return tmp_alllTicket <
               limitticketOfTheLastGroup
               ? lastGroup?._id.valueOf()
@@ -499,9 +477,8 @@ export class TicketService {
   /*********************
    * IS TIKET CLAIMBED *
    *********************/
-  private async isTicketClaimed(ticketNumber: String): Promise<any> {
+  private async isTicketClaimed(ticketNumber: string): Promise<any> {
     let ticket = await this.getTicketByNumber(ticketNumber);
-    // console.log(ticket, 'FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF');
 
     if (ticket != null) {
       if (ticket.idClient) {

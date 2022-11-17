@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class VerifyTicketDto {
@@ -10,5 +10,5 @@ export class VerifyTicketDto {
   })
   @IsNotEmpty()
   @IsString()
-  readonly ticketNumber: String;
+  readonly ticketNumber: string;
 }

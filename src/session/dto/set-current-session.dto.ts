@@ -1,4 +1,4 @@
-import { IsNumber, IsBoolean, IsString } from 'class-validator';
+import {  IsBoolean, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger'; 
 
 export class SetCurrentSessionDto {
@@ -10,7 +10,7 @@ export class SetCurrentSessionDto {
         format: 'Boolean',
     }) 
     @IsBoolean()
-    isCurrent: Boolean;
+    isCurrent: boolean;
 
      @ApiProperty({
         example: '456457724HB78V245VB5KP272',

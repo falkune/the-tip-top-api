@@ -36,14 +36,12 @@ export class UserService {
   LOGIN_ATTEMPTS_TO_BLOCK = 5;
 
   constructor(
-    @InjectModel('User') private readonly userModel: Model<User>,
+    @InjectModel('User') private userModel: Model<User>,
     @InjectModel('Ticket') private readonly ticketModel: Model<Ticket>,
-    @InjectModel('ForgotPassword')
-    @InjectModel('Ticket')
-    private readonly forgotPasswordModel: Model<ForgotPassword>,
+    @InjectModel('ForgotPassword') private readonly forgotPasswordModel: Model<ForgotPassword>,
     private readonly authService: AuthService,
     private readonly sessionService: SessionService,
-    private mailService: MailService,
+    private mailService: MailService, 
     private readonly logger: LoggerService
   ) { }
 
@@ -85,7 +83,7 @@ export class UserService {
     const birthday = new Date(user.birthday);
     this.logger.log(Date.now, 'UserService');
 
-    var userLocation = await this.getLocationInfo(req);
+    let userLocation = await this.getLocationInfo(req);
 
     this.updateUserLocation({ userId: user.id.valueOf().toString(), userLocation: userLocation })
     return {
@@ -114,8 +112,8 @@ export class UserService {
 
   private _calculateAge(birthday) {
     // birthday is a date
-    var ageDifMs = Date.now() - birthday.getTime();
-    var ageDate = new Date(ageDifMs); // miliseconds from epoch
+    let ageDifMs = Date.now() - birthday.getTime();
+    let ageDate = new Date(ageDifMs); // miliseconds from epoch
     return Math.abs(ageDate.getUTCFullYear() - 1970);
   }
 
@@ -123,8 +121,7 @@ export class UserService {
    * REFRESH TOKEN *
    *****************/
 
-  async refreshAccessToken(refreshAccessTokenDto: RefreshAccessTokenDto) {
-    // console.log('Acesss id hherer', refreshAccessTokenDto);
+  async refreshAccessToken(refreshAccessTokenDto: RefreshAccessTokenDto) { 
     const userId = await this.authService.findRefreshToken(
       refreshAccessTokenDto.refreshToken,
     );
@@ -196,8 +193,8 @@ export class UserService {
       ],
     });
 
-    var idClients = [];
-    for (var n = 1; n < tickets.length; ++n) {
+    let idClients = [];
+    for (let n = 1; n < tickets.length; ++n) {
       tickets.forEach((ticket) => {
         idClients.push(ticket.idClient);
       });
@@ -231,51 +228,43 @@ export class UserService {
 
         return await this.userModel.aggregate(
           [
-  
-  
+
+
             {
               $group: {
-  
+
                 _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
                 "nomberOfRegitration": {
                   "$sum": {
                     "$cond": [
                       {
-  
+
                         "$and": [
                           {
-  
-  
+
+
                             $gte: ["$createdAt", new Date(session.startDate)]
-  
-  
+
+
                           },
                           {
                             $lte: ["$createdAt", new Date(session.endDate)]
                           },
                         ]
-  
-  
+
+
                       },
                       1,
                       0
                     ]
                   }
                 },
-  
-  
-  
+
+
+
               }
             }
-            /*  {
-                $group: {
-                _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
-                   nomberOfRegitration: {
-                    $count: {}
-                  }
-        
-                }
-              }*/
+           
           ]).sort({ _id: 1 });
       }
       )
@@ -286,7 +275,7 @@ export class UserService {
 
     return user;
 
-   
+
 
 
 
@@ -392,8 +381,7 @@ export class UserService {
   }
 
   private async findUserByEmail(email: string): Promise<User> {
-    const user = await this.userModel.findOne({ email, verified: true });
-    //  const user = await this.userModel.findOne({email, verified: false});
+    const user = await this.userModel.findOne({ email, verified: true }); 
     if (!user) {
       throw new NotFoundException('Wrong email or password.');
     }
@@ -505,7 +493,7 @@ export class UserService {
   }
 
   private formatDate(date: string) {
-    var d = new Date(date),
+    let d = new Date(date),
       month = '' + (d.getMonth() + 1),
       day = '' + d.getDate(),
       year = d.getFullYear();

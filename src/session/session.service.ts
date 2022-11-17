@@ -1,4 +1,4 @@
-import { Injectable, ServiceUnavailableException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Session } from './interfaces/session.interface';
@@ -47,7 +47,7 @@ export class SessionService {
    * GET ONE Session *
    ******************/
 
-  async getOneSession(id: String): Promise<Session> {
+  async getOneSession(id: string): Promise<Session> {
     return await this.SessionModel.findById(id);
   }
 

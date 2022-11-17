@@ -47,8 +47,8 @@ export class UserController {
   @ApiOperation({ summary: 'Register user' })
   @ApiCreatedResponse({})
   async register(@Body() createUserDto: CreateUserDto) {
-    // console.log('one here',CreateUserDto)
-    var user = await this.userService.create(createUserDto);
+  
+    let user = await this.userService.create(createUserDto);
     
     return user;
   }
@@ -57,8 +57,7 @@ export class UserController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Verify Email' })
   @ApiOkResponse({})
-  // async verifyEmail(@Req() req: Request, @Body() verifyUuidDto: VerifyUuidDto) {
-// 
+ 
   async verifyEmail(@Req() req: Request,  @Query('verification') verification) {
     return await this.userService.verifyEmail(req, verification);
   }
@@ -68,20 +67,12 @@ export class UserController {
   @ApiOperation({ summary: 'Login User' })
   @ApiOkResponse({})
   async login(@Req() req: Request, @Body() loginUserDto: LoginUserDto) {
-    // console.log('Two here',loginUserDto)
+    
 
     return await this.userService.login(req, loginUserDto);
   }
 
-  // @Post('send-email')
-  // @HttpCode(HttpStatus.OK)
-  // @ApiOperation({ summary: 'Login User' })
-  // @ApiOkResponse({})
-  // async send(@Req() req: Request, @Body() user: UserEntity) {
-  //   // console.log('Email sender form user controller',loginUserDto)
-
-  //   return await this.userService.sendEmail(user);
-  // }
+  
 
   @Post('refresh-access-token')
   @HttpCode(HttpStatus.CREATED)
@@ -128,19 +119,7 @@ export class UserController {
     return await this.userService.resetPassword(resetPasswordDto);
   }
 
-  // @Get('plain-text-email')
-  // async plainTextEmail(@Query('toemail') toemail){
-  //   console.log(toemail);
-  //  let response =   await this.mailService.sendMail({
-          
-  //         to: toemail,
-  //         subject:'Welcome',
-  //         from: 'cheikhthiam95g@gmail.com',
-  //         text: 'Please enter your email address here     and try again.'
-  //     })
-
-  //     return response;
-  // }
+ 
 
 
 
