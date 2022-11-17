@@ -136,7 +136,7 @@ pipeline{
               stage("SonarQube Analysis"){              
                   steps{  
                      withSonarQubeEnv('sonarqube', envOnly: true) {
-                        println ${env.SONAR_HOST_URL}
+                        println "${env.SONAR_HOST_URL}"
                      }
                  }
               }
