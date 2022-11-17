@@ -1,8 +1,7 @@
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import {
   Injectable,
-  UnauthorizedException,
-  NotFoundException,
+  UnauthorizedException, 
   BadRequestException
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -10,8 +9,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { sign } from 'jsonwebtoken';
 import { User } from 'src/user/interfaces/user.interface';
-import { RefreshToken } from './interfaces/refresh-token.interface';
-import { MailService } from './../mail/mail.service';
+import { RefreshToken } from './interfaces/refresh-token.interface'; 
 import { v4 } from 'uuid';
 import { Request } from 'express';
 import { getClientIp } from 'request-ip';
@@ -35,7 +33,7 @@ export class AuthService {
   }
  
   async createAccessToken(userId: string) {
-    // const accessToken = this.jwtService.sign({userId}); 
+    
     const accessToken = sign({ userId }, process.env.JWT_SECRET, {
       expiresIn: process.env.JWT_EXPIRATION,
     });
@@ -45,7 +43,7 @@ export class AuthService {
   async createRefreshToken(req: Request, userId) { 
  
     this.logger.log('Alert! Access token is already associated',AuthService.name);
-    var UserLocation = await this.getLocationInfo(req);
+    const UserLocation = await this.getLocationInfo(req);
     const refreshToken = new this.refreshTokenModel({
       userId,
       refreshToken: v4(),

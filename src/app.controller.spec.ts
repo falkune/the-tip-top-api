@@ -14,6 +14,11 @@ describe('AppController', () => {
     appController = app.get<AppController>(AppController);
   });
 
+
+  it('it should  be defined', () => {
+    expect(appController).toBeDefined();
+  });
+
   describe('root', () => {
     it('should return "Api of thetiptop game"', () => {
       expect(appController.getAppName()).toBe( "Api of thetiptop game");

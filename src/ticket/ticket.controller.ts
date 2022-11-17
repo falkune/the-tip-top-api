@@ -63,12 +63,7 @@ export class TicketController {
   @ApiParam({ name: 'id', description: 'id of the sesssion' })
   @ApiOkResponse({})
   async getTicketStats(@Param() params) { 
- console.log('heikh');
  
- console.log(params);
-
- console.log('heikh');
-
 
   return await this.ticketService.getTicketStats(params.id);
   }
@@ -94,8 +89,7 @@ export class TicketController {
     description: 'the token we need for auth.',
   })
   @ApiCreatedResponse({})
-  async createTicket(@Body() createTicketDto: CreateTicketDto) {
-    console.log(ApiHeaders.name, 'Hello chiekh depuis');
+  async createTicket(@Body() createTicketDto: CreateTicketDto) { 
     return await this.ticketService.createTicket(createTicketDto);
   }
 
@@ -132,8 +126,7 @@ export class TicketController {
   async assignTicket(
     @Headers() headers,
     @Body() assignTicketDto: AssignTicketDto,
-  ) {
-    console.log(headers);
+  ) { 
 
     return await this.ticketService.assignTicket(
       assignTicketDto?.idClient,

@@ -36,14 +36,12 @@ export class UserService {
   LOGIN_ATTEMPTS_TO_BLOCK = 5;
 
   constructor(
-    @InjectModel('User') private readonly userModel: Model<User>,
+    @InjectModel('User') private userModel: Model<User>,
     @InjectModel('Ticket') private readonly ticketModel: Model<Ticket>,
-    @InjectModel('ForgotPassword')
-    @InjectModel('Ticket')
-    private readonly forgotPasswordModel: Model<ForgotPassword>,
+    @InjectModel('ForgotPassword') private readonly forgotPasswordModel: Model<ForgotPassword>,
     private readonly authService: AuthService,
     private readonly sessionService: SessionService,
-    private mailService: MailService,
+    private mailService: MailService, 
     private readonly logger: LoggerService
   ) { }
 
@@ -231,40 +229,40 @@ export class UserService {
 
         return await this.userModel.aggregate(
           [
-  
-  
+
+
             {
               $group: {
-  
+
                 _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
                 "nomberOfRegitration": {
                   "$sum": {
                     "$cond": [
                       {
-  
+
                         "$and": [
                           {
-  
-  
+
+
                             $gte: ["$createdAt", new Date(session.startDate)]
-  
-  
+
+
                           },
                           {
                             $lte: ["$createdAt", new Date(session.endDate)]
                           },
                         ]
-  
-  
+
+
                       },
                       1,
                       0
                     ]
                   }
                 },
-  
-  
-  
+
+
+
               }
             }
             /*  {
@@ -286,7 +284,7 @@ export class UserService {
 
     return user;
 
-   
+
 
 
 
