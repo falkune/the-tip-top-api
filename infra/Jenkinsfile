@@ -99,9 +99,7 @@ pipeline{
                     when {branch "dev"}
                     agent { docker { image "node:alpine"}}
                      stages {
-
                         stage("setup"){
-                             
                               steps{
                                 sh "node --version"
                                 sh "npm version"
@@ -117,9 +115,9 @@ pipeline{
                 
                  stage("coverage") {
                     steps{
-                    sh "npm run test:cov"
-                     //sh "scripts/test.sh cov"
-                    }
+                      sh "npm run test:cov"
+                       //sh "scripts/test.sh cov"
+                     }
                 
                    post{
                      always{  
@@ -137,10 +135,15 @@ pipeline{
 
               stage("SonarQube Analysis"){              
                   steps{
-                     sh "npm run sonar"
-                  }
-              }
+                 
+                     withSonarQubeEnv('sonarqube') {
 
+                         sh "echo ${scannerHome}"
+                      
+                     }
+              
+                 }
+              }
                  stage("e2e"){
                      when {branch "dev"}
                      steps{
