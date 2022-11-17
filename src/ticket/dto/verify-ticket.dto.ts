@@ -10,5 +10,5 @@ export class VerifyTicketDto {
   })
   @IsNotEmpty()
   @IsString()
-  readonly ticketNumber: String;
+  readonly ticketNumber: string;
 }
