@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Session } from './interfaces/session.interface';
 import { CreateSessionDto } from './dto/create-session.dto'; 
-import { LoggerService } from 'src/logger/logger.service';
+import { LoggerService } from '../logger/logger.service';
 import { SetCurrentSessionDto } from './dto/set-current-session.dto';
 
 @Injectable()

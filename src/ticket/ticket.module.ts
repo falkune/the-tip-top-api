@@ -10,7 +10,7 @@ import { GroupModule } from 'src/group/group.module';
 import { SessionSchema } from 'src/session/schemas/session.schema';
 import { SessionModule } from 'src/session/session.module';
 import { SessionService } from 'src/session/session.service';
-import { LoggerService } from 'src/logger/logger.service';
+import { LoggerService } from '../logger/logger.service';
 
 
 

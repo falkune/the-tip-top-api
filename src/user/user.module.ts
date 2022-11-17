@@ -8,13 +8,13 @@ import { ForgotPasswordSchema } from './schemas/forgot-password.schema';
 import { TicketSchema } from '../ticket/schemas/ticket.schema';
 import { TicketModule } from '../ticket/ticket.module';
 import { MailModule } from 'src/mail/mail.module';
-import { LoggerService } from 'src/logger/logger.service';
+import { LoggerService } from '../logger/logger.service';
 import { SessionSchema } from 'src/session/schemas/session.schema';
 import { SessionModule } from 'src/session/session.module';
 import { SessionService } from 'src/session/session.service';
 
 @Module({
-  imports: [
+  imports: [ 
     MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
     MongooseModule.forFeature([
       { name: 'ForgotPassword', schema: ForgotPasswordSchema },

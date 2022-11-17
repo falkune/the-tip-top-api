@@ -18,7 +18,7 @@ import { getClientIp } from 'request-ip';
 import { IPinfoWrapper } from 'node-ipinfo';
 
 import * as Cryptr from 'cryptr';
-import { LoggerService } from 'src/logger/logger.service';
+import { LoggerService } from '../logger/logger.service';
 
 @Injectable()
 export class AuthService {

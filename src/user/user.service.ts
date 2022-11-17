@@ -11,12 +11,11 @@ import {
   NotFoundException,
   ConflictException,
   UnauthorizedException,
-  ConsoleLogger,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { v4 } from 'uuid';
-import { addHours, isThursday } from 'date-fns';
+import { addHours } from 'date-fns';
 import * as bcrypt from 'bcrypt';
 import { CreateForgotPasswordDto } from './dto/create-forgot-password.dto';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -25,9 +24,9 @@ import { RefreshAccessTokenDto } from './dto/refresh-access-token.dto';
 import { ForgotPassword } from './interfaces/forgot-password.interface';
 import { Ticket } from '../ticket/interfaces/ticket.interface';
 import { User } from './interfaces/user.interface';
-import { LoggerService } from 'src/logger/logger.service';
+import { LoggerService } from '../logger/logger.service';
 import { UpdateUserLocationDto } from './dto/update-user-location.dto';
-import { SessionService } from 'src/session/session.service';
+import { SessionService } from '../session/session.service';
 
 
 @Injectable()
@@ -42,7 +41,6 @@ export class UserService {
     @InjectModel('ForgotPassword')
     @InjectModel('Ticket')
     private readonly forgotPasswordModel: Model<ForgotPassword>,
-
     private readonly authService: AuthService,
     private readonly sessionService: SessionService,
     private mailService: MailService,

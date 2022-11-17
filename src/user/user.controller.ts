@@ -18,7 +18,7 @@ import {
 import { CreateUserDto } from './dto/create-user.dto';
 import { VerifyUuidDto } from './dto/verify-uuid.dto';
 import { UserService } from './user.service';
-import { AuthGuard, PassportModule } from '@nestjs/passport';
+import { AuthGuard } from '@nestjs/passport';
 import { RefreshAccessTokenDto } from './dto/refresh-access-token.dto';
 import {
   ApiCreatedResponse,
@@ -29,8 +29,8 @@ import {
   ApiOperation,
   ApiParam,
 } from '@nestjs/swagger';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
-import { GetTicketBySessionDto } from 'src/ticket/dto/get-tickets-by-session.dto';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { GetTicketBySessionDto } from '../ticket/dto/get-tickets-by-session.dto';
 import { MailerService } from '@nestjs-modules/mailer'; 
 
 @ApiTags('User')
