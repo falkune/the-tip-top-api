@@ -47,8 +47,8 @@ services:
 
     volumes:
        - /etc/localtime:/etc/localtime:ro
-    #   - backend_code:/usr/src/app
-    #  - /usr/src/app/node_modules
+    #   - backend_code:/usr/../app
+    #  - /usr/../app/node_modules
     restart: unless-stopped
     container_name: api
     depends_on:

@@ -3,15 +3,16 @@ import { UserSchema } from './schemas/user.schema';
 import { Module } from '@nestjs/common';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
-import { AuthModule } from 'src/auth/auth.module';
+import { AuthModule } from '../auth/auth.module';
 import { ForgotPasswordSchema } from './schemas/forgot-password.schema';
 import { TicketSchema } from '../ticket/schemas/ticket.schema';
 import { TicketModule } from '../ticket/ticket.module';
-import { MailModule } from 'src/mail/mail.module';
+import { MailModule } from '../mail/mail.module';
 import { LoggerService } from '../logger/logger.service';
-import { SessionSchema } from 'src/session/schemas/session.schema';
-import { SessionModule } from 'src/session/session.module';
-import { SessionService } from 'src/session/session.service';
+import { SessionSchema } from '../session/schemas/session.schema';
+import { SessionModule } from '../session/session.module';
+import { SessionService } from '../session/session.service'; 
+import { OurConfigService } from '../mail/config.service';
 
 @Module({
   imports: [ 
@@ -23,9 +24,9 @@ import { SessionService } from 'src/session/session.service';
     TicketModule,
     AuthModule,
     MongooseModule.forFeature([{ name: 'Session', schema: SessionSchema}]),SessionModule,
-    MailModule,
+    MailModule
   ],
   controllers: [UserController],
-  providers: [UserService,LoggerService,SessionService],
+  providers: [UserService,LoggerService,SessionService,OurConfigService],
 })
 export class UserModule {}

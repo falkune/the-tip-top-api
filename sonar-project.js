@@ -8,8 +8,8 @@ sonarqubeScanner(
             'sonar.projectDescription': 'API For TheTipTop',
             'sonar.sources':  './src',
             'sonar.tests':  'src',
-            'sonar.inclusions':  'src/**/*.ts', // Entry point of your code
-            'sonar.test.inclusions':'src/**/*.spec.ts,src/**/*.spec.jsx,src/**/*.test.js,src/**/*.test.jsx',
+            'sonar.inclusions':  '../**/*.ts', // Entry point of your code
+            'sonar.test.inclusions':'../**/*.spec.ts,../**/*.spec.jsx,../**/*.test.js,../**/*.test.jsx',
             'sonar.typescript.lcov.reportPaths': 'coverage/lcov.info',
             'sonar.testExecutionReportPaths': 'coverage/test-reporter.xml',
             'sonar.log.level': 'DEBUG',

@@ -41,7 +41,7 @@ export class UserService {
     @InjectModel('ForgotPassword') private readonly forgotPasswordModel: Model<ForgotPassword>,
     private readonly authService: AuthService,
     private readonly sessionService: SessionService,
-    private mailService: MailService, 
+    private mailService: MailService,
     private readonly logger: LoggerService
   ) { }
 
@@ -121,7 +121,7 @@ export class UserService {
    * REFRESH TOKEN *
    *****************/
 
-  async refreshAccessToken(refreshAccessTokenDto: RefreshAccessTokenDto) { 
+  async refreshAccessToken(refreshAccessTokenDto: RefreshAccessTokenDto) {
     const userId = await this.authService.findRefreshToken(
       refreshAccessTokenDto.refreshToken,
     );
@@ -228,43 +228,30 @@ export class UserService {
 
         return await this.userModel.aggregate(
           [
-
-
             {
               $group: {
-
                 _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+                
                 "nomberOfRegitration": {
                   "$sum": {
                     "$cond": [
                       {
-
                         "$and": [
                           {
-
-
                             $gte: ["$createdAt", new Date(session.startDate)]
-
-
                           },
                           {
                             $lte: ["$createdAt", new Date(session.endDate)]
                           },
                         ]
-
-
                       },
                       1,
                       0
                     ]
                   }
                 },
-
-
-
               }
             }
-           
           ]).sort({ _id: 1 });
       }
       )
@@ -381,7 +368,7 @@ export class UserService {
   }
 
   private async findUserByEmail(email: string): Promise<User> {
-    const user = await this.userModel.findOne({ email, verified: true }); 
+    const user = await this.userModel.findOne({ email, verified: true });
     if (!user) {
       throw new NotFoundException('Wrong email or password.');
     }

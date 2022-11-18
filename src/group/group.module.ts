@@ -4,10 +4,10 @@ import { GroupService } from './group.service';
 
 import { MongooseModule } from '@nestjs/mongoose';
 import { GroupSchema } from './schemas/group.schema';
-import { SessionModule } from 'src/session/session.module';
-import { SessionSchema } from 'src/session/schemas/session.schema';
-import { SessionService } from 'src/session/session.service';
-import { LoggerModule } from 'src/logger/logger.module';
+import { SessionModule } from '../session/session.module';
+import { SessionSchema } from '../session/schemas/session.schema';
+import { SessionService } from '../session/session.service';
+import { LoggerModule } from '../logger/logger.module';
 
 
 @Module({

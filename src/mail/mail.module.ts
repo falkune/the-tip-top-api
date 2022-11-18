@@ -1,14 +1,14 @@
 import { MailerModule } from '@nestjs-modules/mailer'; 
 import { Global, Module } from '@nestjs/common';
-import { MailService } from './mail.service'; 
-import { ConfigService } from '@nestjs/config';
+import { MailService } from './mail.service';  
+import { OurConfigService } from './config.service';
 
 @Global() // 👈 global module
 @Module({
   imports: [
     MailerModule.forRootAsync({
       // imports: [ConfigModule], // import module if not enabled globally
-      useFactory: async (config: ConfigService) => ({
+      useFactory: async (config: OurConfigService) => ({
         // transport: config.get("MAIL_TRANSPORT"),
         // or
         transport: {
@@ -24,10 +24,10 @@ import { ConfigService } from '@nestjs/config';
         },
         text: 'Please enter your email address here     and try again.'
       }),
-      inject: [ConfigService],
+      inject: [OurConfigService],
     }),
   ],
-  providers: [MailService],
-  exports: [MailService],
+  providers: [MailService,OurConfigService],
+  exports: [MailService,OurConfigService],
 })
 export class MailModule {}

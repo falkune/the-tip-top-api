@@ -14,7 +14,7 @@ import { AuthGuard } from '@nestjs/passport';
 
 import { GroupService } from './group.service';
 import { CreateGroupDto } from './dto/create-group.dto';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 
 @ApiTags('Group')

@@ -25,13 +25,13 @@ import { AuthGuard } from '@nestjs/passport';
 
 import { TicketService } from './ticket.service';
 import { CreateTicketDto } from './dto/create-ticket.dto';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { AssignTicketDto } from './dto/assign-ticket.dto';
 import { VerifyTicketDto } from './dto/verify-ticket.dto';
 import { GetTicketBySessionDto } from './dto/get-tickets-by-session.dto';
 import { GetTicketByClientDto } from './dto/get-tickets-by-client.dto';
-import { GroupService } from 'src/group/group.service'; 
+import { GroupService } from '../group/group.service'; 
 
 
 

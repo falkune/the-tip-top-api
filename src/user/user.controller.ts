@@ -155,7 +155,7 @@ export class UserController {
     name: 'Bearer',
     description: 'the token we need for auth.',
   })
-  @ApiParam({ name: 'id', description: 'id of the sesssion' })
+  @ApiParam({ name: 'id', description: 'id of the session' })
   @ApiOkResponse({})
   async getNumberOfRegistrationByDay(@Param() params) {
 

@@ -13,8 +13,8 @@ import { Ticket } from './interfaces/ticket.interface';
 import { GroupService } from '../group/group.service';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { AssignTicketDto } from './dto/assign-ticket.dto';
-import { AuthService } from 'src/auth/auth.service';
-import { SessionService } from 'src/session/session.service';
+import { AuthService } from '../auth/auth.service';
+import { SessionService } from '../session/session.service';
 
 
 @Injectable()

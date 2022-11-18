@@ -7,7 +7,7 @@ import { Model } from 'mongoose';
 
 import { Group } from './interfaces/group.interface';
 import { CreateGroupDto } from './dto/create-group.dto';
-import { SessionService } from 'src/session/session.service';;
+import { SessionService } from '../session/session.service';;
 
 @Injectable()
 export class GroupService {
