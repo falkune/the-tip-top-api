@@ -82,7 +82,7 @@ export class TicketService {
   }
 
   /************************
-   * GET TICKET STATICTIS *
+   * GET TICKET STATISTICS *
    ************************/
 
   async getTicketStats(idSession: string): Promise<Array<Ticket>> {
@@ -98,7 +98,6 @@ export class TicketService {
             "numberOfTickets": {
               "$sum": {
                 "$cond": [
-
                   {
                     "$eq": [
                       "$idSession", idSession
@@ -106,8 +105,7 @@ export class TicketService {
                   }, 1,
                   0]
               }
-            },
-
+            }, 
             "notClaimbedTicket": {
               "$sum": {
                 "$cond": [
