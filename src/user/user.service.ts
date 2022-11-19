@@ -45,6 +45,8 @@ export class UserService {
     private readonly logger: LoggerService
   ) { }
 
+
+  
   /***************
    * UPDATE USER *
    ***************/
@@ -76,6 +78,7 @@ export class UserService {
    * LOGIN *
    *********/
   async login(req: Request, loginUserDto: LoginUserDto) {
+   
     const user = await this.findUserByEmail(loginUserDto.email);
     this.isUserBlocked(user);
     await this.checkPassword(loginUserDto.password, user);
