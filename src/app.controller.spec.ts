@@ -20,7 +20,7 @@ describe('AppController', () => {
   });
 
   describe('root', () => {
-    it('should return "Api of thetiptop game"', () => {
+    it('should return "Api of thetiptop Game"', () => {
       expect(appController.getAppName()).toBe( "Api of thetiptop game");
     });
   });
