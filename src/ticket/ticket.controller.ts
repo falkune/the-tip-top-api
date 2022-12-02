@@ -112,8 +112,8 @@ export class TicketController {
   @Patch('assign-ticket')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard('jwt'))
-  @Roles('admin')
-  @ApiOperation({ summary: 'Update one ticket by id ( all params )' })
+  @Roles('client')
+  @ApiOperation({ summary: 'Update one ticket by id ( client id )' })
   @ApiBearerAuth()
   @ApiHeader({
     name: 'Bearer',
