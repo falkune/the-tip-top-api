@@ -91,7 +91,7 @@ pipeline{
 
 
                             stage("deploy"){ 
-                                parallel{
+                                stages{
                                     stage ('release'){
                                         when{ branch 'release'}
                                         steps{
