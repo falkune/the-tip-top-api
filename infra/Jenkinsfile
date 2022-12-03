@@ -166,10 +166,10 @@ pipeline{
                }
              }
         }
+    }
 
         stage("end") {
              steps{echo "Successful end"}
                 }
         } 
    }
-}
