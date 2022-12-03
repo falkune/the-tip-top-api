@@ -10,6 +10,7 @@ import { GroupModule } from './group/group.module';
 import { SessionModule } from './session/session.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { ConfigModule } from '@nestjs/config'; 
+import { FacebookStrategy } from './auth/strategies/facebook.strategy';
 @Module({
   imports: [
  //MongooseModule.forRoot("mongodb://localhost:27017/thetiptop"),
@@ -35,6 +36,6 @@ import { ConfigModule } from '@nestjs/config';
     }),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService,FacebookStrategy],
 })
 export class AppModule {}
