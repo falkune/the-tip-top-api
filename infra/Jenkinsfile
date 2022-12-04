@@ -141,10 +141,11 @@ pipeline{
                                         }
                                     }
 
-                        stage("Fix Vulnerability") {
+                        stage("Audit && Fix Vulnerability") {
                                 steps{
-                                  sh "npm audit"
-                                  sh "npm fund"
+                                 // sh "npm audit"
+                                 // sh "npm fund"
+                                 echo "Fix Vulnerability"
                                 }
                             }
                                              
@@ -169,8 +170,7 @@ pipeline{
                   stage("e2e"){
                      when {branch "dev"}
                      steps{
-                        echo "handle e2e test"
-                        //sh "npm run test:e2e" 
+                        sh "npm run test:e2e" 
                      }
                   }
 
