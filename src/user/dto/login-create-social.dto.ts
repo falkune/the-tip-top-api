@@ -76,18 +76,16 @@ readonly socialNetworkAccessToken: string;
     example: 'I was born !',
     description: 'Date of birth of the User',
     format: 'date',
-  }) 
-  @IsNotEmpty()
+  })  
   @IsString()
-  readonly birthday: string; 
+   birthday: string; 
 
    // password
    @ApiProperty({
     example: 'password',
     description: 'password',
     format: 'string',
-  }) 
-  @IsNotEmpty()
+  })  
   @IsString()
    password: string; 
 }
