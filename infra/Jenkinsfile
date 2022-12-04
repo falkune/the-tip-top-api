@@ -69,13 +69,14 @@ pipeline{
                                                  echo "push api image to the private registry"
                                                  sh "infra/scripts/registry.sh api"        
                                             }
+
+                                             post {
+                                                always {
+                                                 sh "docker system prune -af"
+                                                }
+                                             }
                                           }
                              
-                                    post {
-                                        always {
-                                            sh "docker system prune -af"
-                                        }
-                                    }
                                 }
                             
                          }
