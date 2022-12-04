@@ -12,10 +12,10 @@ pipeline{
               parallel {
                   stage("CI/CD"){
                        stages{
-                          stage("build") {
+                          stage("Build Docker Image") {
                              when { expression { BRANCH_NAME ==~ /(main|release)/ } }
                              stages {
-                                stage("db"){     
+                                stage("DB Docker Image"){     
                                     stages {
                                     stage("release"){  
                                             when {branch 'release'}
@@ -34,7 +34,7 @@ pipeline{
                                     }
                                 }
 
-                            stage("api") {
+                            stage("Api Docker Image") {
                                     stages {                               
                                         stage("release"){  
                                                 when {branch 'release'}
@@ -51,7 +51,7 @@ pipeline{
                              }
                           }
 
-                            stage("registry") {
+                            stage("Register Docker Image") {
                                     when { expression { BRANCH_NAME ==~ /(main|release)/ } }
                                     stages {
                                         stage("login"){ 
@@ -90,7 +90,7 @@ pipeline{
 
 
 
-                            stage("deploy"){ 
+                            stage("Deploy Stage"){ 
                                 stages{
                                     stage ('release'){
                                         when{ branch 'release'}
@@ -170,7 +170,8 @@ pipeline{
                   stage("e2e"){
                      when {branch "dev"}
                      steps{
-                        sh "npm run test:e2e" 
+                        //sh "npm run test:e2e"
+                        echo "Handle e2e testing" 
                      }
                   }
 
