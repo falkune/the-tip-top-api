@@ -80,4 +80,14 @@ readonly socialNetworkAccessToken: string;
   @IsNotEmpty()
   @IsString()
   readonly birthday: string; 
+
+   // password
+   @ApiProperty({
+    example: 'password',
+    description: 'password',
+    format: 'string',
+  }) 
+  @IsNotEmpty()
+  @IsString()
+   password: string; 
 }

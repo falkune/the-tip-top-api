@@ -29,6 +29,7 @@ import { UpdateUserLocationDto } from './dto/update-user-location.dto';
 import { SessionService } from '../session/session.service';
 import { LoginCreateSocialUser } from './dto/login-create-social.dto';
 import { retry } from 'rxjs';
+import { Console } from 'console';
 
 
 @Injectable()
@@ -133,9 +134,9 @@ export class UserService {
    
    
 
-    let userLocation = await this.getLocationInfo(req);
+    ///let userLocation = await this.getLocationInfo(req);
 
-    this.updateUserLocation({ userId: user.id.valueOf().toString(), userLocation: userLocation })
+    //this.updateUserLocation({ userId: user.id.valueOf().toString(), userLocation: userLocation })
     return {
       fullName: user.fullName,
       email: user.email,
@@ -379,11 +380,7 @@ export class UserService {
    ***************************/
 
   private buildRegistrationInfo(user): any {
-    const userRegistrationInfo = {
-      fullName: user.fullName,
-      email: user.email,
-      verified: user.verified,
-    };
+    
 
     this.sendEmail({
       email: user.email,
@@ -391,9 +388,11 @@ export class UserService {
       token: user.verification,
     });
 
+    return user;
+    
 
-    this.logger.log('User creaded', 'UserService');
-    return userRegistrationInfo;
+
+
   }
 
   private async findByVerification(verification: string): Promise<User> {
@@ -431,7 +430,10 @@ export class UserService {
 
 
   private async findUserSocialNetworkUser(loginCreateSocialUser: LoginCreateSocialUser): Promise<User> {
-    const user = await this.userModel.findOne({ socialNetworkUserId: loginCreateSocialUser.socialNetworkUserId, verified: true });
+    const user = await this.userModel.findOne({ email: loginCreateSocialUser.email});
+
+    
+
     if (!user) {
       return this.createSocialNetworkUser(loginCreateSocialUser)
     }

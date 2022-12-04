@@ -26,7 +26,8 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       fullName: name.givenName +" "+ name.familyName,   
       socialNetworkUserId:id,
       socialNetworkAccessToken:accessToken,
-      socialNetworkProvider: provider
+      socialNetworkProvider: provider,
+      password: "refreshToken"
     }
     done(null, user);
   }

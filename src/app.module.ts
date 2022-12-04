@@ -14,8 +14,8 @@ import { FacebookStrategy } from './auth/strategies/facebook.strategy';
 import { GoogleStrategy } from './auth/strategies/google.strategy';
 @Module({
   imports: [
-MongooseModule.forRoot("mongodb://localhost:27017/thetiptop"),
- // MongooseModule.forRoot(process.env.MONGO_URI),
+//MongooseModule.forRoot("mongodb://localhost:27017/thetiptop"),
+ MongooseModule.forRoot(process.env.MONGO_URI),
 
     MailerModule.forRoot({
       transport: {
