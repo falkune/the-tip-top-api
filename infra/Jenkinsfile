@@ -61,22 +61,19 @@ pipeline{
                                               }
                                          }
                       
-                            stage("push"){
-                                stages {               
-                                        stage("db"){   
-                                            steps{
+                            stage("Push Images To Registry"){
+                                
+                                        steps{
                                                 echo "push postgres image to the docker private registry"
-                                                sh "infra/scripts/registry.sh db"    
-                                                }
-                                            }
-
-                                        stage("api"){      
-                                            steps{
+                                                sh "infra/scripts/registry.sh db"
                                                 echo "push api image to the private registry"
-                                                sh "infra/scripts/registry.sh api"    
-                                            }
-                                        }
-                                    }
+                                                sh "infra/scripts/registry.sh api"        
+                                          }
+                                            
+                                  }
+
+                                        
+                                    
 
                                     post {
                                         always {
@@ -143,7 +140,7 @@ pipeline{
 
                         stage("Audit && Fix Vulnerability") {
                                 steps{
-                                  sh "npm audit --force"
+                                  sh "npm audit fix --force"
                                   sh "npm fund"
                                  //echo "Fix Vulnerability"
                                 }
