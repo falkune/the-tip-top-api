@@ -5,97 +5,111 @@ pipeline{
       DOCKER_PRIVATE_REGISTER="registry.dsp-archiwebo21-ct-df-an-cd.fr"
       REGISTRY_CRED=credentials('jenkins-registry-credential')
       IMAGE_TAG=sh(returnStdout: true, script: 'cat infra/build/version | tail -1').trim()
-
     }
+
     stages{
+          stage("Jenkins Flow"){
+              parallel {
+                  stage("CI/CD"){
+                       stages{
+                          stage("Build Docker Image") {
+                             when { expression { BRANCH_NAME ==~ /(main|release)/ } }
+                             stages {
+                                stage("DB Docker Image"){     
+                                    stages {
+                                    stage("release"){  
+                                            when {branch 'release'}
+                                            steps {
+                                                sh "infra/scripts/build.sh db release"
+                                            }
+                                        }
 
-        stage("build") {
-            when { expression { BRANCH_NAME ==~ /(main|release)/ } }
-            parallel {
-               stage("db"){     
-                stages {
-                   stage("release"){  
-                          when {branch 'release'}
-                          steps {
-                              sh "infra/scripts/build.sh db release"
+                                    stage("stable"){
+                                        when{branch 'main'}
+                                        steps{
+                                            sh "infra/scripts/build.sh db stable"
+                                        }
+                                        }
+                                
+                                    }
+                                }
+
+                            stage("Api Docker Image") {
+                                    stages {                               
+                                        stage("release"){  
+                                                when {branch 'release'}
+                                                steps{sh "infra/scripts/build.sh api release"}
+                                         }
+
+                                        stage("stable"){
+                                            when{branch 'main'}
+                                            steps{sh "infra/scripts/build.sh api stable"} 
+                                        }
+                                    }
+                                }
+                             }
                           }
-                    }
 
-                   stage("stable"){
-                       when{branch 'main'}
-                       steps{
-                           sh "infra/scripts/build.sh db stable"
-                       }
-                    }
-            
-                  }
-               }
-
-               stage("api") {
-
-                    stages {
-                  
-                         stage("release"){  
-                                when {branch 'release'}
-                                  steps{
-                                    sh "infra/scripts/build.sh api release"  
-                                 }
-                         }
-
-                        stage("stable"){
-                            when{branch 'main'}
-                               steps{
-                                sh "infra/scripts/build.sh api stable"     
-                             } 
-                        
-                         }
-              
-                     }
-               }
-          }
-        }
-
-        stage("registry") {
-                when { expression { BRANCH_NAME ==~ /(main|release)/ } }
-                stages {
-
-                      stage("login"){
-                         
-                        steps{
-                               echo "Login to the docker private registry"
-                               sh "docker login -u ${REGISTRY_CRED_USR} -p ${REGISTRY_CRED_PSW} https://${DOCKER_PRIVATE_REGISTER}"    
-                           }
-                        }
+                            stage("Register Docker Image") {
+                                    when { expression { BRANCH_NAME ==~ /(main|release)/ } }
+                                    stages {
+                                        stage("login"){ 
+                                            steps{
+                                                echo "Login to the docker private registry"
+                                                sh "docker login -u ${REGISTRY_CRED_USR} -p ${REGISTRY_CRED_PSW} https://${DOCKER_PRIVATE_REGISTER}"    
+                                              }
+                                         }
                       
-                      stage("push"){
+                                        stage("Push Images To Registry"){
+                                
+                                           steps{
+                                                 echo "push postgres image to the docker private registry"
+                                                 sh "infra/scripts/registry.sh db"
+                                                 echo "push api image to the private registry"
+                                                 sh "infra/scripts/registry.sh api"        
+                                            }
 
-                          parallel {
-                          
-                                stage("db"){   
-                                    steps{
-                                          echo "push postgres image to the docker private registry"
-                                          sh "infra/scripts/registry.sh db"    
+                                             post {
+                                                always {
+                                                 sh "docker system prune -af"
+                                                }
+                                             }
+                                          }
+                             
+                                       }
+                            
+                                     }
+
+                            stage("Deploy Stage"){ 
+                                stages{
+                                    stage ('To Release'){
+                                        when{ branch 'release'}
+                                        steps{
+                                            sshagent(credentials: ['devops-sshkey-private']) {
+                                                echo "copy release infra folder env on prod remote"
+                                                echo "Add execute permission to the start.sh file on remote"
+                                                sh "infra/scripts/deploy.sh release"
+                                            }
+                                            
                                         }
                                     }
 
-                                stage("api"){      
-                                    steps{
-                                        echo "push api image to the private registry"
-                                        sh "infra/scripts/registry.sh api"    
+                                    stage('To Prod'){
+                                        when { branch 'main' }
+                                        steps {
+                                            sshagent(credentials: ['devops-sshkey-private']) {
+                                                echo "copy prod infra folder env on remote"
+                                                echo "Add execute permission to start.sh file on remote"
+                                                sh "infra/scripts/deploy.sh prod"
+                                            }                          
+                                        }
                                     }
-                                }
-                          }
+                                }                 
+                            }
+                        }
+                  }  
 
-                          post {
-                              always {
-                                 sh "docker system prune -af"
-                              }
-                          }
-                      }
-                 }
-             }
-        
-           stage("test"){
+            stage("Testing"){
                     when {branch "dev"}
                     environment {
                       SCANNER_HOME = tool 'SonarQubeScanner'
@@ -108,22 +122,49 @@ pipeline{
                               steps{
                                  sh "node --version"
                                  sh "npm version"
-                                 sh "npm install"    
                             }
                           }
+
+                         stage("Install Packages") {
+                                     steps{
+                                         sh "npm install"
+                                        }
+                                    }
+
+                        stage("Audit && Fix Vulnerability") {
+                                steps{
+                                 // sh "npm audit fix --force"
+                                 // sh "npm fund"
+                                  echo "Fix Vulnerability"
+                                 //  sh "npm audit report"
+                                }
+                            }
+                                             
+                        stage("Build Code"){
+                                steps{
+                                    sh "npm run build"
+                                   }
+                            }
                 
-                    stage("unit"){         
+                    stage("Unit"){         
                               steps{
                                 sh "npm run test"
                               }
                            }
                   
-                    stage("coverage") {
+                    stage("Coverage") {
                        steps{
                         sh "npm run test:cov"
+                        }
                       }
-                
-                    }
+                   
+                  stage("e2e"){
+                     when {branch "dev"}
+                     steps{
+                        //sh "npm run test:e2e"
+                        echo "Handle e2e testing" 
+                     }
+                  }
 
               stage("SonarQube Analysis"){              
                   steps{  
@@ -132,48 +173,24 @@ pipeline{
                      }
                  }
               }
-                 stage("e2e"){
-                     when {branch "dev"}
-                     steps{
-                        echo "handle e2e test"
-                        //sh "npm run test:e2e" 
-                     }
-                 }
-               }
-             }
 
-
-        stage("deploy"){ 
-            parallel{
-                stage ('release'){
-                    when{ branch 'release'}
-                    steps{
-                        sshagent(credentials: ['devops-sshkey-private']) {
-                               echo "copy release infra folder env on prod remote"
-                               echo "Add execute permission to the start.sh file on remote"
-                               sh "infra/scripts/deploy.sh release"
+              stage("Quality Gate"){              
+                        steps{  
+                          timeout(time: 1, unit: 'HOURS') {
+                            // Parameter indicates whether to set pipeline to UNSTABLE if Quality Gate fails
+                           // true = set pipeline to UNSTABLE, false = don't
+                          waitForQualityGate abortPipeline: false
                         }
-                           
-                    }
+                     }
                 }
-
-                stage('prod'){
-                    when { branch 'main' }
-                    steps {
-                        sshagent(credentials: ['devops-sshkey-private']) {
-                             echo "copy prod infra folder env on remote"
-                             echo "Add execute permission to start.sh file on remote"
-                             sh "infra/scripts/deploy.sh prod"
-                        }                          
-                    }
-                }
-            }                 
-        }
+               
+            }
+         }
+      }
+    }
 
         stage("end") {
-            steps {
-                echo "Succesfull end"
-            }
-        }
-    }
-}
+             steps{echo "Successful end"}
+                }
+        } 
+   }
