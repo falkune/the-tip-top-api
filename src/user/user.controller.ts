@@ -14,6 +14,7 @@ import {
   HttpCode,
   HttpStatus,
   Query,
+  Redirect,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { VerifyUuidDto } from './dto/verify-uuid.dto';
@@ -32,6 +33,7 @@ import {
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { GetTicketBySessionDto } from '../ticket/dto/get-tickets-by-session.dto';
 import { MailerService } from '@nestjs-modules/mailer'; 
+import { LoginCreateSocialUser } from './dto/login-create-social.dto';
 
 @ApiTags('User')
 @Controller('user')
@@ -196,10 +198,24 @@ export class UserController {
   @UseGuards(AuthGuard("google"))
   async googleAuth(@Req() req) {}
 
+  
   @Get('/google/redirect')
-  @UseGuards(AuthGuard("google"))
+ 
+  @UseGuards(AuthGuard("google")) 
   googleAuthRedirect(@Req() req) {
     return this.userService.googleLogin(req,req.user)
   }
+   
+
+
+  @Post('auth-from-social-network')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Login or User using data provided from socials' })
+  @ApiOkResponse({})
+  async authFromSocialNetwork(@Req() req: Request, @Body() LoginCreateSocialUser: LoginCreateSocialUser) {
+    return await this.userService.findOrCreate(req, LoginCreateSocialUser);
+  }
+
+  
 }
  
