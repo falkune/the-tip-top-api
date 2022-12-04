@@ -178,4 +178,28 @@ export class UserController {
   findAll() {
     return this.userService.findAll();
   }
+
+
+  @Get("/facebook")
+  @UseGuards(AuthGuard("facebook"))
+  async facebookLogin(): Promise<any> {
+    return HttpStatus.OK;
+  }
+
+  @Get("/facebook/redirect")
+  @UseGuards(AuthGuard("facebook"))
+  async facebookLoginRedirect(@Req() req): Promise<any> {
+    return this.userService.googleLogin(req,req.user)
+  }
+
+  @Get("/google")
+  @UseGuards(AuthGuard("google"))
+  async googleAuth(@Req() req) {}
+
+  @Get('/google/redirect')
+  @UseGuards(AuthGuard("google"))
+  googleAuthRedirect(@Req() req) {
+    return this.userService.googleLogin(req,req.user)
+  }
 }
+ 

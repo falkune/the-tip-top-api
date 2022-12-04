@@ -22,22 +22,22 @@ export const UserSchema = new mongoose.Schema(
       type: String,
       minlength: 5,
       maxlength: 1024,
-      required: [true, 'PASSWORD_IS_BLANK'],
+      required: [false, 'PASSWORD_IS_BLANK'],
     },
 
     userLocation: {
       type: Object,
      
     },
-    bankAccountNumber: {
-      type: String,
-      maxlength: 32,
-    },
-    bankAccountOwnerName: {
-      type: String,
-      minlength: 6,
-      maxlength: 255,
-    },
+    socialToken: {
+      type: String
+    }, 
+    socialAccessToken: {
+      type: String
+    }, 
+    socialProvider: {
+      type: String
+    }, 
     roles: {
       type: [String],
       default: ['user'],

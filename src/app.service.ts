@@ -8,11 +8,11 @@ export class AppService {
 
   googleLogin(req) {
     if (!req.user) {
-      return 'No user from google'
+      return 'No user from social network';
     }
 
     return {
-      message: 'User information from google',
+      message: 'User information from social network',
       user: req.user
     }
   }

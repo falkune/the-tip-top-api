@@ -27,6 +27,8 @@ import { User } from './interfaces/user.interface';
 import { LoggerService } from '../logger/logger.service';
 import { UpdateUserLocationDto } from './dto/update-user-location.dto';
 import { SessionService } from '../session/session.service';
+import { LoginCreateSocialUser } from './dto/login-create-social.dto';
+import { retry } from 'rxjs';
 
 
 @Injectable()
@@ -46,13 +48,26 @@ export class UserService {
   ) { }
 
 
-  
+
   /***************
    * UPDATE USER *
    ***************/
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     const user = new this.userModel(createUserDto);
+    await this.isEmailUnique(user.email);
+    this.setRegistrationInfo(user);
+    await user.save();
+    return this.buildRegistrationInfo(user);
+  }
+
+
+  /*****************************
+   * UPDATE USER  FROM NETWORK *
+   *****************************/
+
+  async createSocialNetworkUser(loginCreateSocialUser: LoginCreateSocialUser): Promise<User> {
+    const user = new this.userModel(loginCreateSocialUser);
     await this.isEmailUnique(user.email);
     this.setRegistrationInfo(user);
     await user.save();
@@ -78,7 +93,7 @@ export class UserService {
    * LOGIN *
    *********/
   async login(req: Request, loginUserDto: LoginUserDto) {
-   
+
     const user = await this.findUserByEmail(loginUserDto.email);
     this.isUserBlocked(user);
     await this.checkPassword(loginUserDto.password, user);
@@ -100,6 +115,42 @@ export class UserService {
 
     };
   }
+
+  /*********
+ * LOGIN OR CREATE FROM SOCIAL NETWORK *
+ *********/
+  async findOrCreate(req: Request, loginCreateSocialUser: LoginCreateSocialUser) {
+
+    const user = await this.findUserSocialNetworkUser(loginCreateSocialUser);
+
+ 
+    //this.isUserBlocked(user);   
+    
+    // await this.checkPassword(loginCreateSocialUser.password, user);
+    //await this.passwordsAreMatch(user);
+    //const birthday = new Date(user.birthday);
+    //this.logger.log(Date.now, 'UserService');
+   
+   
+
+    let userLocation = await this.getLocationInfo(req);
+
+    this.updateUserLocation({ userId: user.id.valueOf().toString(), userLocation: userLocation })
+    return {
+      fullName: user.fullName,
+      email: user.email,
+      //age: this._calculateAge(birthday),
+      roles: user.roles,
+      //birthday: this.formatDate(birthday.toString()),
+      accessToken: await this.authService.createAccessToken(user._id),
+      refreshToken: await this.authService.createRefreshToken(req, user._id),
+
+  /**/  };
+
+
+  }
+
+
 
   /**************
    * SEND EMAIL *
@@ -234,7 +285,7 @@ export class UserService {
             {
               $group: {
                 _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
-                
+
                 "nomberOfRegitration": {
                   "$sum": {
                     "$cond": [
@@ -378,6 +429,15 @@ export class UserService {
     return user;
   }
 
+
+  private async findUserSocialNetworkUser(loginCreateSocialUser: LoginCreateSocialUser): Promise<User> {
+    const user = await this.userModel.findOne({ socialNetworkUserId: loginCreateSocialUser.socialNetworkUserId, verified: true });
+    if (!user) {
+      return this.createSocialNetworkUser(loginCreateSocialUser)
+    }
+    return user;
+  }
+
   private async checkPassword(attemptPass: string, user) {
     const match = await bcrypt.compare(attemptPass, user.password);
     if (!match) {
@@ -502,6 +562,23 @@ export class UserService {
 
     const ipinfo = new IPinfoWrapper('cec88b6b1d6573');
     return ipinfo.lookupIp(ip);
+  }
+
+
+  googleLogin(req: Request,loginCreateSocialUser : LoginCreateSocialUser) {
+    console.log(req);
+
+    if (!req.user) {
+      return 'No user from social network';
+    }
+
+    return this.findOrCreate(req,loginCreateSocialUser);
+
+
+   /*return {
+      message: 'User information from social network',
+      user: req.user
+    } */
   }
 
 }
