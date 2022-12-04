@@ -38,14 +38,13 @@ pipeline{
                                     stages {                               
                                         stage("release"){  
                                                 when {branch 'release'}
-                                                steps{sh "infra/scripts/build.sh api release"  }
+                                                steps{sh "infra/scripts/build.sh api release"}
                                          }
 
                                         stage("stable"){
                                             when{branch 'main'}
                                             steps{sh "infra/scripts/build.sh api stable"} 
                                         }
-                            
                                     }
                                 }
                              }
@@ -77,16 +76,13 @@ pipeline{
                                              }
                                           }
                              
-                                }
+                                       }
                             
-                         }
-        
-
-
+                                     }
 
                             stage("Deploy Stage"){ 
                                 stages{
-                                    stage ('release'){
+                                    stage ('To Release'){
                                         when{ branch 'release'}
                                         steps{
                                             sshagent(credentials: ['devops-sshkey-private']) {
@@ -98,7 +94,7 @@ pipeline{
                                         }
                                     }
 
-                                    stage('prod'){
+                                    stage('To Prod'){
                                         when { branch 'main' }
                                         steps {
                                             sshagent(credentials: ['devops-sshkey-private']) {
