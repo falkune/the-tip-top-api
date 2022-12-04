@@ -143,9 +143,9 @@ pipeline{
 
                         stage("Audit && Fix Vulnerability") {
                                 steps{
-                                 // sh "npm audit"
-                                 // sh "npm fund"
-                                 echo "Fix Vulnerability"
+                                  sh "npm audit"
+                                  sh "npm fund"
+                                 //echo "Fix Vulnerability"
                                 }
                             }
                                              
