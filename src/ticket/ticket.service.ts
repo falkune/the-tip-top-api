@@ -105,7 +105,7 @@ export class TicketService {
                   }, 1,
                   0]
               }
-            }, 
+            },
             "notClaimbedTicket": {
               "$sum": {
                 "$cond": [
@@ -271,7 +271,7 @@ export class TicketService {
 
   async assignTicket(
     refreshToken: string,
-    assignTicketDto: AssignTicketDto,
+    assignTicketDto: AssignTicketDto
   ): Promise<any> {
     let userId = await this.authService.findRefreshToken(refreshToken);
     assignTicketDto.idClient = userId.valueOf().toString();
@@ -279,8 +279,7 @@ export class TicketService {
     let ticket;
     try {
       ticket = await this.ticketModel.findOneAndUpdate(
-        { ticketNumber: assignTicketDto?.ticketNumber },
-        { idClient: assignTicketDto?.idClient },
+        { ticketNumber: assignTicketDto?.ticketNumber }
       );
     } catch (error) {
       throw new UnauthorizedException('Sorry the TicketNumber is Wrong', error);
@@ -289,6 +288,55 @@ export class TicketService {
     let group = await this.groupService.getOneGroup(ticket.idGroup);
     return group;
   }
+
+
+  /******************
+   * deliver TICKETS *
+   ******************/
+
+  async deliverTicket(
+    refreshToken: string,
+    assignTicketDto: AssignTicketDto,
+  ): Promise<any> {
+    let userId = await this.authService.findRefreshToken(refreshToken);
+    assignTicketDto.idClient = userId.valueOf().toString();
+    await this.isTicketClaimedByTheUser(assignTicketDto);
+    let ticket;
+    try {
+      ticket = await this.ticketModel.findOneAndUpdate(
+        { ticketNumber: assignTicketDto?.ticketNumber, idClient: assignTicketDto.idClient },
+        { isDelivered: true },
+
+      ); return ticket;
+    } catch (error) {
+      throw new UnauthorizedException('Sorry the TicketNumber or client id are Wrong', error);
+    }
+
+  }
+
+
+  /******************
+ * deliver TICKETS by admin*
+ ******************/
+
+  async deliverTicketByAdmin( 
+    assignTicketDto: AssignTicketDto,
+  ): Promise<any> {
+
+    await this.isTicketClaimedByTheUser(assignTicketDto);
+    let ticket;
+    try {
+      ticket = await this.ticketModel.findOneAndUpdate(
+        { ticketNumber: assignTicketDto?.ticketNumber },
+        { isDelivered: true },
+
+      ); return ticket;
+    } catch (error) {
+      throw new UnauthorizedException('Sorry the TicketNumber or client id are Wrong', error);
+    }
+
+  }
+
 
   /***********************
    * VERIFY TICKETNUMBER *
@@ -488,6 +536,25 @@ export class TicketService {
       }
     } else {
       throw new NotAcceptableException('the ticket number is not correct');
+    }
+  }
+
+  /*********************
+  * IS TIKET CLAIMBED by the user *
+  *********************/
+  private async isTicketClaimedByTheUser(assignTicketDto: AssignTicketDto): Promise<any> {
+    let ticket = await this.getTicketByNumber(assignTicketDto.ticketNumber);
+
+    if (ticket != null && ticket.idClient) {
+      if (ticket.idClient.toString() === assignTicketDto.idClient) {
+        return ticket;
+      } else {
+        throw new NotAcceptableException('The client is not the owner of the ticket of is ');
+      }
+    } else {
+
+      throw new NotAcceptableException('the ticket number is not correct or the ticket is not climbed yet');
+
     }
   }
 }

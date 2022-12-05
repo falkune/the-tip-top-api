@@ -180,7 +180,7 @@ export class UserService {
   private _calculateAge(birthday) {
     // birthday is a date
     let ageDifMs = Date.now() - birthday.getTime();
-    let ageDate = new Date(ageDifMs); // miliseconds from epoch
+    let ageDate = new Date(ageDifMs); // milliseconds from epoch
     return Math.abs(ageDate.getUTCFullYear() - 1970);
   }
 

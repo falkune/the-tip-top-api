@@ -8,7 +8,7 @@ import {
   Param,
   HttpCode,
   HttpStatus,
-  UseGuards, 
+  UseGuards,
   Patch,
   Headers,
 } from '@nestjs/common';
@@ -31,7 +31,7 @@ import { AssignTicketDto } from './dto/assign-ticket.dto';
 import { VerifyTicketDto } from './dto/verify-ticket.dto';
 import { GetTicketBySessionDto } from './dto/get-tickets-by-session.dto';
 import { GetTicketByClientDto } from './dto/get-tickets-by-client.dto';
-import { GroupService } from '../group/group.service'; 
+import { GroupService } from '../group/group.service';
 
 
 
@@ -40,7 +40,7 @@ import { GroupService } from '../group/group.service';
 @Controller('ticket')
 @UseGuards(RolesGuard)
 export class TicketController {
-  constructor(private readonly ticketService: TicketService,private readonly groupeService: GroupService) {}
+  constructor(private readonly ticketService: TicketService, private readonly groupeService: GroupService) { }
 
   @Get()
   @HttpCode(HttpStatus.OK)
@@ -50,19 +50,19 @@ export class TicketController {
     return await this.ticketService.getAllTickets();
   }
 
-/************************
- * GET TICKET STATICTIS *
- ************************/
+  /************************
+   * GET TICKET STATISTICS *
+   ************************/
 
   @Get("get-ticket-stats/:id")
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get all tickets and statics by sessionId' })
   @ApiParam({ name: 'id', description: 'id of the sesssion' })
   @ApiOkResponse({})
-  async getTicketStats(@Param() params) { 
- 
+  async getTicketStats(@Param() params) {
 
-  return await this.ticketService.getTicketStats(params.id);
+
+    return await this.ticketService.getTicketStats(params.id);
   }
 
 
@@ -86,7 +86,7 @@ export class TicketController {
     description: 'the token we need for auth.',
   })
   @ApiCreatedResponse({})
-  async createTicket(@Body() createTicketDto: CreateTicketDto) { 
+  async createTicket(@Body() createTicketDto: CreateTicketDto) {
     return await this.ticketService.createTicket(createTicketDto);
   }
 
@@ -112,7 +112,7 @@ export class TicketController {
   @Patch('assign-ticket')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard('jwt'))
-  @Roles('client')
+  @Roles('client','admin')
   @ApiOperation({ summary: 'Update one ticket by id ( client id )' })
   @ApiBearerAuth()
   @ApiHeader({
@@ -123,11 +123,54 @@ export class TicketController {
   async assignTicket(
     @Headers() headers,
     @Body() assignTicketDto: AssignTicketDto,
-  ) { 
+  ) {
 
     return await this.ticketService.assignTicket(
       assignTicketDto?.idClient,
       assignTicketDto,
+    );
+  }
+
+  @Patch('deliver-ticket')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard('jwt'))
+  @Roles('client','admin')
+  @ApiOperation({ summary: 'Update one ticket by id ( client id and ticket number )' })
+  @ApiBearerAuth()
+  @ApiHeader({
+    name: 'Bearer',
+    description: 'the token we need for auth.',
+  })
+  @ApiOkResponse({})
+  async deliverTicket(
+    @Headers() headers,
+    @Body() assignTicketDto: AssignTicketDto,
+  ) {
+
+    return await this.ticketService.deliverTicket(
+      assignTicketDto?.idClient,
+      assignTicketDto,
+    );
+  }
+
+  @Patch('deliver-ticket-by-admin')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard('jwt'))
+  @Roles('client','admin')
+  @ApiOperation({ summary: 'Update one ticket by id ( client id and ticket number )' })
+  @ApiBearerAuth()
+  @ApiHeader({
+    name: 'Bearer',
+    description: 'the token we need for auth.',
+  })
+  @ApiOkResponse({})
+  async deliverTicketByAdmin(
+    @Headers() headers,
+    @Body() assignTicketDto: AssignTicketDto,
+  ) {
+
+    return await this.ticketService.deliverTicketByAdmin( 
+      assignTicketDto
     );
   }
 
@@ -180,7 +223,7 @@ export class TicketController {
     return await this.ticketService.getClaimbedTickets();
   }
 
-  
+
 
   @Post('/not-claimbed-tickets')
   @HttpCode(HttpStatus.OK)
@@ -220,7 +263,7 @@ export class TicketController {
   @Post('tickets-by-client')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard('jwt'))
-  @Roles('client','admin')
+  @Roles('client', 'admin')
   @ApiOperation({ summary: 'Get ticket by clientId' })
   @ApiBearerAuth()
   @ApiHeader({
@@ -260,8 +303,8 @@ export class TicketController {
     return await this.ticketService.getClaimbedTicketsBySession(
       getTicketBySessionDto.idSession,
     );
-  } 
-  
+  }
+
   @Post('/tickets-not-claimbed-by-session')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard('jwt'))

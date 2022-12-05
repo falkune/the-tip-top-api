@@ -3,9 +3,7 @@ import * as mongoose from 'mongoose';
 export const TicketSchema = new mongoose.Schema(
   {
 
-    isDelivered: {
-      type: Boolean,
-    },
+ 
     idClient: {
       type: String,
     },
@@ -17,6 +15,10 @@ export const TicketSchema = new mongoose.Schema(
     },
     idSession: {
       type: String,
+    },
+    isDelivered: { 
+      type: Boolean,
+      default: false,
     },
     createdAt: {
       type: Date,
