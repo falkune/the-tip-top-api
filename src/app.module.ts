@@ -22,7 +22,7 @@ import { GoogleStrategy } from './auth/strategies/google.strategy';
         host: 'smtp.sendgrid.net',
         auth: {
           user: 'apikey',
-          pass: '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',
+          pass: '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',
         },
       },
     }),

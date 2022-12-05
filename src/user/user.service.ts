@@ -115,6 +115,7 @@ export class UserService {
     this.logger.log(Date.now, 'UserService');
 
     let userLocation = await this.getLocationInfo(req);
+  
 
     this.updateUserLocation({ userId: user.id.valueOf().toString(), userLocation: userLocation })
     return {
@@ -170,8 +171,30 @@ export class UserService {
    **************/
 
   async sendEmail(user) {
+    console.log(user);
     return await this.mailService.sendUserConfirmation(user);
   }
+
+   /**************
+   * SEND EMAIL CONFIRMATIONS *
+   **************/
+
+    async sendUserConfirmation(user) {
+      console.log(user);
+      return await this.mailService.sendUserConfirmation(user);
+    }
+
+
+
+      /**************
+   * SEND EMAIL CONFIRMATIONS *
+   **************/
+
+       async sendForgotPasswordVerifier(forgotPassword) {
+        console.log(forgotPassword);
+        return await this.mailService.sendForgotPasswordVerifier(forgotPassword);
+      }
+  
 
   /*****************
    * _CALCULATEAGE *
@@ -210,20 +233,22 @@ export class UserService {
     createForgotPasswordDto: CreateForgotPasswordDto,
   ) {
     await this.findByEmail(createForgotPasswordDto.email);
-    await this.saveForgotPassword(req, createForgotPasswordDto);
+   let forgotPassword = await this.saveForgotPassword(req, createForgotPasswordDto);
+    this.sendForgotPasswordVerifier(forgotPassword);
     return {
       email: createForgotPasswordDto.email,
       message: 'verification sent.',
     };
   }
 
-  /*******************
+  /*************************
    * FORGET PASSWORD VERIFY*
-   *******************/
+   *************************/
 
-  async forgotPasswordVerify(req: Request, verifyUuidDto: VerifyUuidDto) {
-    const forgotPassword = await this.findForgotPasswordByUuid(verifyUuidDto);
+  async forgotPasswordVerify(req: Request, verification: string) {
+    const forgotPassword = await this.findForgotPasswordByUuid(verification);
     await this.setForgotPasswordFirstUsed(req, forgotPassword);
+    
     return {
       email: forgotPassword.email,
       message: 'now reset your password.',
@@ -394,10 +419,10 @@ export class UserService {
   private buildRegistrationInfo(user): any {
     
 
-    this.sendEmail({
+    this.sendUserConfirmation({
       email: user.email,
       name: user.fullName,
-      token: user.verification,
+      verification: user.verification,
     });
 
     return user;
@@ -498,14 +523,14 @@ export class UserService {
       browser: this.authService.getBrowserInfo(req),
       country: this.authService.getCountry(req),
     });
-    await forgotPassword.save();
+   return await forgotPassword.save();
   }
 
   private async findForgotPasswordByUuid(
-    verifyUuidDto: VerifyUuidDto,
+    verification: string,
   ): Promise<ForgotPassword> {
     const forgotPassword = await this.forgotPasswordModel.findOne({
-      verification: verifyUuidDto.verification,
+      verification: verification,
       firstUsed: false,
       finalUsed: false,
       expires: { $gt: new Date() },

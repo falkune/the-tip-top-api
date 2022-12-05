@@ -51,7 +51,7 @@ export const UserSchema = new mongoose.Schema(
     },
     verified: {
       type: Boolean,
-      default: true,
+      default: false,
     },
     verificationExpires: {
       type: Date,

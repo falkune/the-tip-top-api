@@ -107,15 +107,16 @@ export class UserController {
     return await this.userService.forgotPassword(req, createForgotPasswordDto);
   }
 
-  @Post('forgot-password-verify')
+  @Get('forgot-password-verify')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Verfiy forget password code' })
   @ApiOkResponse({})
   async forgotPasswordVerify(
     @Req() req: Request,
-    @Body() verifyUuidDto: VerifyUuidDto,
+
+    @Query('verification') verification 
   ) {
-    return await this.userService.forgotPasswordVerify(req, verifyUuidDto);
+    return await this.userService.forgotPasswordVerify(req, verification);
   }
 
   @Post('reset-password')
