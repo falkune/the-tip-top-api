@@ -90,6 +90,18 @@ export class UserService {
     };
   }
 
+
+/**********
+ * LOGOUT *
+ **********/
+
+ async logout(req: Request, logoutDto: RefreshAccessTokenDto) {
+
+ 
+  return this.authService.logout(logoutDto.refreshToken);
+  
+}
+
   /*********
    * LOGIN *
    *********/

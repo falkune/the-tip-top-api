@@ -74,6 +74,16 @@ export class UserController {
     return await this.userService.login(req, loginUserDto);
   }
 
+  @Post('logout')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'LoOut User' })
+  @ApiOkResponse({})
+  async logout(@Req() req: Request, @Body() refreshAccessToken: RefreshAccessTokenDto) {
+    
+
+    return await this.userService.logout(req, refreshAccessToken);
+  }
+
   
 
   @Post('refresh-access-token')

@@ -66,14 +66,7 @@ export class AuthService {
     return refreshToken.userId;
   }
 
-  // async findUserIdByToken(token: string){
-  //   const refreshToken = await this.refreshTokenModel.findOne({refreshToken: token});
-  //   if (!refreshToken) {
-  //     throw new UnauthorizedException('User has been logged out.');
-  //   }
-  //   return refreshToken.userId;
-  // }
-
+ 
   /****************************
    * FIND USER BY ACCESSTOKEN *
    ****************************/
@@ -88,6 +81,25 @@ export class AuthService {
     }
     return user;
   }
+
+
+/**********
+ * LOGOUT *
+ **********/
+
+
+ async logout(refreshToken: String): Promise<any> {
+  const res = await this.refreshTokenModel.deleteOne({
+    refreshToken: refreshToken
+  });
+  if (res.acknowledged && res.deletedCount == 1) {
+     return {message:"Successfully logged out"}
+  }else{
+    throw new UnauthorizedException('User has been already logged out.')
+  }
+  
+}
+
 
   //   ┬┬ ┬┌┬┐  ┌─┐─┐ ┬┌┬┐┬─┐┌─┐┌─┐┌┬┐┌─┐┬─┐
   //   ││││ │   ├┤ ┌┴┬┘ │ ├┬┘├─┤│   │ │ │├┬┘
