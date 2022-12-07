@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NotAcceptableException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Session } from './interfaces/session.interface';
@@ -19,7 +19,7 @@ export class SessionService {
    *****************/
 
   async createSession(createSessionDto: CreateSessionDto): Promise<Session> {
-    console.log('Savaing ...');
+    
 
     const Session = new this.SessionModel(createSessionDto);
     await Session.save();
@@ -91,7 +91,7 @@ export class SessionService {
     ticket = await  this.SessionModel.findOneAndUpdate({_id: setCurrentSessionDto.idSession}, {isCurrent:setCurrentSessionDto?.isCurrent})
     
   } catch (error) {
-    throw new UnauthorizedException('Sorry the TicketNumber is Wrong', error);
+    throw new NotAcceptableException('Sorry the TicketNumber is Wrong', error);
   }
  
 return ticket;

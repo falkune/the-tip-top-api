@@ -6,7 +6,7 @@ import {
     ApiBearerAuth,
     ApiHeader,
     ApiOperation,
-    ApiParam 
+    ApiParam
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 
@@ -15,7 +15,7 @@ import { CreateSessionDto } from './dto/create-session.dto';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { SetCurrentSessionDto } from './dto/set-current-session.dto';
- 
+
 @ApiTags('Session')
 @Controller('Session')
 @UseGuards(RolesGuard)
@@ -26,7 +26,7 @@ export class SessionController {
 
     @Get()
     @HttpCode(HttpStatus.OK)
-    @ApiOperation({summary: 'Get All Session',})
+    @ApiOperation({ summary: 'Get All Session', })
     @ApiOkResponse({})
     async getAllSession() {
         return await this.SessionService.getAllSessions();
@@ -35,7 +35,7 @@ export class SessionController {
 
     @Get('get-current-session')
     @HttpCode(HttpStatus.OK)
-    @ApiOperation({summary: 'Get the current session',})
+    @ApiOperation({ summary: 'Get the current session', })
     @ApiOkResponse({})
     async getCurrentSession() {
         return await this.SessionService.getCurrentSession();
@@ -44,8 +44,8 @@ export class SessionController {
 
     @Get(':id')
     @HttpCode(HttpStatus.OK)
-    @ApiOperation({summary: 'Get One Session',})
-    @ApiParam({name: 'id', description: 'id of Session'})
+    @ApiOperation({ summary: 'Get One Session', })
+    @ApiParam({ name: 'id', description: 'id of Session' })
     @ApiOkResponse({})
     async getOneSessions(@Param() params) {
         return await this.SessionService.getOneSession(params.id);
@@ -55,17 +55,15 @@ export class SessionController {
     @HttpCode(HttpStatus.CREATED)
     @UseGuards(AuthGuard('jwt'))
     @Roles('admin')
-    @ApiOperation({summary: 'Create one Session',})
+    @ApiOperation({ summary: 'Create one Session', })
     @ApiBearerAuth()
     @ApiHeader({
         name: 'Bearer',
         description: 'the token we need for auth.'
     })
     @ApiCreatedResponse({})
-    
-    async createSession(@Body() createSessionDto: CreateSessionDto) {
 
-      
+    async createSession(@Body() createSessionDto: CreateSessionDto) {
         return await this.SessionService.createSession(createSessionDto);
     }
 
@@ -74,9 +72,9 @@ export class SessionController {
     @HttpCode(HttpStatus.OK)
     @UseGuards(AuthGuard('jwt'))
     @Roles('admin')
-    @ApiOperation({summary: 'Update one Session by id ( all params )',})
+    @ApiOperation({ summary: 'Update one Session by id ( all params )', })
     @ApiBearerAuth()
-    @ApiParam({name: 'id', description: 'id of Session'})
+    @ApiParam({ name: 'id', description: 'id of Session' })
     @ApiHeader({
         name: 'Bearer',
         description: 'the token we need for auth.'
@@ -90,13 +88,13 @@ export class SessionController {
     @HttpCode(HttpStatus.OK)
     @UseGuards(AuthGuard('jwt'))
     @Roles('admin')
-    @ApiOperation({summary: 'Delete one Session',})
+    @ApiOperation({ summary: 'Delete one Session', })
     @ApiBearerAuth()
     @ApiHeader({
         name: 'Bearer',
         description: 'the token we need for auth.'
     })
-    @ApiParam({name: 'id', description: 'id of Session we want to delete.'})
+    @ApiParam({ name: 'id', description: 'id of Session we want to delete.' })
     @ApiOkResponse({})
     async deleteOneSession(@Param() params) {
         return await this.SessionService.deleteSession(params.id);
@@ -106,15 +104,15 @@ export class SessionController {
     @HttpCode(HttpStatus.OK)
     @UseGuards(AuthGuard('jwt'))
     @Roles('admin')
-    @ApiOperation({summary: 'Set an session as cureent session',})
-    @ApiBearerAuth() 
+    @ApiOperation({ summary: 'Set an session as cureent session', })
+    @ApiBearerAuth()
     @ApiHeader({
         name: 'Bearer',
         description: 'the token we need for auth.'
     })
     @ApiOkResponse({})
 
-     async setCurrentSession(@Body() setCurrentSessionDto: SetCurrentSessionDto) {
+    async setCurrentSession(@Body() setCurrentSessionDto: SetCurrentSessionDto) {
         return await this.SessionService.setCurrentSession(setCurrentSessionDto);
-    } 
+    }
 }

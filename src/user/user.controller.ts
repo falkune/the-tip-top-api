@@ -154,7 +154,7 @@ export class UserController {
     @Body() getTicketBySessionDto: GetTicketBySessionDto,
   ) {
 
-    console.log("getTicketBySessionDto.description");
+    
     return await this.userService.getUsersBySession(
       getTicketBySessionDto.idSession,
     );
@@ -174,7 +174,7 @@ export class UserController {
   @ApiOkResponse({})
   async getNumberOfRegistrationByDay(@Param() params) {
 
-    console.log("getNumberOfRegistrationByDay.getNumberOfRegistrationByDay", params);
+    
     return await this.userService.getNumberOfRegistrationByDay(params);
   }
 

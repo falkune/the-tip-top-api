@@ -1,10 +1,9 @@
 import {
   ConflictException,
   ImATeapotException,
-  Injectable,
-  NotAcceptableException,
+  Injectable, 
   ServiceUnavailableException,
-  UnauthorizedException,
+  NotAcceptableException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -87,7 +86,7 @@ export class TicketService {
 
   async getTicketStats(idSession: string): Promise<Array<Ticket>> {
 
-    console.log("the session is " + idSession);
+    
     return await this.ticketModel.aggregate(
       [
 
@@ -239,7 +238,7 @@ export class TicketService {
         .getOneSession(idSession)
         .then((session) => session.limitTicket);
     } catch (error) {
-      throw new UnauthorizedException(
+      throw new NotAcceptableException(
         'Something went wrong when trying to get the max ticket session',
         error,
       );
@@ -282,7 +281,7 @@ export class TicketService {
         { ticketNumber: assignTicketDto?.ticketNumber }
       );
     } catch (error) {
-      throw new UnauthorizedException('Sorry the TicketNumber is Wrong', error);
+      throw new NotAcceptableException('Sorry the TicketNumber is Wrong', error);
     }
 
     let group = await this.groupService.getOneGroup(ticket.idGroup);
@@ -309,7 +308,7 @@ export class TicketService {
 
       ); return ticket;
     } catch (error) {
-      throw new UnauthorizedException('Sorry the TicketNumber or client id are Wrong', error);
+      throw new NotAcceptableException('Sorry the TicketNumber or client id are Wrong', error);
     }
 
   }
@@ -332,7 +331,7 @@ export class TicketService {
 
       ); return ticket;
     } catch (error) {
-      throw new UnauthorizedException('Sorry the TicketNumber or client id are Wrong', error);
+      throw new NotAcceptableException('Sorry the TicketNumber or client id are Wrong', error);
     }
 
   }
@@ -374,7 +373,7 @@ export class TicketService {
 
       };
     } else {
-      throw new UnauthorizedException("Sorry, this ticket is not associated with  group.");
+      throw new NotAcceptableException("Sorry, this ticket is not associated with  group.");
     }
   }
 

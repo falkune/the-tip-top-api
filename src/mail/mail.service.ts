@@ -24,10 +24,10 @@ export class MailService {
         // },
       });
 
-      console.log(result);
-      console.log(result.messageId);
+      
+      
     } catch (error) {
-      console.log(error);
+      
 
     }
 
@@ -55,10 +55,10 @@ export class MailService {
         // },
       });
 
-      console.log(result);
-      console.log(result.messageId);
+      
+      
     } catch (error) {
-      console.log(error);
+      
 
     }
 

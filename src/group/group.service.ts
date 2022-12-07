@@ -54,7 +54,7 @@ export class GroupService {
    ******************/
 
   async getOneGroup(id: string): Promise<Group> {
-    console.log('getOneGroup', id);
+    
     return await this.GroupModel.findById(id);
   }
 

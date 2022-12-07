@@ -186,7 +186,7 @@ export class TicketController {
   })
   @ApiOkResponse({})
   async verifyTicket(@Body() verifyTicketDto: VerifyTicketDto) {
-    console.log(verifyTicketDto);
+    
 
     return await this.ticketService.verifyTicket(verifyTicketDto?.ticketNumber);
   }
@@ -203,7 +203,7 @@ export class TicketController {
   })
   @ApiOkResponse({})
   async checkTicket(@Body() verifyTicketDto: VerifyTicketDto) {
-    console.log(verifyTicketDto);
+    
 
     return await this.ticketService.checkTicket(verifyTicketDto?.ticketNumber);
   }
@@ -254,7 +254,7 @@ export class TicketController {
     @Body() getTicketBySessionDto: GetTicketBySessionDto,
   ) {
 
-    console.log('getTicketBySession', getTicketBySessionDto);
+    
     return await this.ticketService.getTicketBySession(
       getTicketBySessionDto.idSession,
     );
@@ -275,7 +275,7 @@ export class TicketController {
     @Body() getTicketByClientDto: GetTicketByClientDto,
   ) {
 
-    console.log('getTicketByClientDto', getTicketByClientDto);
+    
     return await this.ticketService.getTicketByIdClient(
       getTicketByClientDto.idClient
     );
@@ -299,7 +299,7 @@ export class TicketController {
     @Body() getTicketBySessionDto: GetTicketBySessionDto,
   ) {
 
-    console.log('getClaimbedTicketsBySession', getTicketBySessionDto);
+    
     return await this.ticketService.getClaimbedTicketsBySession(
       getTicketBySessionDto.idSession,
     );
@@ -320,7 +320,7 @@ export class TicketController {
     @Body() getTicketBySessionDto: GetTicketBySessionDto,
   ) {
 
-    console.log('getNotClaimbedTicketsBySession', getTicketBySessionDto);
+    
     return await this.ticketService.getNotClaimbedTicketsBySession(
       getTicketBySessionDto.idSession,
     );

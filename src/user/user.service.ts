@@ -10,7 +10,7 @@ import {
   BadRequestException,
   NotFoundException,
   ConflictException,
-  UnauthorizedException,
+  NotAcceptableException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -130,32 +130,34 @@ export class UserService {
     };
   }
 
-  /*********
- * LOGIN OR CREATE FROM SOCIAL NETWORK *
- *********/
+ 
+/*******************************************
+ * * LOGIN OR CREATE FROM SOCIAL NETWORK * *
+ *******************************************/
+
   async findOrCreate(req: Request, loginCreateSocialUser: LoginCreateSocialUser) {
 
     const user = await this.findUserSocialNetworkUser(loginCreateSocialUser);
 
  
-    //this.isUserBlocked(user);   
+    this.isUserBlocked(user);   
     
     // await this.checkPassword(loginCreateSocialUser.password, user);
     //await this.passwordsAreMatch(user);
-    //const birthday = new Date(user.birthday);
-    //this.logger.log(Date.now, 'UserService');
+    const birthday = new Date(user.birthday); 
    
    
 
-    ///let userLocation = await this.getLocationInfo(req);
+     let userLocation = await this.getLocationInfo(req);
 
-    //this.updateUserLocation({ userId: user.id.valueOf().toString(), userLocation: userLocation })
+     this.updateUserLocation({ userId: user.id.valueOf().toString(), userLocation: userLocation });
+
     return {
       fullName: user.fullName,
       email: user.email,
-      //age: this._calculateAge(birthday),
+       age: this._calculateAge(birthday),
       roles: user.roles,
-      //birthday: this.formatDate(birthday.toString()),
+      birthday: this.formatDate(birthday.toString()),
       accessToken: await this.authService.createAccessToken(user._id),
       refreshToken: await this.authService.createRefreshToken(req, user._id),
 
@@ -170,28 +172,28 @@ export class UserService {
    * SEND EMAIL *
    **************/
 
-  async sendEmail(user) {
-    console.log(user);
+  async sendEmail(user) { 
     return await this.mailService.sendUserConfirmation(user);
   }
 
-   /**************
+   /****************************
    * SEND EMAIL CONFIRMATIONS *
-   **************/
+   ****************************/
 
     async sendUserConfirmation(user) {
-      console.log(user);
+     
       return await this.mailService.sendUserConfirmation(user);
     }
 
 
 
-      /**************
-   * SEND EMAIL CONFIRMATIONS *
-   **************/
+     
+/********************************
+ * * SEND EMAIL CONFIRMATIONS * *
+ ********************************/
 
        async sendForgotPasswordVerifier(forgotPassword) {
-        console.log(forgotPassword);
+        
         return await this.mailService.sendForgotPasswordVerifier(forgotPassword);
       }
   
@@ -221,6 +223,7 @@ export class UserService {
     }
     return {
       accessToken: await this.authService.createAccessToken(user._id),
+      message:'Vous êtes reconnecté !'
     };
   }
 
@@ -304,7 +307,7 @@ export class UserService {
  ******************/
 
   async findAll(): Promise<Array<User>> {
-    console.log('findAll called with ');
+    
     return await this.userModel.find({}, { idClient: 1, fullName: 1, email: 1, birthday: 1, userLocation: 1 });
   }
 
@@ -313,7 +316,7 @@ export class UserService {
    *****************************/
 
   async getNumberOfRegistrationByDay(params): Promise<Array<User>> {
-    console.log('params', params);
+    
     let user;
     try {
       user = this.sessionService.getOneSession(params.idSession).then(async (session) => {
@@ -348,7 +351,7 @@ export class UserService {
       }
       )
     } catch (error) {
-      throw new UnauthorizedException('Sorry the sesssionId is Wrong', error);
+      throw new NotAcceptableException('Sorry the sesssionId is Wrong', error);
     }
 
 
@@ -371,17 +374,17 @@ export class UserService {
     updateUserLocation: UpdateUserLocationDto
   ): Promise<User> {
 
-    console.log(updateUserLocation);
+    
     let user;
     try {
       user = await this.userModel.findOneAndUpdate({ _id: updateUserLocation.userId }, { userLocation: updateUserLocation?.userLocation })
 
-      console.log("Updater");
-      console.log(user);
+      
+      
 
-      console.log("Updater");
+      
     } catch (error) {
-      throw new UnauthorizedException('Sorry the userId is Wrong', error);
+      throw new NotAcceptableException('Sorry the userId is Wrong', error);
     }
 
     return user;
@@ -426,9 +429,6 @@ export class UserService {
     });
 
     return user;
-    
-
-
 
   }
 
@@ -605,7 +605,7 @@ export class UserService {
 
 
   googleLogin(req: Request,loginCreateSocialUser : LoginCreateSocialUser) {
-    console.log(req);
+    
 
     if (!req.user) {
       return 'No user from social network';

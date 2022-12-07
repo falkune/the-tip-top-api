@@ -56,7 +56,7 @@ export class GroupController {
     
     async createGroup(@Body() createGroupDto: CreateGroupDto) {
 
-        console.log(ApiHeaders.name,"Hello chiekh depuis");
+        
         return await this.GroupService.createGroup(createGroupDto);
     }
 
