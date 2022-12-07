@@ -49,16 +49,12 @@ export class UserController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Register user' })
   @ApiCreatedResponse({})
-  async register(@Body() createUserDto: CreateUserDto,@Res() res: Response) {
+  async register(@Body() createUserDto: CreateUserDto, @Res() res: Response) {
 
-     return await this.userService.create(createUserDto);
-  
+    let user = await this.userService.create(createUserDto);
 
-    /*return res.render('requestVerifyEmail', {
-      layout: 'layout_main',
-     message: {IsFriend:false,text:user.email},
-    });*/
-   
+    return user;
+
   }
 
   @Get('verify-email')
@@ -232,17 +228,17 @@ export class UserController {
   async authFromSocialNetwork(@Req() req: Request, @Body() LoginCreateSocialUser: LoginCreateSocialUser) {
     return await this.userService.findOrCreate(req, LoginCreateSocialUser);
   }
- 
+
 
   @Get('layout')
   anotherLayout(@Res() res: Response) {
     return res.render('requestVerifyEmail', {
       layout: 'layout_main',
-      message: {IsFriend:false,text:"This is my fiend"},
+      message: { IsFriend: false, text: "This is my fiend" },
     });
   }
 
- 
+
 
 
 }
