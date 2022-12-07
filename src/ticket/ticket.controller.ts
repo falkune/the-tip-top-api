@@ -112,7 +112,7 @@ export class TicketController {
   @Patch('assign-ticket')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard('jwt'))
-  @Roles('client','admin')
+  @Roles('client', 'admin')
   @ApiOperation({ summary: 'Update one ticket by id ( client id )' })
   @ApiBearerAuth()
   @ApiHeader({
@@ -134,7 +134,7 @@ export class TicketController {
   @Patch('deliver-ticket')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard('jwt'))
-  @Roles('client','admin')
+  @Roles('client', 'admin')
   @ApiOperation({ summary: 'Update one ticket by id ( client id and ticket number )' })
   @ApiBearerAuth()
   @ApiHeader({
@@ -156,7 +156,7 @@ export class TicketController {
   @Patch('deliver-ticket-by-admin')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard('jwt'))
-  @Roles('client','admin')
+  @Roles('client', 'admin')
   @ApiOperation({ summary: 'Update one ticket by id ( client id and ticket number )' })
   @ApiBearerAuth()
   @ApiHeader({
@@ -169,7 +169,7 @@ export class TicketController {
     @Body() assignTicketDto: AssignTicketDto,
   ) {
 
-    return await this.ticketService.deliverTicketByAdmin( 
+    return await this.ticketService.deliverTicketByAdmin(
       assignTicketDto
     );
   }
@@ -186,7 +186,7 @@ export class TicketController {
   })
   @ApiOkResponse({})
   async verifyTicket(@Body() verifyTicketDto: VerifyTicketDto) {
-    
+
 
     return await this.ticketService.verifyTicket(verifyTicketDto?.ticketNumber);
   }
@@ -203,7 +203,7 @@ export class TicketController {
   })
   @ApiOkResponse({})
   async checkTicket(@Body() verifyTicketDto: VerifyTicketDto) {
-    
+
 
     return await this.ticketService.checkTicket(verifyTicketDto?.ticketNumber);
   }
@@ -254,7 +254,7 @@ export class TicketController {
     @Body() getTicketBySessionDto: GetTicketBySessionDto,
   ) {
 
-    
+
     return await this.ticketService.getTicketBySession(
       getTicketBySessionDto.idSession,
     );
@@ -275,7 +275,7 @@ export class TicketController {
     @Body() getTicketByClientDto: GetTicketByClientDto,
   ) {
 
-    
+
     return await this.ticketService.getTicketByIdClient(
       getTicketByClientDto.idClient
     );
@@ -298,7 +298,6 @@ export class TicketController {
   async getClaimbedTicketsBySession(
     @Body() getTicketBySessionDto: GetTicketBySessionDto,
   ) {
-
     
     return await this.ticketService.getClaimbedTicketsBySession(
       getTicketBySessionDto.idSession,
@@ -320,7 +319,7 @@ export class TicketController {
     @Body() getTicketBySessionDto: GetTicketBySessionDto,
   ) {
 
-    
+
     return await this.ticketService.getNotClaimbedTicketsBySession(
       getTicketBySessionDto.idSession,
     );
