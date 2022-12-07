@@ -15,7 +15,7 @@ export class MailService {
     try {
       let result = await this.mailerService.sendMail({
         to: user.email,
-        from: 'ag.prod2022@gmail.com', // override default from
+        from: 'info@dsp-archiwebo21-ct-df-an-cd.fr', // override default from
         subject: 'Bienvenue au jeu de thétiptop. Confirmer votre email',
         html: html, // `.hbs` extension is appended automatically
         // context: { // ✏️ filling curly brackets with content
@@ -46,7 +46,7 @@ export class MailService {
     try {
       let result = await this.mailerService.sendMail({
         to: forgotPassword.email,
-        from: 'ag.prod2022@gmail.com', // override default from
+        from: 'info@dsp-archiwebo21-ct-df-an-cd.fr', // override default from
         subject: 'Demande de changement de mot de passe',
         html: html, // `.hbs` extension is appended automatically
         // context: { // ✏️ filling curly brackets with content

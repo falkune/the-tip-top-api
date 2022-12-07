@@ -1,7 +1,7 @@
 import { Roles } from './../auth/decorators/roles.decorator';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { CreateForgotPasswordDto } from './dto/create-forgot-password.dto';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { LoginUserDto } from './dto/login-user.dto';
 import {
   Controller,
@@ -15,6 +15,7 @@ import {
   HttpStatus,
   Query,
   Redirect,
+  Res,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { VerifyUuidDto } from './dto/verify-uuid.dto';
@@ -32,14 +33,14 @@ import {
 } from '@nestjs/swagger';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { GetTicketBySessionDto } from '../ticket/dto/get-tickets-by-session.dto';
-import { MailerService } from '@nestjs-modules/mailer'; 
+import { MailerService } from '@nestjs-modules/mailer';
 import { LoginCreateSocialUser } from './dto/login-create-social.dto';
 
 @ApiTags('User')
 @Controller('user')
 @UseGuards(RolesGuard)
 export class UserController {
-  constructor(private readonly userService: UserService,private mailService: MailerService) {}
+  constructor(private readonly userService: UserService, private mailService: MailerService) { }
 
   // ╔═╗╦ ╦╔╦╗╦ ╦╔═╗╔╗╔╔╦╗╦╔═╗╔═╗╔╦╗╔═╗
   // ╠═╣║ ║ ║ ╠═╣║╣ ║║║ ║ ║║  ╠═╣ ║ ║╣
@@ -48,19 +49,24 @@ export class UserController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Register user' })
   @ApiCreatedResponse({})
-  async register(@Body() createUserDto: CreateUserDto) {
+  async register(@Body() createUserDto: CreateUserDto,@Res() res: Response) {
+
+     return await this.userService.create(createUserDto);
   
-    let user = await this.userService.create(createUserDto);
-    
-    return user;
+
+    /*return res.render('requestVerifyEmail', {
+      layout: 'layout_main',
+     message: {IsFriend:false,text:user.email},
+    });*/
+   
   }
 
   @Get('verify-email')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Verify Email' })
   @ApiOkResponse({})
- 
-  async verifyEmail(@Req() req: Request,  @Query('verification') verification) {
+
+  async verifyEmail(@Req() req: Request, @Query('verification') verification) {
     return await this.userService.verifyEmail(req, verification);
   }
 
@@ -69,7 +75,7 @@ export class UserController {
   @ApiOperation({ summary: 'Login User' })
   @ApiOkResponse({})
   async login(@Req() req: Request, @Body() loginUserDto: LoginUserDto) {
-    
+
 
     return await this.userService.login(req, loginUserDto);
   }
@@ -79,12 +85,12 @@ export class UserController {
   @ApiOperation({ summary: 'LoOut User' })
   @ApiOkResponse({})
   async logout(@Req() req: Request, @Body() refreshAccessToken: RefreshAccessTokenDto) {
-    
+
 
     return await this.userService.logout(req, refreshAccessToken);
   }
 
-  
+
 
   @Post('refresh-access-token')
   @HttpCode(HttpStatus.CREATED)
@@ -114,7 +120,7 @@ export class UserController {
   async forgotPasswordVerify(
     @Req() req: Request,
 
-    @Query('verification') verification 
+    @Query('verification') verification
   ) {
     return await this.userService.forgotPasswordVerify(req, verification);
   }
@@ -132,7 +138,7 @@ export class UserController {
     return await this.userService.resetPassword(resetPasswordDto);
   }
 
- 
+
 
 
 
@@ -172,7 +178,7 @@ export class UserController {
   @ApiOkResponse({})
   async getNumberOfRegistrationByDay(@Param() params) {
 
-    console.log("getNumberOfRegistrationByDay.getNumberOfRegistrationByDay",params);
+    console.log("getNumberOfRegistrationByDay.getNumberOfRegistrationByDay", params);
     return await this.userService.getNumberOfRegistrationByDay(params);
   }
 
@@ -202,21 +208,21 @@ export class UserController {
   @Get("/facebook/redirect")
   @UseGuards(AuthGuard("facebook"))
   async facebookLoginRedirect(@Req() req): Promise<any> {
-    return this.userService.googleLogin(req,req.user)
+    return this.userService.googleLogin(req, req.user)
   }
 
   @Get("/google")
   @UseGuards(AuthGuard("google"))
-  async googleAuth(@Req() req) {}
+  async googleAuth(@Req() req) { }
 
-  
+
   @Get('/google/redirect')
- 
-  @UseGuards(AuthGuard("google")) 
+
+  @UseGuards(AuthGuard("google"))
   googleAuthRedirect(@Req() req) {
-    return this.userService.googleLogin(req,req.user)
+    return this.userService.googleLogin(req, req.user)
   }
-   
+
 
 
   @Post('auth-from-social-network')
@@ -226,7 +232,17 @@ export class UserController {
   async authFromSocialNetwork(@Req() req: Request, @Body() LoginCreateSocialUser: LoginCreateSocialUser) {
     return await this.userService.findOrCreate(req, LoginCreateSocialUser);
   }
-
-  
-}
  
+
+  @Get('layout')
+  anotherLayout(@Res() res: Response) {
+    return res.render('requestVerifyEmail', {
+      layout: 'layout_main',
+      message: {IsFriend:false,text:"This is my fiend"},
+    });
+  }
+
+ 
+
+
+}

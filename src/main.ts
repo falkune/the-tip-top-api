@@ -9,9 +9,32 @@ import { ValidationPipe } from '@nestjs/common';
 import { GroupModule } from './group/group.module';
 import { SessionModule } from './session/session.module'; 
 import { LoggerModule } from './logger/logger.module';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { join } from 'path';
+import * as hbs from 'express-handlebars';
+import { printName } from './hbs/helpers';
+
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+ // const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  app.useStaticAssets(join(__dirname, '..', 'public'));
+  app.setBaseViewsDir(join(__dirname, '..', 'views'));
+
+  app.engine(
+    'hbs',
+    hbs({
+      extname: 'hbs',
+      defaultLayout: 'layout_main',
+      layoutsDir: join(__dirname, '..', 'views', 'layouts'),
+      partialsDir: join(__dirname, '..', 'views', 'partials'),
+      helpers: { printName },
+    }),
+  );
+  
+
+  app.setViewEngine('hbs');
   app.enableCors();
 
   // ╦ ╦╔═╗╔═╗  ╔═╗╦  ╔═╗╔╗ ╔═╗╦    ╔═╗╦╔═╗╔═╗╔═╗
