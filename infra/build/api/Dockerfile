@@ -5,7 +5,7 @@ WORKDIR /usr/app
 
 COPY package*.json ./
 
-RUN npm install yarn && yarn install --only=development
+RUN npm install yarn --global && yarn install
 
 COPY . .
 
