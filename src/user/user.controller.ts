@@ -21,7 +21,7 @@ import {
   Query,
   Res,
 } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto'; 
+import { CreateUserDto } from './dto/create-user.dto';
 import { UserService } from './user.service';
 import { AuthGuard } from '@nestjs/passport';
 import { RefreshAccessTokenDto } from './dto/refresh-access-token.dto';
@@ -121,7 +121,7 @@ export class UserController {
     console.log(verify);
     return res.render('requestVerifyEmail', {
       layout: 'layout_main',
-      message: { isExpired: !verify.fullName, text: verify.fullName },
+      message: { isExpired: !verify.fullName, text: verify.fullName, url: process.env.FRONT_END_URL },
     });
 
   }
@@ -210,7 +210,7 @@ export class UserController {
     console.log(verify);
     return res.render('requestVerifyForgetPassword', {
       layout: 'layout_main',
-      message: { isExpired: !verify.email, text: verify.email },
+      message: { isExpired: !verify.email, text: verify.email, url: process.env.FRONT_END_URL },
     });
 
   }
