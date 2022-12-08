@@ -10,25 +10,31 @@ import { GroupModule } from './group/group.module';
 import { SessionModule } from './session/session.module'; 
 import { LoggerModule } from './logger/logger.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { join } from 'path';
+import { join,resolve } from 'path';
 import * as hbs from 'express-handlebars';
-import { printName } from './hbs/helpers';
+import { printName } from './hbs/helpers'; 
+
+
 
 
 async function bootstrap() {
- // const app = await NestFactory.create(AppModule);
+
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   app.useStaticAssets(join(__dirname, '..', 'public'));
   app.setBaseViewsDir(join(__dirname, '..', 'views'));
+
+  app.useStaticAssets(resolve('./src/public'));
+  app.setBaseViewsDir(resolve('./src/views'));
+  app.setViewEngine('hbs');
 
   app.engine(
     'hbs',
     hbs({
       extname: 'hbs',
       defaultLayout: 'layout_main',
-      layoutsDir: join(__dirname, '..', 'views', 'layouts'),
-      partialsDir: join(__dirname, '..', 'views', 'partials'),
+      layoutsDir: resolve('./src/views/layouts'),
+      partialsDir: resolve('./src/views/partials'),
       helpers: { printName },
     }),
   );

@@ -1,0 +1,417 @@
+<div class="container">
+
+
+
+    {{#if message.isExpired}}
+      <div class="container">
+        <H1> Oups !  le lien a expiré :) </H1>
+        <a href="http://localhost:3001/connexion/">
+            <button class="login">Aller à la page de connexion</button>
+        </a>
+    </div>
+
+    {{else}}
+    <div class="container">
+        <H1>Hello {{message.text}}, Merci d'avoir valider votre addresse email !! </H1>
+        <a href="http://localhost:3001/connexion/">
+            <button class="login">Aller à la page de connexion</button>
+        </a>
+    </div>
+    {{/if}}
+
+</div>
+
+
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Open Sans', sans-serif;
+    }
+
+    .index-image-liste {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    #canvas {
+        width: 100vw;
+        padding-left: 25%;
+        padding-top: 15%;
+    }
+
+    .navbar {
+        padding: 0 30px;
+    }
+
+    header {
+        height: 90px;
+        background-color: gainsboro;
+    }
+
+    footer {
+        width: 100%;
+        background-color: #38870D;
+        padding-top: 25px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+        align-items: center;
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        color: white;
+        text-align: center;
+    }
+
+    header {
+        width: 100%;
+        min-height: 70px;
+        display: flex;
+        background-color: white;
+        align-items: center;
+        box-shadow: 0px 4px 15px 0px rgb(0 0 0 / 10%);
+        position: fixed;
+        top: 0;
+        z-index: 45739863;
+    }
+
+    header nav {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        display: flex;
+        padding: 15px;
+        justify-content: space-between;
+    }
+
+    footer nav {
+        display: flex;
+        align-items: center;
+        color: white
+    }
+
+    footer ul {
+        display: flex;
+        padding-left: 0;
+    }
+
+    footer button {
+        border-radius: 100px;
+        background-color: #2D6005;
+        color: white;
+        padding: 15px;
+        border: none;
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    .homebutton {
+        padding: 15px;
+        border-radius: 100px;
+        min-width: 225px;
+        background-color: #38870D;
+        border: none;
+        color: white;
+        font-size: 20px;
+        box-shadow: 0px 0px 0px 8px rgba(2, 85, 141, 0.25);
+        margin: 15px;
+    }
+
+    .baction {
+        padding: 15px;
+        border-radius: 100px;
+        min-width: 225px;
+        background-color: #38870D;
+        border: none;
+        color: white;
+        font-size: 25px;
+        box-shadow: 1px 1px 0px 5px rgba(2, 85, 141, 0.55);
+        margin: 15px;
+    }
+
+    .lot {
+        background: rgba(107, 104, 103, 0.3);
+        backdrop-filter: blur(8px);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        align-items: center;
+        padding: 25px;
+        min-height: 325px;
+        min-width: 325px;
+        border-radius: 100%;
+        margin: 10px;
+    }
+
+    .lot a {
+        font-size: 15px;
+        color: white
+    }
+
+    .lot img {
+        width: 20%;
+        margin: 25px;
+    }
+
+    .lot p {
+        margin-bottom: 5px;
+        color: white;
+    }
+
+    .childLot {
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+        padding: 15px;
+        background: #F6F6F6;
+        font-size: 16px;
+        width: 100%;
+        max-width: 350px;
+        padding-bottom: 25px;
+        padding-top: 25px;
+        margin: 15px;
+        border-radius: 8px;
+    }
+
+    .childLot a {
+        text-decoration: underline;
+        font-size: 16px;
+        padding: 8px;
+    }
+
+    .newsletter {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .newsletter p {
+        font-size: 25px;
+        margin-bottom: 5px;
+        color: white;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .newsletter small {
+        margin-bottom: 15px;
+        color: #F8F8F8
+    }
+
+    .newsletter input {
+        font-size: 16px;
+        padding: 8px;
+        margin-bottom: 5px;
+    }
+
+    .newsletter button {
+        padding: 10px;
+        font-size: 16px;
+        color: white;
+        background: #2D6005;
+        border: none;
+    }
+
+    .boutton-login {
+        text-align: center;
+    }
+
+    .boutton-login button {
+        /* width: 300px;*/
+        margin: 5px;
+        border-radius: 10px;
+    }
+
+    html,
+    a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .pulse {
+        animation: pulse 1s infinite;
+    }
+
+    .imageConnexion {
+        position: fixed;
+    }
+
+    .team {
+        width: 100%;
+        max-width: 800px;
+        background: transparent;
+        margin-bottom: -150px;
+    }
+
+    .team img {
+        border-radius: 10px;
+        margin: 25px
+    }
+
+    .team2 {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        background-color: #38870D;
+        color: white;
+        min-height: 60vh;
+        padding: 15px;
+        padding-top: 150px;
+    }
+
+    .team2 h2 {
+        font-size: 2.4em;
+        margin-bottom: 5px;
+    }
+
+    .team2 p {
+        max-width: 800px;
+        font-size: 16px;
+        line-height: 1.8;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    .responsiveMenu {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    .responsiveMenu li {
+        height: 50px;
+        margin-bottom: 20px;
+        font-size: 20px;
+        color: grey
+    }
+
+    .lotsItems {
+        width: 100%;
+        background-color: #38870D;
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        padding: 20px;
+        align-items: center;
+        color: white;
+        padding-bottom: 35px;
+        margin: 10px;
+        transform: translatey(0px);
+        animation: float 3s ease-in-out;
+        border-radius: 15px;
+    }
+
+    .lotsItems h3 {
+        font-size: 1.6em;
+        text-align: center;
+        margin: 5px;
+    }
+
+    .lotsItems p {
+        font-size: 18px;
+        max-width: 300px;
+        text-align: center;
+        margin: 5px;
+        line-height: 1.5;
+    }
+
+    .lotsItems a {
+        background-color: white;
+        border: solid 3px #38870D;
+        color: #38870D;
+        padding: 15px;
+        margin: 30px;
+        font-weight: bold;
+        border-radius: 100px;
+        text-align: center;
+    }
+
+    .lotsItems img {
+        width: 10px;
+    }
+
+    .breacrumb ol {
+        padding: 0px;
+        list-style-type: none;
+        display: flex;
+    }
+
+    .lds-hourglass {
+        display: inline-block;
+        position: relative;
+        background-color: red;
+        width: 250px;
+        height: 250px;
+    }
+
+    .lds-hourglass:after {
+        content: " ";
+        display: block;
+        border-radius: 50%;
+        width: 0;
+        height: 0;
+        margin: 8px;
+        box-sizing: border-box;
+        border: 32px solid #fed;
+        border-color: #fed transparent #fed transparent;
+        animation: lds-hourglass 1.2s infinite;
+    }
+
+    @keyframes lds-hourglass {
+        0% {
+            transform: rotate(0);
+            animation-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
+        }
+
+        50% {
+            transform: rotate(900deg);
+            animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+        }
+
+        100% {
+            transform: rotate(1800deg);
+        }
+    }
+
+    .bingo {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: 1.1em;
+        height: 60px;
+        width: 90%;
+        max-width: 500px;
+        padding: 10px;
+        padding-left: 15px;
+        border: solid 1px #D2D2D2;
+        border-radius: 5px;
+        margin-top: 15px;
+        outline: none;
+        background-color: white;
+        margin-bottom: 15px;
+    }
+
+    .container {
+        font-family: 'Open Sans', sans-serif;
+        min-height: 100vh;
+        padding-top: 90px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .login {
+        padding: 15px;
+        border-radius: 100px;
+        min-width: 225px;
+        background-color: #38870D;
+        border: none;
+        color: white;
+        font-size: 20px;
+        box-shadow: 0px 0px 0px 8px rgb(2 85 141 / 25%);
+        margin: 15px;
+    }
+</style>

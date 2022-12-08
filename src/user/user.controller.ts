@@ -1,8 +1,13 @@
 import { Roles } from './../auth/decorators/roles.decorator';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { CreateForgotPasswordDto } from './dto/create-forgot-password.dto';
+import { SignedUrlGuard, UrlGeneratorService } from 'nestjs-url-generator';
+import { LocalAuthGuard } from '../auth/guards/auth.guard'
+import { EmailParams } from '../user/params/email.params';
+import { EmailQuery } from '../user/query/email.query';
 import { Request, Response } from 'express';
 import { LoginUserDto } from './dto/login-user.dto';
+
 import {
   Controller,
   Param,
@@ -14,7 +19,6 @@ import {
   HttpCode,
   HttpStatus,
   Query,
-  Redirect,
   Res,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -35,12 +39,14 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { GetTicketBySessionDto } from '../ticket/dto/get-tickets-by-session.dto';
 import { MailerService } from '@nestjs-modules/mailer';
 import { LoginCreateSocialUser } from './dto/login-create-social.dto';
+import { User } from './interfaces/user.interface';
+import { MailService } from 'src/mail/mail.service';
 
 @ApiTags('User')
 @Controller('user')
 @UseGuards(RolesGuard)
 export class UserController {
-  constructor(private readonly userService: UserService, private mailService: MailerService) { }
+  constructor(private readonly userService: UserService, private maileService: MailerService, private mailService :MailService, private readonly urlGeneratorService: UrlGeneratorService) { }
 
   // ╔═╗╦ ╦╔╦╗╦ ╦╔═╗╔╗╔╔╦╗╦╔═╗╔═╗╔╦╗╔═╗
   // ╠═╣║ ║ ║ ╠═╣║╣ ║║║ ║ ║║  ╠═╣ ║ ║╣
@@ -49,23 +55,80 @@ export class UserController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Register user' })
   @ApiCreatedResponse({})
-  async register(@Body() createUserDto: CreateUserDto, @Res() res: Response) {
+  async register(@Body() createUserDto: CreateUserDto) {
 
     let user = await this.userService.create(createUserDto);
+   
+    const urlGenerator = this.generateUrl(user);
+   // return urlGenerator;
 
-    return user;
+    return this.mailService.sendUserConfirmation({
+      email: user.email,
+      name: user.fullName,
+      url: urlGenerator,
+    });
 
   }
 
-  @Get('verify-email')
+  private generateUrl(user: User) {
+    const emailParams = {
+      version: '1.0//.%$',
+      userId: 'true',
+    };
+
+    const query: EmailQuery = {
+      verification: user.verification,
+    };
+
+    const urlGenerator = this.urlGeneratorService.signControllerUrl({
+      controller: UserController,
+      controllerMethod: UserController.prototype.verifyEmail,
+      expirationDate: user.verificationExpires,
+      query: query,
+      params: emailParams,
+    });
+    return urlGenerator;
+  }
+
+  /**************************************************
+   * LOGIN OR USER USING DATA PROVIDED FROM SOCIALS *
+   **************************************************/
+
+
+  @Post('auth-from-social-network')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Login or User using data provided from socials' })
+  @ApiOkResponse({})
+  async authFromSocialNetwork(@Req() req: Request, @Body() LoginCreateSocialUser: LoginCreateSocialUser) {
+    return await this.userService.findOrCreate(req, LoginCreateSocialUser);
+   
+  }
+
+
+ 
+
+
+  @Get('make-signed-url/version/:version/user/:userId')
+  @UseGuards(SignedUrlGuard, LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Verify Email' })
   @ApiOkResponse({})
+  async verifyEmail(@Param() emailParams: EmailParams,
+    @Query() emailQuery: EmailQuery,@Res() res:Response) {
+    let verify = await this.userService.verifyEmail(emailQuery.verification);
+    console.log(verify);
+    return res.render('requestVerifyEmail', {
+      layout: 'layout_main',
+      message: { isExpired: !verify.fullName, text: verify.fullName },
+    });
 
-  async verifyEmail(@Req() req: Request, @Query('verification') verification) {
-    return await this.userService.verifyEmail(req, verification);
   }
 
+
+/*******************
+ * LOGIN CLASSIQUE *
+ *******************/
+ 
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Login User' })
@@ -75,6 +138,12 @@ export class UserController {
 
     return await this.userService.login(req, loginUserDto);
   }
+
+
+
+/**********
+ * LOGOUT *
+ **********/
 
   @Post('logout')
   @HttpCode(HttpStatus.OK)
@@ -87,6 +156,9 @@ export class UserController {
   }
 
 
+/************************
+ * REFRESH-ACCESS-TOKEN *
+ ************************/
 
   @Post('refresh-access-token')
   @HttpCode(HttpStatus.CREATED)
@@ -97,6 +169,9 @@ export class UserController {
   ) {
     return await this.userService.refreshAccessToken(refreshAccessTokenDto);
   }
+/********************
+ * FORGOT-PASSWORD' *
+ ********************/
 
   @Post('forgot-password')
   @HttpCode(HttpStatus.OK)
@@ -107,7 +182,22 @@ export class UserController {
     @Body() createForgotPasswordDto: CreateForgotPasswordDto,
   ) {
     return await this.userService.forgotPassword(req, createForgotPasswordDto);
+  
   }
+
+
+
+
+
+
+
+
+
+
+
+/**************************
+ * FORGOT-PASSWORD-VERIFY *
+ **************************/
 
   @Get('forgot-password-verify')
   @HttpCode(HttpStatus.OK)
@@ -121,7 +211,23 @@ export class UserController {
     return await this.userService.forgotPasswordVerify(req, verification);
   }
 
-  @Post('reset-password')
+
+
+
+
+
+
+
+
+
+
+
+  
+
+/***************************
+ *     RESET-PASSWORD      * 
+ ***************************/
+
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Reset password after verify reset password' })
   @ApiBearerAuth()
@@ -137,7 +243,9 @@ export class UserController {
 
 
 
-
+/********************
+ * USERS-BY-SESSION *
+ ********************/
 
   @Post('users-by-session')
   @HttpCode(HttpStatus.OK)
@@ -154,7 +262,7 @@ export class UserController {
     @Body() getTicketBySessionDto: GetTicketBySessionDto,
   ) {
 
-    
+
     return await this.userService.getUsersBySession(
       getTicketBySessionDto.idSession,
     );
@@ -174,7 +282,7 @@ export class UserController {
   @ApiOkResponse({})
   async getNumberOfRegistrationByDay(@Param() params) {
 
-    
+
     return await this.userService.getNumberOfRegistrationByDay(params);
   }
 
@@ -195,48 +303,34 @@ export class UserController {
   }
 
 
-  @Get("/facebook")
-  @UseGuards(AuthGuard("facebook"))
-  async facebookLogin(): Promise<any> {
-    return HttpStatus.OK;
-  }
 
-  @Get("/facebook/redirect")
-  @UseGuards(AuthGuard("facebook"))
-  async facebookLoginRedirect(@Req() req): Promise<any> {
-    return this.userService.googleLogin(req, req.user)
-  }
+  // @Get("/facebook")
+  // @UseGuards(AuthGuard("facebook"))
+  // async facebookLogin(): Promise<any> {
+  //   return HttpStatus.OK;
+  // }
 
-  @Get("/google")
-  @UseGuards(AuthGuard("google"))
-  async googleAuth(@Req() req) { }
+  // @Get("/facebook/redirect")
+  // @UseGuards(AuthGuard("facebook"))
+  // async facebookLoginRedirect(@Req() req): Promise<any> {
+  //   return this.userService.googleLogin(req, req.user)
+  // }
 
-
-  @Get('/google/redirect')
-
-  @UseGuards(AuthGuard("google"))
-  googleAuthRedirect(@Req() req) {
-    return this.userService.googleLogin(req, req.user)
-  }
+  // @Get("/google")
+  // @UseGuards(AuthGuard("google"))
+  // async googleAuth(@Req() req) { }
 
 
+  // @Get('/google/redirect')
 
-  @Post('auth-from-social-network')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Login or User using data provided from socials' })
-  @ApiOkResponse({})
-  async authFromSocialNetwork(@Req() req: Request, @Body() LoginCreateSocialUser: LoginCreateSocialUser) {
-    return await this.userService.findOrCreate(req, LoginCreateSocialUser);
-  }
+  // @UseGuards(AuthGuard("google"))
+  // googleAuthRedirect(@Req() req) {
+  //   return this.userService.googleLogin(req, req.user)
+  // }
 
 
-  @Get('layout')
-  anotherLayout(@Res() res: Response) {
-    return res.render('requestVerifyEmail', {
-      layout: 'layout_main',
-      message: { IsFriend: false, text: "This is my fiend" },
-    });
-  }
+
+
 
 
 

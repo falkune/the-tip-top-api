@@ -8,9 +8,9 @@ export class MailService {
   async sendUserConfirmation(user) {
 
 
-    console.log('Hello cheikh', user)
-    const url = `https://api.dev.dsp-archiwebo21-ct-df-an-cd.fr/user/verify-email?verification=${user.verification}`;
-    let html = '<p>Hey ' + user.name + ',</p><p>Please click below to confirm your email</p><p><a href="' + url + '">Confirm</a></p><p>If you did not request this email you can safely ignore it.</p>';
+    
+    const url = `${user.url}`;
+    let html = '<p>Bonjour ' + user.name + '</p><p>Veillez confirmer votre addresse email en cliant sur </p><p><a href="' + url + '">Confirmer</a></p><p>Si vous n\'avez pa été à l\'origine de cette demande , vous pouvez ignorer ce message.</p>';
 
     try {
       let result = await this.mailerService.sendMail({
@@ -24,10 +24,41 @@ export class MailService {
         // },
       });
 
-      
-      
+
+
     } catch (error) {
-      
+
+
+    }
+
+
+
+  }
+
+
+  async sendWelcomeEmail(user) {
+
+
+ 
+    const url = `${user.url}`;
+    let html = '<p>Bonjour ' + user.name + ',</p><p>  Bienvenu au jeu thé tip top</p><p><a href="' + url + '">Verifier mes ticket maintenant </a></p>';
+
+    try {
+      let result = await this.mailerService.sendMail({
+        to: user.email,
+        from: 'info@dsp-archiwebo21-ct-df-an-cd.fr', // override default from
+        subject: 'Bienvenue au jeu de thétiptop. Comment jouer ?',
+        html: html, // `.hbs` extension is appended automatically
+        // context: { // ✏️ filling curly brackets with content
+        //   name: user.name,
+        //   url,
+        // },
+      });
+
+
+
+    } catch (error) {
+
 
     }
 
@@ -55,10 +86,10 @@ export class MailService {
         // },
       });
 
-      
-      
+
+
     } catch (error) {
-      
+
 
     }
 

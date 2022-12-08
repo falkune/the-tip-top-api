@@ -19,7 +19,6 @@ import { addHours } from 'date-fns';
 import * as bcrypt from 'bcrypt';
 import { CreateForgotPasswordDto } from './dto/create-forgot-password.dto';
 import { CreateUserDto } from './dto/create-user.dto';
-import { VerifyUuidDto } from './dto/verify-uuid.dto';
 import { RefreshAccessTokenDto } from './dto/refresh-access-token.dto';
 import { ForgotPassword } from './interfaces/forgot-password.interface';
 import { Ticket } from '../ticket/interfaces/ticket.interface';
@@ -28,8 +27,7 @@ import { LoggerService } from '../logger/logger.service';
 import { UpdateUserLocationDto } from './dto/update-user-location.dto';
 import { SessionService } from '../session/session.service';
 import { LoginCreateSocialUser } from './dto/login-create-social.dto';
-import { retry } from 'rxjs';
-import { Console } from 'console';
+
 
 
 @Injectable()
@@ -59,7 +57,8 @@ export class UserService {
     await this.isEmailUnique(user.email);
     this.setRegistrationInfo(user);
     await user.save();
-    return this.buildRegistrationInfo(user);
+    return user;
+    
   }
 
 
@@ -69,38 +68,40 @@ export class UserService {
 
   async createSocialNetworkUser(loginCreateSocialUser: LoginCreateSocialUser): Promise<User> {
     const user = new this.userModel(loginCreateSocialUser);
+
     await this.isEmailUnique(user.email);
     this.setRegistrationInfo(user);
     await user.save();
-    return this.buildRegistrationInfo(user);
+    return  user;
   }
 
   /****************
    * VERIFY EMAIL *
    ****************/
 
-  async verifyEmail(req: Request, verification: string) {
-    const user = await this.findByVerification(verification);
-    await this.setUserAsVerified(user);
+  async verifyEmail( verification: string) {
+    console.log(verification);
+    const user = await this.findByVerification( verification);
+    if (user && user.fullName) {
+      await this.setUserAsVerified(user);
+    }
     return {
       fullName: user.fullName,
-      email: user.email,
-      accessToken: await this.authService.createAccessToken(user._id),
-      refreshToken: await this.authService.createRefreshToken(req, user._id),
+      email: user.email
     };
   }
 
 
-/**********
- * LOGOUT *
- **********/
+  /**********
+   * LOGOUT *
+   **********/
 
- async logout(req: Request, logoutDto: RefreshAccessTokenDto) {
+  async logout(req: Request, logoutDto: RefreshAccessTokenDto) {
 
- 
-  return this.authService.logout(logoutDto.refreshToken);
-  
-}
+
+    return this.authService.logout(logoutDto.refreshToken);
+
+  }
 
   /*********
    * LOGIN *
@@ -115,7 +116,7 @@ export class UserService {
     this.logger.log(Date.now, 'UserService');
 
     let userLocation = await this.getLocationInfo(req);
-  
+
 
     this.updateUserLocation({ userId: user.id.valueOf().toString(), userLocation: userLocation })
     return {
@@ -130,38 +131,31 @@ export class UserService {
     };
   }
 
- 
-/*******************************************
- * * LOGIN OR CREATE FROM SOCIAL NETWORK * *
- *******************************************/
+
+  /*******************************************
+   * * LOGIN OR CREATE FROM SOCIAL NETWORK * *
+   *******************************************/
 
   async findOrCreate(req: Request, loginCreateSocialUser: LoginCreateSocialUser) {
 
     const user = await this.findUserSocialNetworkUser(loginCreateSocialUser);
+    this.isUserBlocked(user);
+    const birthday = new Date(user.birthday);
+    let userLocation = await this.getLocationInfo(req);
 
- 
-    this.isUserBlocked(user);   
-    
-    // await this.checkPassword(loginCreateSocialUser.password, user);
-    //await this.passwordsAreMatch(user);
-    const birthday = new Date(user.birthday); 
-   
-   
-
-     let userLocation = await this.getLocationInfo(req);
-
-     this.updateUserLocation({ userId: user.id.valueOf().toString(), userLocation: userLocation });
+    this.updateUserLocation({ userId: user.id.valueOf().toString(), userLocation: userLocation });
 
     return {
       fullName: user.fullName,
       email: user.email,
-       age: this._calculateAge(birthday),
+      age: this._calculateAge(birthday),
       roles: user.roles,
       birthday: this.formatDate(birthday.toString()),
       accessToken: await this.authService.createAccessToken(user._id),
       refreshToken: await this.authService.createRefreshToken(req, user._id),
 
-  /**/  };
+      /**/
+};
 
 
   }
@@ -172,31 +166,31 @@ export class UserService {
    * SEND EMAIL *
    **************/
 
-  async sendEmail(user) { 
+  async sendEmail(user) {
     return await this.mailService.sendUserConfirmation(user);
   }
 
-   /****************************
-   * SEND EMAIL CONFIRMATIONS *
-   ****************************/
+  /****************************
+  * SEND EMAIL CONFIRMATIONS *
+  ****************************/
 
-    async sendUserConfirmation(user) {
-     
-      return await this.mailService.sendUserConfirmation(user);
-    }
+  async sendUserConfirmation(user) {
+
+    return await this.mailService.sendUserConfirmation(user);
+  }
 
 
 
-     
-/********************************
- * * SEND EMAIL CONFIRMATIONS * *
- ********************************/
 
-       async sendForgotPasswordVerifier(forgotPassword) {
-        
-        return await this.mailService.sendForgotPasswordVerifier(forgotPassword);
-      }
-  
+  /********************************
+   * * SEND EMAIL CONFIRMATIONS * *
+   ********************************/
+
+  async sendForgotPasswordVerifier(forgotPassword) {
+
+    return await this.mailService.sendForgotPasswordVerifier(forgotPassword);
+  }
+
 
   /*****************
    * _CALCULATEAGE *
@@ -223,7 +217,7 @@ export class UserService {
     }
     return {
       accessToken: await this.authService.createAccessToken(user._id),
-      message:'Vous êtes reconnecté !'
+      message: 'Vous êtes reconnecté !'
     };
   }
 
@@ -236,7 +230,7 @@ export class UserService {
     createForgotPasswordDto: CreateForgotPasswordDto,
   ) {
     await this.findByEmail(createForgotPasswordDto.email);
-   let forgotPassword = await this.saveForgotPassword(req, createForgotPasswordDto);
+    let forgotPassword = await this.saveForgotPassword(req, createForgotPasswordDto);
     this.sendForgotPasswordVerifier(forgotPassword);
     return {
       email: createForgotPasswordDto.email,
@@ -251,7 +245,7 @@ export class UserService {
   async forgotPasswordVerify(req: Request, verification: string) {
     const forgotPassword = await this.findForgotPasswordByUuid(verification);
     await this.setForgotPasswordFirstUsed(req, forgotPassword);
-    
+
     return {
       email: forgotPassword.email,
       message: 'now reset your password.',
@@ -307,7 +301,7 @@ export class UserService {
  ******************/
 
   async findAll(): Promise<Array<User>> {
-    
+
     return await this.userModel.find({}, { idClient: 1, fullName: 1, email: 1, birthday: 1, userLocation: 1 });
   }
 
@@ -316,7 +310,7 @@ export class UserService {
    *****************************/
 
   async getNumberOfRegistrationByDay(params): Promise<Array<User>> {
-    
+
     let user;
     try {
       user = this.sessionService.getOneSession(params.idSession).then(async (session) => {
@@ -374,15 +368,15 @@ export class UserService {
     updateUserLocation: UpdateUserLocationDto
   ): Promise<User> {
 
-    
+
     let user;
     try {
       user = await this.userModel.findOneAndUpdate({ _id: updateUserLocation.userId }, { userLocation: updateUserLocation?.userLocation })
 
-      
-      
 
-      
+
+
+
     } catch (error) {
       throw new NotAcceptableException('Sorry the userId is Wrong', error);
     }
@@ -390,6 +384,20 @@ export class UserService {
     return user;
 
   }
+
+    /***************************
+   * BUILD REGISTRATION INFO *
+   ***************************/
+
+  
+     buildRegistrationInfo(info): any {
+
+
+      this.sendUserConfirmation(info);
+  
+      return info;
+  
+    }
 
   /*******************
    * PRIVATE METHODS *
@@ -415,33 +423,21 @@ export class UserService {
     user.verificationExpires = addHours(new Date(), this.HOURS_TO_VERIFY);
   }
 
-  /***************************
-   * BUILD REGISTRATION INFO *
-   ***************************/
 
-  private buildRegistrationInfo(user): any {
-    
 
-    this.sendUserConfirmation({
-      email: user.email,
-      name: user.fullName,
-      verification: user.verification,
-    });
-
-    return user;
-
-  }
-
-  private async findByVerification(verification: string): Promise<User> {
+  private async findByVerification( verification: string): Promise<User> {
     const user = await this.userModel.findOne({
       verification,
       verified: false,
       verificationExpires: { $gt: new Date() },
     });
     if (!user) {
-      throw new BadRequestException('Bad request.');
+      return new this.userModel();
+
+    } else {
+      return user;
     }
-    return user;
+
   }
 
   private async findByEmail(email: string): Promise<User> {
@@ -467,13 +463,22 @@ export class UserService {
 
 
   private async findUserSocialNetworkUser(loginCreateSocialUser: LoginCreateSocialUser): Promise<User> {
-    const user = await this.userModel.findOne({ email: loginCreateSocialUser.email});
+    const user = await this.userModel.findOne({ email: loginCreateSocialUser.email });
 
-    
+
 
     if (!user) {
-      return this.createSocialNetworkUser(loginCreateSocialUser)
+      
+      let userCreated =  await this.createSocialNetworkUser(loginCreateSocialUser)
+     this.mailService.sendWelcomeEmail({
+        email: userCreated.email,
+        name: userCreated.fullName,
+        url: "http://localhost:3001/",
+      });
+      return userCreated;
     }
+  
+
     return user;
   }
 
@@ -523,7 +528,7 @@ export class UserService {
       browser: this.authService.getBrowserInfo(req),
       country: this.authService.getCountry(req),
     });
-   return await forgotPassword.save();
+    return await forgotPassword.save();
   }
 
   private async findForgotPasswordByUuid(
@@ -604,20 +609,14 @@ export class UserService {
   }
 
 
-  googleLogin(req: Request,loginCreateSocialUser : LoginCreateSocialUser) {
-    
+  googleLogin(req: Request, loginCreateSocialUser: LoginCreateSocialUser) {
+
 
     if (!req.user) {
       return 'No user from social network';
     }
 
-    return this.findOrCreate(req,loginCreateSocialUser);
-
-
-   /*return {
-      message: 'User information from social network',
-      user: req.user
-    } */
+    return this.findOrCreate(req, loginCreateSocialUser);
   }
 
 }
