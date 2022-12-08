@@ -44,6 +44,8 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_HOST=${DB_HOST}
       - MONGO_URI=mongodb://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/thetiptop
+      - FRONT_END_URL="https://dsp-archiwebo21-ct-df-an-cd.fr"
+      - APP_URL="https://api.dsp-archiwebo21-ct-df-an-cd.fr"
 
     volumes:
        - /etc/localtime:/etc/localtime:ro
