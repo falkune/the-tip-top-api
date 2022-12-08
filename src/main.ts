@@ -7,19 +7,61 @@ import { warn } from 'console';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import { GroupModule } from './group/group.module';
-import { SessionModule } from './session/session.module'; 
+import { SessionModule } from './session/session.module';
 import { LoggerModule } from './logger/logger.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { join,resolve } from 'path';
+import { join, resolve } from 'path';
 import * as hbs from 'express-handlebars';
-import { printName } from './hbs/helpers'; 
+import { printName } from './hbs/helpers';
+import { LoggerService } from './logger/logger.service';
 
 
 
+
+
+import {
+  NestjsWinstonLoggerService,
+  appendRequestIdToLogger,
+  LoggingInterceptor,
+  morganRequestLogger,
+  morganResponseLogger,
+  appendIdToRequest
+} from "nestjs-winston-logger";
+
+import { format, transports } from "winston";
+import helmet from "helmet";
 
 async function bootstrap() {
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+
+
+  const globalLogger = new NestjsWinstonLoggerService({
+    format: format.combine(
+      format.timestamp({ format: "isoDateTime" }),
+      format.json(),
+      format.colorize({ all: true }),
+    ),
+    transports: [
+      new transports.File({ filename: "error.log", level: "error" }), 
+      new transports.Console(),
+    ],
+    level: "verbose"
+  });
+  app.use(helmet());
+  app.useLogger(globalLogger);
+
+  // append id to identify request
+  app.use(appendIdToRequest);
+  app.use(appendRequestIdToLogger(globalLogger));
+
+  app.use(morganRequestLogger(globalLogger));
+  app.use(morganResponseLogger(globalLogger));
+
+  app.useGlobalInterceptors(new LoggingInterceptor(globalLogger));
+
+  // new code
 
   app.useStaticAssets(join(__dirname, '..', 'public'));
   app.setBaseViewsDir(join(__dirname, '..', 'views'));
@@ -38,7 +80,7 @@ async function bootstrap() {
       helpers: { printName },
     }),
   );
-  
+
 
   app.setViewEngine('hbs');
   app.enableCors();
@@ -53,7 +95,7 @@ async function bootstrap() {
   // ╔═╗╦ ╦╔═╗╔═╗╔═╗╔═╗╦═╗
   // ╚═╗║║║╠═╣║ ╦║ ╦║╣ ╠╦╝   
   // ╚═╝╚╩╝╩ ╩╚═╝╚═╝╚═╝╩╚═
-  
+
   const options = new DocumentBuilder()
     .setTitle('API')
     .setDescription('API de thetiptop')
@@ -67,7 +109,7 @@ async function bootstrap() {
       GroupModule,
       SessionModule,
       LoggerModule
-  ],
+    ],
   });
   SwaggerModule.setup('api', app, document);
 
@@ -79,3 +121,7 @@ async function bootstrap() {
   warn(`APP IS LISTENING TO PORT ${PORT}`);
 }
 bootstrap();
+
+
+
+
