@@ -13,16 +13,18 @@ import { ConfigModule } from '@nestjs/config';
 import { FacebookStrategy } from './auth/strategies/facebook.strategy';
 import { GoogleStrategy } from './auth/strategies/google.strategy';
 import { UrlGeneratorModule } from 'nestjs-url-generator';
-import { urlGeneratorModuleConfig } from 'configs/signed-url.config';
+//import { urlGeneratorModuleConfig } from 'configs/signed-url.config';
+
 
 @Module({
   imports: [
 //MongooseModule.forRoot("mongodb://localhost:27017/thetiptop"),
  MongooseModule.forRoot(process.env.MONGO_URI),
  
-    UrlGeneratorModule.forRootAsync({
-      useFactory: () => urlGeneratorModuleConfig(),
-    }),
+  UrlGeneratorModule.forRoot({
+    secret: process.env.APP_KEY, // optional, required only for signed URL
+    appUrl: process.env.APP_URL,
+  }),
     MailerModule.forRoot({
       transport: {
         host: 'smtp.sendgrid.net',
