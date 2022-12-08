@@ -20,7 +20,7 @@ WORKDIR /usr/app
 
 COPY package*.json ./
 
-RUN npm install yarn && yarn install --only=production
+RUN npm install yarn --global && yarn install --only=production
 
 COPY . .
 
