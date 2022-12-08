@@ -127,7 +127,8 @@ pipeline{
 
                          stage("Install Packages") {
                                      steps{
-                                         sh "npm install --legacy-peer-deps"
+                                         sh "npm install --global yarn"
+                                         sh "yarn install"
                                         }
                                     }
 
