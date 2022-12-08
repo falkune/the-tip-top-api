@@ -3,8 +3,6 @@ FROM node:16.18.1-alpine3.15 As development
 
 WORKDIR /usr/app
 
-RUN npm install yarn --global && yarn --version
-
 COPY package*.json ./
 
 RUN yarn install --only development
@@ -19,8 +17,6 @@ ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
 
 WORKDIR /usr/app
-
-RUN npm install yarn --global
 
 COPY package*.json ./
 
