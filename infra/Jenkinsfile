@@ -143,19 +143,19 @@ pipeline{
                                              
                         stage("Build Code"){
                                 steps{
-                                    sh "npm run build"
+                                    sh "yarn run build"
                                    }
                             }
                 
                     stage("Unit"){         
                               steps{
-                                sh "npm run test"
+                                sh "yarn run test"
                               }
                            }
                   
                     stage("Coverage") {
                        steps{
-                        sh "npm run test:cov"
+                        sh "yarn run test:cov"
                         }
                       }
                    
