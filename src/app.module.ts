@@ -15,8 +15,6 @@ import { GoogleStrategy } from './auth/strategies/google.strategy';
 import { UrlGeneratorModule } from 'nestjs-url-generator';
 //import { urlGeneratorModuleConfig } from 'configs/signed-url.config';
 
-console.log(process.env);
-
 
 @Module({
   imports: [
