@@ -60,8 +60,6 @@ export class TicketController {
   @ApiParam({ name: 'id', description: 'id of the sesssion' })
   @ApiOkResponse({})
   async getTicketStats(@Param() params) {
-
-
     return await this.ticketService.getTicketStats(params.id);
   }
 

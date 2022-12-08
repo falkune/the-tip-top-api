@@ -67,16 +67,15 @@ export class MailService {
   }
 
 
-  async sendForgotPasswordVerifier(forgotPassword) {
+  async sendForgotPasswordVerifier(user) {
 
 
-    console.log('Hello cheikh', forgotPassword)
-    const url = `https://api.dev.dsp-archiwebo21-ct-df-an-cd.fr/user/forgot-password-verify?verification=${forgotPassword.verification}`;
-    let html = '<p>Bonjour ' + forgotPassword.name + ',</p><p>Veuillez cliquez sur le lien suivant pour confirmer votre demande de changement de mot de passe </p><p><a href="' + url + '">Modifier mon mot de passe</a></p><p></p>';
+    const url = `${user.url}`; 
+    let html = '<p>Bonjour ' + user.name + ',</p><p>Veuillez cliquez sur le lien suivant pour confirmer votre demande de changement de mot de passe </p><p><a href="' + url + '">Modifier mon mot de passe</a></p><p></p>';
 
     try {
       let result = await this.mailerService.sendMail({
-        to: forgotPassword.email,
+        to: user.email,
         from: 'info@dsp-archiwebo21-ct-df-an-cd.fr', // override default from
         subject: 'Demande de changement de mot de passe',
         html: html, // `.hbs` extension is appended automatically
