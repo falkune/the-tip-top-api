@@ -473,7 +473,7 @@ export class UserService {
      this.mailService.sendWelcomeEmail({
         email: userCreated.email,
         name: userCreated.fullName,
-        url: "http://localhost:3001/",
+        url: "https://dev.dsp-archiwebo21-ct-df-an-cd.fr/",
       });
       return userCreated;
     }
