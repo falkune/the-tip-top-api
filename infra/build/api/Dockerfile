@@ -3,11 +3,11 @@ FROM node:16.18.1-alpine3.15 As development
 
 WORKDIR /usr/app
 
-RUN npm install yarn && yarn --version
+RUN npm install yarn --global && yarn --version
 
 COPY package*.json ./
 
-RUN yarn install
+RUN yarn install --only development
 
 COPY . .
 
@@ -20,9 +20,11 @@ ENV NODE_ENV=${NODE_ENV}
 
 WORKDIR /usr/app
 
+RUN npm install yarn --global
+
 COPY package*.json ./
 
-RUN npm install yarn --global && yarn install --only=production
+RUN yarn install --only=production
 
 COPY . .
 
