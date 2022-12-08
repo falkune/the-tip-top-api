@@ -3,9 +3,11 @@ FROM node:16.18.1-alpine3.15 As development
 
 WORKDIR /usr/app
 
+RUN npm install yarn && yarn --version
+
 COPY package*.json ./
 
-RUN npm install yarn --global && yarn install
+RUN yarn install
 
 COPY . .
 
