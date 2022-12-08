@@ -12,8 +12,7 @@ import { LoggerModule } from './logger/logger.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join, resolve } from 'path';
 import * as hbs from 'express-handlebars';
-import { printName } from './hbs/helpers';
-import { LoggerService } from './logger/logger.service';
+import { printName } from './hbs/helpers'; 
 
 
 
@@ -29,12 +28,10 @@ import {
 } from "nestjs-winston-logger";
 
 import { format, transports } from "winston";
-import helmet from "helmet";
-
+import helmet from "helmet"; 
 async function bootstrap() {
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-
 
 
   const globalLogger = new NestjsWinstonLoggerService({
@@ -44,20 +41,26 @@ async function bootstrap() {
       format.colorize({ all: true }),
     ),
     transports: [
-      new transports.File({ filename: "error.log", level: "error" }), 
+      new transports.File({ filename: "error.log", level: "error" }),
       new transports.Console(),
     ],
     level: "verbose"
   });
   app.use(helmet());
   app.useLogger(globalLogger);
+  
+
+
+
 
   // append id to identify request
   app.use(appendIdToRequest);
   app.use(appendRequestIdToLogger(globalLogger));
 
-  app.use(morganRequestLogger(globalLogger));
-  app.use(morganResponseLogger(globalLogger));
+  app.use(morganRequestLogger(globalLogger, ':remote-addr - :remote-user [:date] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"'));
+  app.use(morganResponseLogger(globalLogger, ':remote-addr - :remote-user [:date] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"'));
+
+
 
   app.useGlobalInterceptors(new LoggingInterceptor(globalLogger));
 
