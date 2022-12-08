@@ -21,8 +21,7 @@ import {
   Query,
   Res,
 } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { VerifyUuidDto } from './dto/verify-uuid.dto';
+import { CreateUserDto } from './dto/create-user.dto'; 
 import { UserService } from './user.service';
 import { AuthGuard } from '@nestjs/passport';
 import { RefreshAccessTokenDto } from './dto/refresh-access-token.dto';
@@ -46,11 +45,12 @@ import { MailService } from 'src/mail/mail.service';
 @Controller('user')
 @UseGuards(RolesGuard)
 export class UserController {
-  constructor(private readonly userService: UserService, private maileService: MailerService, private mailService :MailService, private readonly urlGeneratorService: UrlGeneratorService) { }
+  constructor(private readonly userService: UserService, private maileService: MailerService, private mailService: MailService, private readonly urlGeneratorService: UrlGeneratorService) { }
 
   // ╔═╗╦ ╦╔╦╗╦ ╦╔═╗╔╗╔╔╦╗╦╔═╗╔═╗╔╦╗╔═╗
   // ╠═╣║ ║ ║ ╠═╣║╣ ║║║ ║ ║║  ╠═╣ ║ ║╣
   // ╩ ╩╚═╝ ╩ ╩ ╩╚═╝╝╚╝ ╩ ╩╚═╝╩ ╩ ╩ ╚═╝
+
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Register user' })
@@ -58,9 +58,9 @@ export class UserController {
   async register(@Body() createUserDto: CreateUserDto) {
 
     let user = await this.userService.create(createUserDto);
-   
+
     const urlGenerator = this.generateUrl(user);
-   // return urlGenerator;
+    // return urlGenerator;
 
     return this.mailService.sendUserConfirmation({
       email: user.email,
@@ -101,12 +101,14 @@ export class UserController {
   @ApiOkResponse({})
   async authFromSocialNetwork(@Req() req: Request, @Body() LoginCreateSocialUser: LoginCreateSocialUser) {
     return await this.userService.findOrCreate(req, LoginCreateSocialUser);
-   
+
   }
 
 
- 
 
+  /************************
+   * VERIFY EMAIL ADDRESS *
+   ************************/
 
   @Get('make-signed-url/version/:version/user/:userId')
   @UseGuards(SignedUrlGuard, LocalAuthGuard)
@@ -114,7 +116,7 @@ export class UserController {
   @ApiOperation({ summary: 'Verify Email' })
   @ApiOkResponse({})
   async verifyEmail(@Param() emailParams: EmailParams,
-    @Query() emailQuery: EmailQuery,@Res() res:Response) {
+    @Query() emailQuery: EmailQuery, @Res() res: Response) {
     let verify = await this.userService.verifyEmail(emailQuery.verification);
     console.log(verify);
     return res.render('requestVerifyEmail', {
@@ -125,10 +127,14 @@ export class UserController {
   }
 
 
-/*******************
- * LOGIN CLASSIQUE *
- *******************/
- 
+
+
+
+
+  /*******************
+   * LOGIN CLASSIQUE *
+   *******************/
+
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Login User' })
@@ -141,9 +147,9 @@ export class UserController {
 
 
 
-/**********
- * LOGOUT *
- **********/
+  /**********
+   * LOGOUT *
+   **********/
 
   @Post('logout')
   @HttpCode(HttpStatus.OK)
@@ -156,9 +162,9 @@ export class UserController {
   }
 
 
-/************************
- * REFRESH-ACCESS-TOKEN *
- ************************/
+  /************************
+   * REFRESH-ACCESS-TOKEN *
+   ************************/
 
   @Post('refresh-access-token')
   @HttpCode(HttpStatus.CREATED)
@@ -169,9 +175,9 @@ export class UserController {
   ) {
     return await this.userService.refreshAccessToken(refreshAccessTokenDto);
   }
-/********************
- * FORGOT-PASSWORD' *
- ********************/
+  /********************
+   * FORGOT-PASSWORD' *
+   ********************/
 
   @Post('forgot-password')
   @HttpCode(HttpStatus.OK)
@@ -182,51 +188,37 @@ export class UserController {
     @Body() createForgotPasswordDto: CreateForgotPasswordDto,
   ) {
     return await this.userService.forgotPassword(req, createForgotPasswordDto);
-  
+
   }
 
 
 
 
+  /**************************
+   * FORGOT-PASSWORD-VERIFY *
+   **************************/
 
 
-
-
-
-
-
-/**************************
- * FORGOT-PASSWORD-VERIFY *
- **************************/
-
-  @Get('forgot-password-verify')
+  @Get('forgot-password-verify/version/:version/user/:userId')
+  @UseGuards(SignedUrlGuard, LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Verfiy forget password code' })
   @ApiOkResponse({})
-  async forgotPasswordVerify(
-    @Req() req: Request,
+  async forgotPasswordVerify(@Param() emailParams: EmailParams,
+    @Query() emailQuery: EmailQuery, @Res() res: Response, @Req() req: Request) {
+    let verify = await this.userService.forgotPasswordVerify(req, emailQuery.verification);
+    console.log(verify);
+    return res.render('requestVerifyForgetPassword', {
+      layout: 'layout_main',
+      message: { isExpired: !verify.email, text: verify.email },
+    });
 
-    @Query('verification') verification
-  ) {
-    return await this.userService.forgotPasswordVerify(req, verification);
   }
 
 
-
-
-
-
-
-
-
-
-
-
-  
-
-/***************************
- *     RESET-PASSWORD      * 
- ***************************/
+  /***************************
+   *     RESET-PASSWORD      * 
+   ***************************/
 
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Reset password after verify reset password' })
@@ -241,11 +233,9 @@ export class UserController {
   }
 
 
-
-
-/********************
- * USERS-BY-SESSION *
- ********************/
+  /********************
+   * USERS-BY-SESSION *
+   ********************/
 
   @Post('users-by-session')
   @HttpCode(HttpStatus.OK)

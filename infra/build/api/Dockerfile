@@ -5,7 +5,7 @@ WORKDIR /usr/app
 
 COPY package*.json ./
 
-RUN npm install yarn && yarn install --only=development
+RUN yarn install --only development
 
 COPY . .
 
@@ -20,7 +20,7 @@ WORKDIR /usr/app
 
 COPY package*.json ./
 
-RUN npm install yarn && yarn install --only=production
+RUN yarn install --only=production
 
 COPY . .
 

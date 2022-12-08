@@ -27,6 +27,9 @@ import { LoggerService } from '../logger/logger.service';
 import { UpdateUserLocationDto } from './dto/update-user-location.dto';
 import { SessionService } from '../session/session.service';
 import { LoginCreateSocialUser } from './dto/login-create-social.dto';
+import { UrlGeneratorService } from 'nestjs-url-generator/dist/url-generator.service';
+import { EmailQuery } from './query/email.query';
+import { UserController } from './user.controller';
 
 
 
@@ -43,7 +46,8 @@ export class UserService {
     private readonly authService: AuthService,
     private readonly sessionService: SessionService,
     private mailService: MailService,
-    private readonly logger: LoggerService
+    private readonly logger: LoggerService,
+    private readonly urlGeneratorService: UrlGeneratorService
   ) { }
 
 
@@ -58,7 +62,7 @@ export class UserService {
     this.setRegistrationInfo(user);
     await user.save();
     return user;
-    
+
   }
 
 
@@ -72,16 +76,16 @@ export class UserService {
     await this.isEmailUnique(user.email);
     this.setRegistrationInfo(user);
     await user.save();
-    return  user;
+    return user;
   }
 
   /****************
    * VERIFY EMAIL *
    ****************/
 
-  async verifyEmail( verification: string) {
+  async verifyEmail(verification: string) {
     console.log(verification);
-    const user = await this.findByVerification( verification);
+    const user = await this.findByVerification(verification);
     if (user && user.fullName) {
       await this.setUserAsVerified(user);
     }
@@ -155,7 +159,7 @@ export class UserService {
       refreshToken: await this.authService.createRefreshToken(req, user._id),
 
       /**/
-};
+    };
 
 
   }
@@ -186,10 +190,10 @@ export class UserService {
    * * SEND EMAIL CONFIRMATIONS * *
    ********************************/
 
-  async sendForgotPasswordVerifier(forgotPassword) {
+  // async sendForgotPasswordVerifier(forgotPassword) {
 
-    return await this.mailService.sendForgotPasswordVerifier(forgotPassword);
-  }
+  //   return await this.mailService.sendForgotPasswordVerifier(forgotPassword);
+  // }
 
 
   /*****************
@@ -229,12 +233,15 @@ export class UserService {
     req: Request,
     createForgotPasswordDto: CreateForgotPasswordDto,
   ) {
-    await this.findByEmail(createForgotPasswordDto.email);
+    let user = await this.findByEmail(createForgotPasswordDto.email);
     let forgotPassword = await this.saveForgotPassword(req, createForgotPasswordDto);
-    this.sendForgotPasswordVerifier(forgotPassword);
+    let url = await this.generateVerifyForgotPasswordUrl(forgotPassword);
+    //await this.mailService.sendForgotPasswordVerifier({ name: user.fullName, email: user.email, url: url }); 
+
     return {
       email: createForgotPasswordDto.email,
-      message: 'verification sent.',
+      message: 'Un email de vérification de votre demande vous a été envoyé à l\'addresse email indiqué. ',
+      url: url
     };
   }
 
@@ -244,12 +251,18 @@ export class UserService {
 
   async forgotPasswordVerify(req: Request, verification: string) {
     const forgotPassword = await this.findForgotPasswordByUuid(verification);
-    await this.setForgotPasswordFirstUsed(req, forgotPassword);
 
-    return {
-      email: forgotPassword.email,
-      message: 'now reset your password.',
-    };
+    if (forgotPassword && forgotPassword.email) {
+      await this.setForgotPasswordFirstUsed(req, forgotPassword);
+      return {
+        email: forgotPassword.email,
+        message: 'now reset your password.',
+      };
+    } else {
+      return {
+        message: 'Le lien a expiré',
+      };
+    }
   }
 
   /******************
@@ -385,19 +398,19 @@ export class UserService {
 
   }
 
-    /***************************
-   * BUILD REGISTRATION INFO *
-   ***************************/
-
-  
-     buildRegistrationInfo(info): any {
+  /***************************
+ * BUILD REGISTRATION INFO *
+ ***************************/
 
 
-      this.sendUserConfirmation(info);
-  
-      return info;
-  
-    }
+  buildRegistrationInfo(info): any {
+
+
+    this.sendUserConfirmation(info);
+
+    return info;
+
+  }
 
   /*******************
    * PRIVATE METHODS *
@@ -425,7 +438,7 @@ export class UserService {
 
 
 
-  private async findByVerification( verification: string): Promise<User> {
+  private async findByVerification(verification: string): Promise<User> {
     const user = await this.userModel.findOne({
       verification,
       verified: false,
@@ -468,16 +481,16 @@ export class UserService {
 
 
     if (!user) {
-      
-      let userCreated =  await this.createSocialNetworkUser(loginCreateSocialUser)
-     this.mailService.sendWelcomeEmail({
+
+      let userCreated = await this.createSocialNetworkUser(loginCreateSocialUser)
+      this.mailService.sendWelcomeEmail({
         email: userCreated.email,
         name: userCreated.fullName,
         url: "https://dev.dsp-archiwebo21-ct-df-an-cd.fr/",
       });
       return userCreated;
     }
-  
+
 
     return user;
   }
@@ -541,9 +554,9 @@ export class UserService {
       expires: { $gt: new Date() },
     });
     if (!forgotPassword) {
-      throw new BadRequestException('Bad request.');
-    }
-    return forgotPassword;
+      return {} as ForgotPassword;
+    } else { return forgotPassword; }
+
   }
 
   private async setForgotPasswordFirstUsed(
@@ -567,7 +580,7 @@ export class UserService {
       expires: { $gt: new Date() },
     });
     if (!forgotPassword) {
-      throw new BadRequestException('Bad request.');
+      return {} as ForgotPassword;
     }
     return forgotPassword;
   }
@@ -600,6 +613,31 @@ export class UserService {
     return [day, month, year].join('/');
   }
 
+
+  /****************************************
+   * GENERATE VERIFY FORGOT PASSWORD URL *
+   ****************************************/
+
+
+  private generateVerifyForgotPasswordUrl(forgotPassword: ForgotPassword) {
+    const emailParams = {
+      version: '1.0//.%$',
+      userId: 'true',
+    };
+
+    const query: EmailQuery = {
+      verification: forgotPassword.verification,
+    };
+
+    const urlGenerator = this.urlGeneratorService.signControllerUrl({
+      controller: UserController,
+      controllerMethod: UserController.prototype.forgotPasswordVerify,
+      expirationDate: forgotPassword.expires,
+      query: query,
+      params: emailParams,
+    });
+    return urlGenerator;
+  }
 
   async getLocationInfo(req: Request): Promise<Object> {
     let ip = await getClientIp(req);
