@@ -200,9 +200,9 @@ export class TicketService {
 
         }
       ],).sort({ _id: 1 });
-       ticketGroupedByGroupId =  await  this.formatTicketGroupedByGroupId(ticketGroupedByGroupId, session);
+    ticketGroupedByGroupId = await this.formatTicketGroupedByGroupId(ticketGroupedByGroupId, session);
 
-       return ticketGroupedByGroupId;
+    return ticketGroupedByGroupId;
   }
 
 
@@ -215,12 +215,12 @@ export class TicketService {
         let group = await this.groupService.getOneGroup(el._id);
         el.limitTicket = Math.round((session.limitTicket * group.percentage) / 100);
         el.sessionLimitTicket = session.limitTicket;
-        el.claimbedTicketPercentage = el.numberOfTickets == 0 ? (0).toFixed(2) : ((el.claimbedTicket  * 100) / el.numberOfTickets).toFixed(2);
-        el.notClaimbedTicketPercentage = el.notClaimbedTicket == 0 ? (0).toFixed(2) : ((el.notClaimbedTicket  * 100) / el.numberOfTickets).toFixed(2);
+        el.claimbedTicketPercentage = el.numberOfTickets == 0 ? (0).toFixed(2) : ((el.claimbedTicket * 100) / el.numberOfTickets).toFixed(2);
+        el.notClaimbedTicketPercentage = el.notClaimbedTicket == 0 ? (0).toFixed(2) : ((el.notClaimbedTicket * 100) / el.numberOfTickets).toFixed(2);
 
         if (index === array.length - 1) resolve(ticketGroupedByGroupId);
-        
-        
+
+
       })
     });
 
@@ -424,18 +424,29 @@ export class TicketService {
 
     if (ticket?.idGroup) {
       let group = await this.groupService.getOneGroup(ticket.idGroup);
-      let client = await this.userService.getOneUser(ticket.idClient.toString());
-      return {
+
+
+      let res = {
         lot: group.description,
         idClient: ticket.idClient,
-        fullName: client.fullName,
-        email: client.email,
         isDelivered: ticket.isDelivered,
         idSession: ticket.idSession,
         createdAt: ticket.createdAt,
         updatedAt: ticket.updatedAt
 
       };
+      if (ticket?.idClient) {
+        let client = await this.userService.getOneUser(ticket.idClient.toString());
+        return {
+          ...res, fullName: client?.fullName,
+          email: client?.email,
+        }
+      } else {
+        return res;
+      }
+
+
+
     } else {
       throw new NotAcceptableException("Désolé, le ticket  n'est pas associé à un lot.");
     }
