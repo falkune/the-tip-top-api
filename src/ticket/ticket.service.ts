@@ -67,7 +67,7 @@ export class TicketService {
       }
 
       if (trying == 0) {
-        throw new ServiceUnavailableException('Limit of numbers exceeded');
+        throw new ServiceUnavailableException('La limite des numéro possibles est atteint');
       } else {
 
 
@@ -76,7 +76,7 @@ export class TicketService {
         return ticket;
       }
     } else {
-      throw new ServiceUnavailableException('Limit of tickets attempted');
+      throw new ServiceUnavailableException('La limite de ticket est atteint');
     }
   }
 
@@ -260,8 +260,17 @@ export class TicketService {
    * DELETE TICKET *
    *****************/
 
-  async deleteTicket(id: string): Promise<Ticket> {
-    return await this.ticketModel.findByIdAndDelete(id);
+  async deleteTicket(id: string): Promise<any> {
+    let res =  await this.ticketModel.findByIdAndDelete(id);
+
+
+    if(!res){
+      throw new NotAcceptableException('Le ticket n\'existe pas dans le base de donnée');
+    }else{
+      return {
+        message: 'Le ticket a été bien supprimée',  
+      }
+    }
   }
 
   /******************
@@ -308,7 +317,7 @@ export class TicketService {
 
       ); return ticket;
     } catch (error) {
-      throw new NotAcceptableException('Sorry the TicketNumber or client id are Wrong', error);
+      throw new NotAcceptableException('Désolé, le numéro de ticket ou l\'id du client est incorrecte', error);
     }
 
   }
@@ -331,7 +340,7 @@ export class TicketService {
 
       ); return ticket;
     } catch (error) {
-      throw new NotAcceptableException('Sorry the TicketNumber or client id are Wrong', error);
+      throw new NotAcceptableException('Désolé, le numéro de ticket ou l\'id du client est incorrecte', error);
     }
 
   }
@@ -350,7 +359,7 @@ export class TicketService {
         lot: group.description,
       };
     } else {
-      throw new ImATeapotException('Sorry, this ticket number is invalid.');
+      throw new ImATeapotException('Désolé,le numéro de ticket est invalide');
     }
   }
 
@@ -373,7 +382,7 @@ export class TicketService {
 
       };
     } else {
-      throw new NotAcceptableException("Sorry, this ticket is not associated with  group.");
+      throw new NotAcceptableException("Désolé, le ticket  n'est pas associé à un lot.");
     }
   }
 
@@ -528,13 +537,13 @@ export class TicketService {
     if (ticket != null) {
       if (ticket.idClient) {
         throw new ConflictException(
-          'the number is already used by the a client',
+          'Le numéro de ticket déjà été réclamé par un client.',
         );
       } else {
         return ticket;
       }
     } else {
-      throw new NotAcceptableException('the ticket number is not correct');
+      throw new NotAcceptableException('the ticket number is not correct.');
     }
   }
 
@@ -548,11 +557,11 @@ export class TicketService {
       if (ticket.idClient.toString() === assignTicketDto.idClient) {
         return ticket;
       } else {
-        throw new NotAcceptableException('The client is not the owner of the ticket of is ');
+        throw new NotAcceptableException('Le numéro de ticket fournit n’appartient pas à ce client.');
       }
     } else {
 
-      throw new NotAcceptableException('the ticket number is not correct or the ticket is not climbed yet');
+      throw new NotAcceptableException('Le numéro du ticket fournit est incorrecte ou il n\'as pas encore été réclamé pas un client.');
 
     }
   }
