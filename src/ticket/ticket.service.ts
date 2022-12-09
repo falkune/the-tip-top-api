@@ -199,9 +199,10 @@ export class TicketService {
           }
 
         }
-      ],);
-    return this.formatTicketGroupedByGroupId(ticketGroupedByGroupId, session);
- 
+      ],).sort({ _id: 1 });
+       ticketGroupedByGroupId =  await  this.formatTicketGroupedByGroupId(ticketGroupedByGroupId, session);
+
+       return ticketGroupedByGroupId;
   }
 
 
@@ -210,15 +211,16 @@ export class TicketService {
 
     return new Promise((resolve, reject) => {
       ticketGroupedByGroupId.forEach(async (el, index, array) => {
+        console.log(array,'ARRATYE')
         let group = await this.groupService.getOneGroup(el._id);
         el.limitTicket = Math.round((session.limitTicket * group.percentage) / 100);
         el.sessionLimitTicket = session.limitTicket;
-
         el.claimbedTicketPercentage = el.numberOfTickets == 0 ? (0).toFixed(2) : ((el.claimbedTicket  * 100) / el.numberOfTickets).toFixed(2);
         el.notClaimbedTicketPercentage = el.notClaimbedTicket == 0 ? (0).toFixed(2) : ((el.notClaimbedTicket  * 100) / el.numberOfTickets).toFixed(2);
 
-        console.log(el);
         if (index === array.length - 1) resolve(ticketGroupedByGroupId);
+        
+        
       })
     });
 
