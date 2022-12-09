@@ -1,7 +1,7 @@
 import {
   ConflictException,
   ImATeapotException,
-  Injectable, 
+  Injectable,
   ServiceUnavailableException,
   NotAcceptableException,
 } from '@nestjs/common';
@@ -80,13 +80,30 @@ export class TicketService {
     }
   }
 
+  /*********
+   * BINGO *
+   *********/
+
+
+
+  async bingo(idSession: string): Promise<Array<Ticket>> {
+
+    return this.ticketModel.aggregate(
+      [
+        {
+          $sample: { size: 1 }
+        }
+      ]
+    )
+  }
+
   /************************
    * GET TICKET STATISTICS *
    ************************/
 
   async getTicketStats(idSession: string): Promise<Array<Ticket>> {
 
-    
+
     return await this.ticketModel.aggregate(
       [
 
@@ -261,14 +278,14 @@ export class TicketService {
    *****************/
 
   async deleteTicket(id: string): Promise<any> {
-    let res =  await this.ticketModel.findByIdAndDelete(id);
+    let res = await this.ticketModel.findByIdAndDelete(id);
 
 
-    if(!res){
+    if (!res) {
       throw new NotAcceptableException('Le ticket n\'existe pas dans le base de donnée');
-    }else{
+    } else {
       return {
-        message: 'Le ticket a été bien supprimée',  
+        message: 'Le ticket a été bien supprimée',
       }
     }
   }
@@ -287,7 +304,7 @@ export class TicketService {
     let ticket;
     try {
       ticket = await this.ticketModel.findOneAndUpdate(
-        { ticketNumber: assignTicketDto?.ticketNumber }
+        { ticketNumber: assignTicketDto?.ticketNumber },{ idClient: assignTicketDto?.idClient },
       );
     } catch (error) {
       throw new NotAcceptableException('Sorry the TicketNumber is Wrong', error);
@@ -312,7 +329,7 @@ export class TicketService {
     let ticket;
     try {
       ticket = await this.ticketModel.findOneAndUpdate(
-        { ticketNumber: assignTicketDto?.ticketNumber, idClient: assignTicketDto.idClient },
+        { ticketNumber: assignTicketDto?.ticketNumber, idClient: assignTicketDto?.idClient },
         { isDelivered: true },
 
       ); return ticket;
@@ -327,7 +344,7 @@ export class TicketService {
  * deliver TICKETS by admin*
  ******************/
 
-  async deliverTicketByAdmin( 
+  async deliverTicketByAdmin(
     assignTicketDto: AssignTicketDto,
   ): Promise<any> {
 

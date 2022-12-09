@@ -29,7 +29,7 @@ import { SessionService } from '../session/session.service';
 import { LoginCreateSocialUser } from './dto/login-create-social.dto';
 import { UrlGeneratorService } from 'nestjs-url-generator/dist/url-generator.service';
 import { EmailQuery } from './query/email.query';
-import { UserController } from './user.controller';
+import { UserController } from './user.controller'; 
 
 
 
@@ -301,6 +301,10 @@ export class UserService {
         idClients.push(ticket.idClient);
       });
     }
+
+    console.log(new Set(idClients));
+    console.log(tickets);
+  
 
     return await this.userModel.find({ _id: { $in: idClients } }, { idClient: 1, fullName: 1, email: 1, birthday: 1, userLocation: 1 });
   }

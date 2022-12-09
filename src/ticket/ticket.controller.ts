@@ -64,6 +64,25 @@ export class TicketController {
   }
 
 
+
+  /*********
+   * BINGO *
+   *********/
+
+  @Get("/bingo/:id")
+  @UseGuards(AuthGuard('jwt'))
+  @ApiOperation({ summary: 'Get the final winner' })
+  @HttpCode(HttpStatus.OK)
+  @Roles('admin')
+  @ApiBearerAuth()
+  async binngo(@Param() params) {
+    return await this.ticketService.bingo(params.id);
+  }
+
+
+
+
+
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get One ticket' })
@@ -175,7 +194,7 @@ export class TicketController {
   @Post('/verify-ticket')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard('jwt'))
-  @Roles('client')
+  @Roles('client','admin')
   @ApiOperation({ summary: 'Update one ticket by id ( all params )' })
   @ApiBearerAuth()
   @ApiHeader({
@@ -296,7 +315,7 @@ export class TicketController {
   async getClaimbedTicketsBySession(
     @Body() getTicketBySessionDto: GetTicketBySessionDto,
   ) {
-    
+
     return await this.ticketService.getClaimbedTicketsBySession(
       getTicketBySessionDto.idSession,
     );
