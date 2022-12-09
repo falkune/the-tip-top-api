@@ -105,14 +105,16 @@ export class UserController {
   }
 
 
- 
+
   /************************
    * VERIFY EMAIL ADDRESS *
    ************************/
 
   @Get('make-signed-url/version/:version/user/:userId')
-  @UseGuards(SignedUrlGuard, LocalAuthGuard)
-  
+  @UseGuards(SignedUrlGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Verify Email' })
+  @ApiOkResponse({})
   async verifyEmail(@Param() emailParams: EmailParams,
     @Query() emailQuery: EmailQuery, @Res() res: Response) {
     let verify = await this.userService.verifyEmail(emailQuery.verification);
@@ -198,7 +200,10 @@ export class UserController {
 
 
   @Get('forgot-password-verify/version/:version/user/:userId')
-  @UseGuards(SignedUrlGuard, LocalAuthGuard)
+  @UseGuards(SignedUrlGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Verfiy forget password code' })
+  @ApiOkResponse({})
   async forgotPasswordVerify(@Param() emailParams: EmailParams,
     @Query() emailQuery: EmailQuery, @Res() res: Response, @Req() req: Request) {
     let verify = await this.userService.forgotPasswordVerify(req, emailQuery.verification);
