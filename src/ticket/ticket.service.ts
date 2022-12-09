@@ -17,6 +17,8 @@ import { AssignTicketDto } from './dto/assign-ticket.dto';
 import { AuthService } from '../auth/auth.service';
 import { SessionService } from '../session/session.service';
 import { UserService } from 'src/user/user.service';
+import { cp } from 'fs';
+import { Session } from 'src/session/interfaces/session.interface';
 
 
 @Injectable()
@@ -111,8 +113,10 @@ export class TicketService {
 
   async getTicketStats(idSession: string): Promise<Array<Ticket>> {
 
+    let session = await this.sessionService.getOneSession(idSession);
 
-    return await this.ticketModel.aggregate(
+
+    let ticketGroupedByGroupId = await this.ticketModel.aggregate(
       [
 
         {
@@ -190,16 +194,34 @@ export class TicketService {
                   0
                 ]
               }
-            }
-
+            },
           }
 
         }
       ],);
+    return this.formatTicketGroupedByGroupId(ticketGroupedByGroupId, session);
+
+    //return ticketGroupedByGroupId;
+
+
 
   }
 
 
+
+  private formatTicketGroupedByGroupId(ticketGroupedByGroupId: Array<any>, session: Session): Promise<Array<Ticket>> {
+
+    return new Promise((resolve, reject) => {
+      ticketGroupedByGroupId.forEach(async (el, index, array) => {
+        let group = await this.groupService.getOneGroup(el._id);
+        el.limitTicket = (session.limitTicket * group.percentage) / 100;
+        console.log(el);
+        if (index === array.length - 1) resolve(ticketGroupedByGroupId);
+      })
+    });
+
+
+  }
 
   /******************
    * GET ALL TICKET *
@@ -348,9 +370,9 @@ export class TicketService {
   }
 
 
-  /******************
+  /*************************
  * deliver TICKETS by admin*
- ******************/
+ ****************************/
 
   async deliverTicketByAdmin(
     assignTicketDto: AssignTicketDto,
