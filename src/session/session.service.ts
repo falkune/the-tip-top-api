@@ -102,8 +102,19 @@ export class SessionService {
    * DELETE Session *
    *******************/
 
-  async deleteSession(id: string): Promise<Session> {
-    return await this.SessionModel.findByIdAndDelete(id);
+  async deleteSession(id: string): Promise<any> {
+    let res = await this.SessionModel.findByIdAndDelete(id);
+    console.log(res);
+    
+
+    if(!res){
+      throw new NotAcceptableException('La session n\'existe pas dans le base de donnée');
+    }else{
+      return {
+        message: 'La session a été bien supprimée',  
+      }
+    }
+
   }
 
 
