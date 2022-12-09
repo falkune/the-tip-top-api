@@ -19,6 +19,7 @@ import { SessionService } from '../session/session.service';
 import { UserService } from 'src/user/user.service';
 import { cp } from 'fs';
 import { Session } from 'src/session/interfaces/session.interface';
+import { rawListeners } from 'process';
 
 
 @Injectable()
@@ -200,11 +201,7 @@ export class TicketService {
         }
       ],);
     return this.formatTicketGroupedByGroupId(ticketGroupedByGroupId, session);
-
-    //return ticketGroupedByGroupId;
-
-
-
+ 
   }
 
 
@@ -214,7 +211,12 @@ export class TicketService {
     return new Promise((resolve, reject) => {
       ticketGroupedByGroupId.forEach(async (el, index, array) => {
         let group = await this.groupService.getOneGroup(el._id);
-        el.limitTicket = (session.limitTicket * group.percentage) / 100;
+        el.limitTicket = Math.round((session.limitTicket * group.percentage) / 100);
+        el.sessionLimitTicket = session.limitTicket;
+
+        el.claimbedTicketPercentage = el.numberOfTickets == 0 ? (0).toFixed(2) : ((el.claimbedTicket  * 100) / el.numberOfTickets).toFixed(2);
+        el.notClaimbedTicketPercentage = el.notClaimbedTicket == 0 ? (0).toFixed(2) : ((el.notClaimbedTicket  * 100) / el.numberOfTickets).toFixed(2);
+
         console.log(el);
         if (index === array.length - 1) resolve(ticketGroupedByGroupId);
       })
