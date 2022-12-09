@@ -211,7 +211,7 @@ export class TicketService {
 
     return new Promise((resolve, reject) => {
       ticketGroupedByGroupId.forEach(async (el, index, array) => {
-        console.log(array,'ARRATYE')
+        //console.log(array,'ARRATYE')
         let group = await this.groupService.getOneGroup(el._id);
         el.limitTicket = Math.round((session.limitTicket * group.percentage) / 100);
         el.sessionLimitTicket = session.limitTicket;
