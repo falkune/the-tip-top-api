@@ -2,7 +2,7 @@ import { Injectable, NotAcceptableException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Session } from './interfaces/session.interface';
-import { CreateSessionDto } from './dto/create-session.dto'; 
+import { CreateSessionDto } from './dto/create-session.dto';
 import { LoggerService } from '../logger/logger.service';
 import { SetCurrentSessionDto } from './dto/set-current-session.dto';
 
@@ -10,20 +10,20 @@ import { SetCurrentSessionDto } from './dto/set-current-session.dto';
 export class SessionService {
   constructor(
     @InjectModel('Session') private readonly SessionModel: Model<Session>,
-       private readonly logger  : LoggerService
- 
-  ) {}
+    private readonly logger: LoggerService
+
+  ) { }
 
   /*****************
    * CREATE Session *
    *****************/
 
-  async createSession(createSessionDto: CreateSessionDto): Promise<Session> {
-    
+  async createSession(createSessionDto: CreateSessionDto): Promise<any> {
+
 
     const Session = new this.SessionModel(createSessionDto);
     await Session.save();
-    return Session;
+    return { message: "Session créée avec success " };
   }
 
   /******************
@@ -34,14 +34,14 @@ export class SessionService {
     return await this.SessionModel.find({});
   }
 
-    /********************
-   * GET CURRENT SESSION *
-   **********************/
+  /********************
+ * GET CURRENT SESSION *
+ **********************/
 
-     async getCurrentSession(): Promise<any> {
-      return await this.SessionModel.find({isCurrent: true});
-    }
-  
+  async getCurrentSession(): Promise<any> {
+    return await this.SessionModel.find({ isCurrent: true });
+  }
+
 
   /******************
    * GET ONE Session *
@@ -75,28 +75,28 @@ export class SessionService {
     id: string,
     createSessionDto: CreateSessionDto,
   ): Promise<Session> {
-  return await this.SessionModel.findOneAndUpdate({_id: id}, createSessionDto);
-  
+    return await this.SessionModel.findOneAndUpdate({ _id: id }, createSessionDto);
+
   }
 
-/***********************
- * SET CURRENT SESSION *
- ***********************/
+  /***********************
+   * SET CURRENT SESSION *
+   ***********************/
 
- async setCurrentSession(
-  setCurrentSessionDto: SetCurrentSessionDto
-): Promise<Session> {
-  let ticket;
-  try {
-    ticket = await  this.SessionModel.findOneAndUpdate({_id: setCurrentSessionDto.idSession}, {isCurrent:setCurrentSessionDto?.isCurrent})
-    
-  } catch (error) {
-    throw new NotAcceptableException('Sorry the TicketNumber is Wrong', error);
+  async setCurrentSession(
+    setCurrentSessionDto: SetCurrentSessionDto
+  ): Promise<Session> {
+    let ticket;
+    try {
+      ticket = await this.SessionModel.findOneAndUpdate({ _id: setCurrentSessionDto.idSession }, { isCurrent: setCurrentSessionDto?.isCurrent })
+
+    } catch (error) {
+      throw new NotAcceptableException('Sorry the TicketNumber is Wrong', error);
+    }
+
+    return ticket;
+
   }
- 
-return ticket;
-
-}
 
   /******************
    * DELETE Session *
@@ -106,5 +106,5 @@ return ticket;
     return await this.SessionModel.findByIdAndDelete(id);
   }
 
- 
+
 }

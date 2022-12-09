@@ -9,7 +9,7 @@ import { MailModule } from './mail/mail.module';
 import { GroupModule } from './group/group.module';
 import { SessionModule } from './session/session.module';
 import { MailerModule } from '@nestjs-modules/mailer';
-import { ConfigModule } from '@nestjs/config'; 
+import { ConfigModule } from '@nestjs/config';
 import { FacebookStrategy } from './auth/strategies/facebook.strategy';
 import { GoogleStrategy } from './auth/strategies/google.strategy';
 import { UrlGeneratorModule } from 'nestjs-url-generator';
@@ -18,21 +18,21 @@ import { UrlGeneratorModule } from 'nestjs-url-generator';
 
 @Module({
   imports: [
-//MongooseModule.forRoot("mongodb://localhost:27017/thetiptop"),
- MongooseModule.forRoot(process.env.MONGO_URI),
- 
-  UrlGeneratorModule.forRoot({
-    secret: process.env.APP_KEY, // optional, required only for signed URL
-    appUrl: process.env.APP_URL
-  }),
+    //MongooseModule.forRoot("mongodb://localhost:27017/thetiptop"),
+    MongooseModule.forRoot(process.env.MONGO_URI),
+
+    UrlGeneratorModule.forRoot({
+      secret: process.env.APP_KEY, // optional, required only for signed URL
+      appUrl: process.env.APP_URL
+    }),
     MailerModule.forRoot({
       transport: {
-        host: 'smtp.sendgrid.net',
+        host: process.env.MAIL_HOST,
         auth: {
-          user: 'apikey',
-          pass: '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',
+          user: process.env.MAIL_USER,
+          pass: process.env.MAIL_PASSWORD,
         },
-      },
+      }
     }),
     UserModule,
     AuthModule,
@@ -45,11 +45,11 @@ import { UrlGeneratorModule } from 'nestjs-url-generator';
     }),
   ],
   controllers: [AppController],
-  providers: [AppService,FacebookStrategy,GoogleStrategy],
+  providers: [AppService, FacebookStrategy, GoogleStrategy],
 })
-export class AppModule {}
+export class AppModule { }
 
 
- 
+
 
 
