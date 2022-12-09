@@ -4,6 +4,8 @@ import {
   Injectable,
   ServiceUnavailableException,
   NotAcceptableException,
+  forwardRef,
+  Inject,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -14,15 +16,21 @@ import { CreateTicketDto } from './dto/create-ticket.dto';
 import { AssignTicketDto } from './dto/assign-ticket.dto';
 import { AuthService } from '../auth/auth.service';
 import { SessionService } from '../session/session.service';
+import { UserService } from 'src/user/user.service';
 
 
 @Injectable()
 export class TicketService {
   constructor(
     @InjectModel('Ticket') private readonly ticketModel: Model<Ticket>,
+    @Inject(forwardRef(() => UserService))
+    private userService: UserService,
     private readonly groupService: GroupService,
     private readonly authService: AuthService,
     private readonly sessionService: SessionService,
+
+
+
   ) { }
 
   /*****************
@@ -304,7 +312,7 @@ export class TicketService {
     let ticket;
     try {
       ticket = await this.ticketModel.findOneAndUpdate(
-        { ticketNumber: assignTicketDto?.ticketNumber },{ idClient: assignTicketDto?.idClient },
+        { ticketNumber: assignTicketDto?.ticketNumber }, { idClient: assignTicketDto?.idClient },
       );
     } catch (error) {
       throw new NotAcceptableException('Sorry the TicketNumber is Wrong', error);
@@ -376,7 +384,7 @@ export class TicketService {
         lot: group.description,
       };
     } else {
-      throw new ImATeapotException('Désolé,le numéro de ticket est invalide');
+      throw new NotAcceptableException('Désolé,le numéro de ticket est invalide');
     }
   }
 
@@ -390,9 +398,13 @@ export class TicketService {
 
     if (ticket?.idGroup) {
       let group = await this.groupService.getOneGroup(ticket.idGroup);
+      let client = await this.userService.getOneUser(ticket.idClient.toString());
       return {
         lot: group.description,
         idClient: ticket.idClient,
+        fullName: client.fullName,
+        email: client.email,
+        isDelivered: ticket.isDelivered,
         idSession: ticket.idSession,
         createdAt: ticket.createdAt,
         updatedAt: ticket.updatedAt

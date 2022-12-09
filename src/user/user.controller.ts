@@ -290,6 +290,11 @@ export class UserController {
   }
 
 
+  async getOneUser  (id: string) {
+    return await this.userService.getOneUser(id);
+
+  }
+
 
   // @Get("/facebook")
   // @UseGuards(AuthGuard("facebook"))

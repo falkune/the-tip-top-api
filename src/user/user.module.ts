@@ -21,7 +21,6 @@ import { OurConfigService } from '../mail/config.service';
       { name: 'ForgotPassword', schema: ForgotPasswordSchema },
     ]),
     MongooseModule.forFeature([{ name: 'Ticket', schema: TicketSchema }]),
-    TicketModule,
     AuthModule,
     MongooseModule.forFeature([{ name: 'Session', schema: SessionSchema}]),SessionModule,
     MailModule
@@ -29,4 +28,4 @@ import { OurConfigService } from '../mail/config.service';
   controllers: [UserController],
   providers: [UserService,LoggerService,SessionService,OurConfigService],
 })
-export class UserModule {}
+export class UserModule { }

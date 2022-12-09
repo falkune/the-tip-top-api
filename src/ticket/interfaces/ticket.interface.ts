@@ -6,6 +6,7 @@ export interface Ticket extends Document {
     ticketNumber: string,
     idGroup: string,
     idSession: string,
+    isDelivered: boolean,
     createdAt: Date,
     updatedAt: Date
 };

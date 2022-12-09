@@ -30,6 +30,7 @@ import { LoginCreateSocialUser } from './dto/login-create-social.dto';
 import { UrlGeneratorService } from 'nestjs-url-generator/dist/url-generator.service';
 import { EmailQuery } from './query/email.query';
 import { UserController } from './user.controller'; 
+import { TicketService } from 'src/ticket/ticket.service';
 
 
 
@@ -95,6 +96,15 @@ export class UserService {
     };
   }
 
+    /******************
+   * GET ONE User *
+   ******************/
+
+     async getOneUser(id: string): Promise<User> {
+    
+      return await this.userModel.findById(id);
+    }
+  
 
   /**********
    * LOGOUT *
