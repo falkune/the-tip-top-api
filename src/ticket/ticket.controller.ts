@@ -32,6 +32,8 @@ import { VerifyTicketDto } from './dto/verify-ticket.dto';
 import { GetTicketBySessionDto } from './dto/get-tickets-by-session.dto';
 import { GetTicketByClientDto } from './dto/get-tickets-by-client.dto';
 import { GroupService } from '../group/group.service';
+import { DeliverTicketByAdminDto } from './dto/deliver-ticket-by-admin.dto';
+import { DeliverTicketByClientDto } from './dto/deliver-ticket-by-client.dto';
 
 
 
@@ -161,12 +163,12 @@ export class TicketController {
   @ApiOkResponse({})
   async deliverTicket(
     @Headers() headers,
-    @Body() assignTicketDto: AssignTicketDto,
+    @Body() deliverTicketByClientDto: DeliverTicketByClientDto,
   ) {
 
     return await this.ticketService.deliverTicket(
-      assignTicketDto?.idClient,
-      assignTicketDto,
+      deliverTicketByClientDto?.idClient,
+      deliverTicketByClientDto,
     );
   }
 
@@ -183,18 +185,18 @@ export class TicketController {
   @ApiOkResponse({})
   async deliverTicketByAdmin(
     @Headers() headers,
-    @Body() assignTicketDto: AssignTicketDto,
+    @Body() deliverTicketByAdminDto: DeliverTicketByAdminDto,
   ) {
 
     return await this.ticketService.deliverTicketByAdmin(
-      assignTicketDto
+      deliverTicketByAdminDto
     );
   }
 
   @Post('/verify-ticket')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard('jwt'))
-  @Roles('client','admin')
+  @Roles('client', 'admin')
   @ApiOperation({ summary: 'Update one ticket by id ( all params )' })
   @ApiBearerAuth()
   @ApiHeader({

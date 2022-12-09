@@ -20,6 +20,8 @@ import { UserService } from 'src/user/user.service';
 import { cp } from 'fs';
 import { Session } from 'src/session/interfaces/session.interface';
 import { rawListeners } from 'process';
+import { DeliverTicketByClientDto } from './dto/deliver-ticket-by-client.dto';
+import { DeliverTicketByAdminDto } from './dto/deliver-ticket-by-admin.dto';
 
 
 @Injectable()
@@ -349,21 +351,22 @@ export class TicketService {
   }
 
 
-  /******************
-   * deliver TICKETS *
-   ******************/
+
+  /*********************************
+   * * DELIVER TICKETS BY CLIENT * *
+   *********************************/
 
   async deliverTicket(
     refreshToken: string,
-    assignTicketDto: AssignTicketDto,
+    params: DeliverTicketByClientDto,
   ): Promise<any> {
     let userId = await this.authService.findRefreshToken(refreshToken);
-    assignTicketDto.idClient = userId.valueOf().toString();
-    await this.isTicketClaimedByTheUser(assignTicketDto);
+    params.idClient = userId.valueOf().toString();
+    await this.isTicketClaimedByTheUser(params);
     let ticket;
     try {
       ticket = await this.ticketModel.findOneAndUpdate(
-        { ticketNumber: assignTicketDto?.ticketNumber, idClient: assignTicketDto?.idClient },
+        { ticketNumber: params?.ticketNumber, idClient: params?.idClient },
         { isDelivered: true },
 
       ); return ticket;
@@ -379,14 +382,14 @@ export class TicketService {
  ****************************/
 
   async deliverTicketByAdmin(
-    assignTicketDto: AssignTicketDto,
+    deliverTicketByAdminDto: DeliverTicketByAdminDto,
   ): Promise<any> {
 
-    await this.isTicketClaimedByTheUser(assignTicketDto);
+    await this.isTicketAlreadyDelivered(deliverTicketByAdminDto.ticketNumber);
     let ticket;
     try {
       ticket = await this.ticketModel.findOneAndUpdate(
-        { ticketNumber: assignTicketDto?.ticketNumber },
+        { ticketNumber: deliverTicketByAdminDto?.ticketNumber },
         { isDelivered: true },
 
       ); return ticket;
@@ -616,19 +619,31 @@ export class TicketService {
   /*********************
   * IS TIKET CLAIMBED by the user *
   *********************/
-  private async isTicketClaimedByTheUser(assignTicketDto: AssignTicketDto): Promise<any> {
-    let ticket = await this.getTicketByNumber(assignTicketDto.ticketNumber);
+  private async isTicketClaimedByTheUser(deliverTicketByClientDto: DeliverTicketByClientDto): Promise<any> {
+    await this.isTicketAlreadyDelivered(deliverTicketByClientDto.ticketNumber);
+    let ticket = await this.getTicketByNumber(deliverTicketByClientDto.ticketNumber);
 
     if (ticket != null && ticket.idClient) {
-      if (ticket.idClient.toString() === assignTicketDto.idClient) {
+      if (ticket.idClient.toString() === deliverTicketByClientDto.idClient) {
         return ticket;
       } else {
         throw new NotAcceptableException('Le numéro de ticket fournit n’appartient pas à ce client.');
       }
     } else {
-
       throw new NotAcceptableException('Le numéro du ticket fournit est incorrecte ou il n\'as pas encore été réclamé pas un client.');
+    }
+  }
+  private async isTicketAlreadyDelivered(ticketNumber: string): Promise<any> {
+    let ticket = await this.getTicketByNumber(ticketNumber);
 
+    if (ticket) {
+      if (!ticket.isDelivered) {
+        return ticket;
+      } else {
+        throw new NotAcceptableException('Le gain associé à ce ticket a déjà été délivré.');
+      }
+    } else {
+      throw new NotAcceptableException('Le numéro du ticket fournit est incorrecte ou il n\'as pas encore été réclamé pas un client.');
     }
   }
 }
