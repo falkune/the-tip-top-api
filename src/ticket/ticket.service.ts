@@ -198,6 +198,60 @@ export class TicketService {
                 ]
               }
             },
+            "deliveredTicket": {
+              "$sum": {
+
+
+                "$cond": [
+                  {
+
+                    "$and": [
+                      {
+                        "$eq": [
+                          "$isDelivered", true
+                        ]
+                      },
+                      {
+                        "$eq": [
+                          "$idSession", idSession
+                        ]
+                      }
+                    ]
+
+
+                  },
+                  1,
+                  0
+                ]
+              }
+            },
+            "notDeliveredTicket": {
+              "$sum": {
+
+
+                "$cond": [
+                  {
+
+                    "$and": [
+                      {
+                        "$eq": [
+                          "$isDelivered", false
+                        ]
+                      },
+                      {
+                        "$eq": [
+                          "$idSession", idSession
+                        ]
+                      }
+                    ]
+
+
+                  },
+                  1,
+                  0
+                ]
+              }
+            },
           }
 
         }
@@ -211,10 +265,10 @@ export class TicketService {
     let sessionNotClaimbedTicketPercentage = sessionTotalNotClaimbedTicket == 0 ? (0).toFixed(2) : ((sessionTotalNotClaimbedTicket * 100) / sessionTotalNumberOfTickets).toFixed(2);
     let sessionTotalNumberOfTicketsPercentage = sessionTotalNumberOfTickets == 0 ? (0).toFixed(2) : ((sessionTotalNumberOfTickets * 100) / session.limitTicket).toFixed(2);
 
-    
 
 
-    return { groupStats: ticketGroupedByGroupId, sessionStats: { sessionTotalClaimbedTicket: sessionTotalClaimbedTicket, sessionTotalNotClaimbedTicket: sessionTotalNotClaimbedTicket, sessionTotalNumberOfTickets: sessionTotalNumberOfTickets, sessionClaimbedTicketPercentage: sessionClaimbedTicketPercentage, sessionNotClaimbedTicketPercentage: sessionNotClaimbedTicketPercentage,sessionTotalNumberOfTicketsPercentage:sessionTotalNumberOfTicketsPercentage } };
+
+    return { groupStats: ticketGroupedByGroupId, sessionStats: { sessionTotalClaimbedTicket: sessionTotalClaimbedTicket, sessionTotalNotClaimbedTicket: sessionTotalNotClaimbedTicket, sessionTotalNumberOfTickets: sessionTotalNumberOfTickets, sessionClaimbedTicketPercentage: sessionClaimbedTicketPercentage, sessionNotClaimbedTicketPercentage: sessionNotClaimbedTicketPercentage, sessionTotalNumberOfTicketsPercentage: sessionTotalNumberOfTicketsPercentage } };
   }
 
 
@@ -235,8 +289,10 @@ export class TicketService {
         el.sessionLimitTicket = session.limitTicket;
         el.numberOfTicketsPercentage = el.limitTicket == 0 ? (0).toFixed(2) : ((el.numberOfTickets * 100) / el.limitTicket).toFixed(2);
         el.claimbedTicketPercentage = el.numberOfTickets == 0 ? (0).toFixed(2) : ((el.claimbedTicket * 100) / el.numberOfTickets).toFixed(2);
-        el.notClaimbedTicketPercentage = el.notClaimbedTicket == 0 ? (0).toFixed(2) : ((el.notClaimbedTicket * 100) / el.numberOfTickets).toFixed(2);
-
+        el.notClaimbedTicketPercentage = el.numberOfTickets == 0 ? (0).toFixed(2) : ((el.notClaimbedTicket * 100) / el.numberOfTickets).toFixed(2);
+        el.deliveredTicketPercentage = el.numberOfTickets == 0 ? (0).toFixed(2) : ((el.deliveredTicket * 100) / el.numberOfTickets).toFixed(2);
+        el.notDeliveredTicketPercentage = el.numberOfTickets == 0 ? (0).toFixed(2) : ((el.notDeliveredTicket * 100) / el.numberOfTickets).toFixed(2);
+        el.groupName = group?.description;
         if (index === array.length - 1) resolve(ticketGroupedByGroupId);
 
       })
