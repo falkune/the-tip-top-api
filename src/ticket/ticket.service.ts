@@ -207,10 +207,14 @@ export class TicketService {
     let sessionTotalClaimbedTicket = await this.getComputedVal(ticketGroupedByGroupId, "claimbedTicket");
     let sessionTotalNotClaimbedTicket = await this.getComputedVal(ticketGroupedByGroupId, "notClaimbedTicket");
     let sessionTotalNumberOfTickets = await this.getComputedVal(ticketGroupedByGroupId, "numberOfTickets");
+    let sessionClaimbedTicketPercentage = sessionTotalNumberOfTickets == 0 ? (0).toFixed(2) : ((sessionTotalClaimbedTicket * 100) / sessionTotalNumberOfTickets).toFixed(2);
+    let sessionNotClaimbedTicketPercentage = sessionTotalNotClaimbedTicket == 0 ? (0).toFixed(2) : ((sessionTotalNotClaimbedTicket * 100) / sessionTotalNumberOfTickets).toFixed(2);
+    let sessionTotalNumberOfTicketsPercentage = sessionTotalNumberOfTickets == 0 ? (0).toFixed(2) : ((sessionTotalNumberOfTickets * 100) / session.limitTicket).toFixed(2);
+
+    
 
 
-
-    return { groupStats: ticketGroupedByGroupId, sessionStats: { sessionTotalClaimbedTicket: sessionTotalClaimbedTicket, sessionTotalNotClaimbedTicket: sessionTotalNotClaimbedTicket, sessionTotalNumberOfTickets: sessionTotalNumberOfTickets } };
+    return { groupStats: ticketGroupedByGroupId, sessionStats: { sessionTotalClaimbedTicket: sessionTotalClaimbedTicket, sessionTotalNotClaimbedTicket: sessionTotalNotClaimbedTicket, sessionTotalNumberOfTickets: sessionTotalNumberOfTickets, sessionClaimbedTicketPercentage: sessionClaimbedTicketPercentage, sessionNotClaimbedTicketPercentage: sessionNotClaimbedTicketPercentage,sessionTotalNumberOfTicketsPercentage:sessionTotalNumberOfTicketsPercentage } };
   }
 
 
@@ -229,8 +233,10 @@ export class TicketService {
         let group = await this.groupService.getOneGroup(el._id);
         el.limitTicket = Math.round((session.limitTicket * group.percentage) / 100);
         el.sessionLimitTicket = session.limitTicket;
+        el.numberOfTicketsPercentage = el.limitTicket == 0 ? (0).toFixed(2) : ((el.numberOfTickets * 100) / el.limitTicket).toFixed(2);
         el.claimbedTicketPercentage = el.numberOfTickets == 0 ? (0).toFixed(2) : ((el.claimbedTicket * 100) / el.numberOfTickets).toFixed(2);
         el.notClaimbedTicketPercentage = el.notClaimbedTicket == 0 ? (0).toFixed(2) : ((el.notClaimbedTicket * 100) / el.numberOfTickets).toFixed(2);
+
         if (index === array.length - 1) resolve(ticketGroupedByGroupId);
 
       })
