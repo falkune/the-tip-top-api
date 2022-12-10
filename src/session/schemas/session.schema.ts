@@ -31,6 +31,10 @@ export const SessionSchema = new mongoose.Schema(
       default: false,
 
     },
+    winner: {
+      type: String
+
+    },
   },
   {
     versionKey: false,

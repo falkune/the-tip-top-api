@@ -6,6 +6,7 @@ import {
   NotAcceptableException,
   forwardRef,
   Inject,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -17,9 +18,7 @@ import { AssignTicketDto } from './dto/assign-ticket.dto';
 import { AuthService } from '../auth/auth.service';
 import { SessionService } from '../session/session.service';
 import { UserService } from 'src/user/user.service';
-import { cp } from 'fs';
 import { Session } from 'src/session/interfaces/session.interface';
-import { rawListeners } from 'process';
 import { DeliverTicketByClientDto } from './dto/deliver-ticket-by-client.dto';
 import { DeliverTicketByAdminDto } from './dto/deliver-ticket-by-admin.dto';
 
@@ -43,23 +42,33 @@ export class TicketService {
    *****************/
 
   async createTicket(createTicketDto: CreateTicketDto): Promise<Ticket> {
-    const numberOfCreatedTickets = await this.getNumberOfCreatedTickets();
+    const numberOfCreatedTickets = await this.getNumberOfCreatedTicketsInsideSession(createTicketDto?.idSession);
 
 
-    const maxTicketForSession = await this.getMaxTicketFoSession(
+    const maxTicketForSession = await this.getMaxTicketForSession(
       createTicketDto?.idSession,
     );
 
 
 
+
+
+
+
+
     if (numberOfCreatedTickets < maxTicketForSession) {
+
       createTicketDto.ticketNumber = this.getRandomInt();
+
 
 
       let ticketFound = await this.getTicketByNumber(
         createTicketDto.ticketNumber,
       );
+
+
       let randGroup = await this.getRandomGroup(0, createTicketDto.idSession);
+      console.table([numberOfCreatedTickets, maxTicketForSession, ticketFound, createTicketDto.ticketNumber, randGroup]);
 
 
       let trying = maxTicketForSession;
@@ -99,15 +108,45 @@ export class TicketService {
 
 
 
-  async bingo(idSession: string): Promise<Array<Ticket>> {
+  async bingo(idSession: string): Promise<any> {
 
-    return this.ticketModel.aggregate(
+    const [ticket] = await this.ticketModel.aggregate(
       [
+
         {
-          $sample: { size: 1 }
-        }
+          $match: {
+
+            $and: [
+              { idSession: {$eq: idSession} },
+              { idClient: { $exists: true } }
+            ]
+          },
+
+
+
+
+
+        },
+        { $sample: { size: 1 } }
+
       ]
-    )
+    );
+    if (ticket) {
+      console.log(ticket);
+      let session = await this.sessionService.setWinner(idSession, ticket.ticketNumber)
+      if (ticket.idClient) {
+        let winner = await this.userService.getOneUser(ticket.idClient)
+        console.log(session)
+        return { session, winner }
+      } else {
+        return { session }
+      }
+
+    } else {
+      throw new UnprocessableEntityException("Désolé, il n'y as pas de ticket généré ou réclamé dans cette session");
+    }
+
+
   }
 
   /************************
@@ -350,8 +389,13 @@ export class TicketService {
    *************************/
 
 
-  async getAllTicketForGroup(idGroup: string): Promise<number> {
-    return await this.ticketModel.find({ idGroup: { $eq: idGroup } }).count();
+  async getAllTicketForGroup(idGroup: string, idSession: string): Promise<number> {
+    return await this.ticketModel.find(
+
+
+      { $and: [{ idGroup: { $eq: idGroup } }, { idSession: { $eq: idSession } }] }).count();
+
+
   }
 
   /*************************
@@ -369,15 +413,15 @@ export class TicketService {
    * COUNT THE NUMBER OF CREATED TICKETS *
    ***************************************/
 
-  async getNumberOfCreatedTickets(): Promise<any> {
-    return await this.ticketModel.count();
+  async getNumberOfCreatedTicketsInsideSession(idSession: string): Promise<any> {
+    return await this.ticketModel.find({ idSession: idSession }).count();
   }
 
   /*************************************************
    * THE MAXIMUM NUMBER OF TICKETS FOR THE SESSION *
    *************************************************/
 
-  async getMaxTicketFoSession(idSession: string): Promise<number> {
+  async getMaxTicketForSession(idSession: string): Promise<number> {
     try {
       return await this.sessionService
         .getOneSession(idSession)
@@ -648,9 +692,14 @@ export class TicketService {
 
       for (; i < groups.length; ++i) {
         s += group?.percentage;
+
         let ticketsForGroup = await this.getAllTicketForGroup(
-          group._id.valueOf(),
+          group?._id.valueOf(), idSession
         );
+
+        console.info("Group", ticketsForGroup);
+
+
 
 
         let session = await this.sessionService.getOneSession(idSession)
@@ -664,7 +713,7 @@ export class TicketService {
           } else {
 
             let tmp_alllTicket, tmp_limitTicket;
-            await this.getAllTicketForGroup(lastGroup._id.valueOf()).then((val) => {
+            await this.getAllTicketForGroup(lastGroup._id.valueOf(), idSession).then((val) => {
               tmp_alllTicket = val;
             });
 
@@ -678,7 +727,7 @@ export class TicketService {
           }
         } else {
 
-          return this.getAllTicketForGroup(lastGroup._id.valueOf()) <
+          return this.getAllTicketForGroup(lastGroup._id.valueOf(), idSession) <
             lastGroup?.limitTicket
             ? lastGroup._id.valueOf()
             : this.getRandomGroup(i + 1, idSession);
@@ -704,13 +753,13 @@ export class TicketService {
         return ticket;
       }
     } else {
-      throw new NotAcceptableException('the ticket number is not correct.');
+      throw new NotAcceptableException('Désolé, le numéro de ticket est incorrecte');
     }
   }
 
-  /*********************
-  * IS TIKET CLAIMBED by the user *
-  *********************/
+  /**********************************
+  ** IS TIKET CLAIMBED by the user **
+  ***********************************/
   private async isTicketClaimedByTheUser(deliverTicketByClientDto: DeliverTicketByClientDto): Promise<any> {
     await this.isTicketAlreadyDelivered(deliverTicketByClientDto.ticketNumber);
     let ticket = await this.getTicketByNumber(deliverTicketByClientDto.ticketNumber);

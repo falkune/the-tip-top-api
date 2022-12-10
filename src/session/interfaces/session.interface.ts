@@ -7,4 +7,6 @@ export interface Session extends Document {
     description: string,
     limitTicket: number,
     isCurrent: boolean,
+    winner: string,
+
 };

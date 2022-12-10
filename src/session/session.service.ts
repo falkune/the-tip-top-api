@@ -5,6 +5,7 @@ import { Session } from './interfaces/session.interface';
 import { CreateSessionDto } from './dto/create-session.dto';
 import { LoggerService } from '../logger/logger.service';
 import { SetCurrentSessionDto } from './dto/set-current-session.dto';
+import { SetWinnerOfTheSession } from './dto/set-winner-of-the-session.dto';
 
 @Injectable()
 export class SessionService {
@@ -98,6 +99,26 @@ export class SessionService {
 
   }
 
+  /***********************
+  * SET WENNER SESSION *
+  ***********************/
+
+  async setWinner(
+    id: string, winner: string
+  ): Promise<Session> {
+    
+    try {
+      let ticket = await this.SessionModel.findOneAndUpdate({ _id: id }, { winner: winner },{ returnOriginal: false })
+      return ticket;
+
+    } catch (error) {
+      throw new NotAcceptableException('Sorry the TicketNumber is Wrong', error);
+    }
+
+ 
+
+  }
+
   /******************
    * DELETE Session *
    *******************/
@@ -105,13 +126,13 @@ export class SessionService {
   async deleteSession(id: string): Promise<any> {
     let res = await this.SessionModel.findByIdAndDelete(id);
     console.log(res);
-    
 
-    if(!res){
+
+    if (!res) {
       throw new NotAcceptableException('La session n\'existe pas dans le base de donnée');
-    }else{
+    } else {
       return {
-        message: 'La session a été bien supprimée',  
+        message: 'La session a été bien supprimée',
       }
     }
 

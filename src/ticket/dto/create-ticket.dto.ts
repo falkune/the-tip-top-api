@@ -5,27 +5,6 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateTicketDto {
-  // @ApiProperty({
-  //   example: 'Example Title',
-  //   description: 'Title of ticket',
-  //   format: 'string',
-  //   minLength: 6,
-  //   maxLength: 255,
-  // })
-  // @IsNotEmpty()
-  // @IsString()
-  // @MinLength(5)
-  // @MaxLength(255)
-  // readonly title: string;
-
-  // @ApiProperty({
-  //   example: 'Body example ...',
-  //   description: 'Main part of ticket',
-  //   format: 'string',
-  // })
-  // @IsNotEmpty()
-  // @IsString()
-  // readonly body: string;
 
   @ApiProperty({
     example: 'ticketNumber example ... 032752375705450273450723047',
@@ -46,7 +25,7 @@ export class CreateTicketDto {
     description: 'Indentifier of the session where the ticket is part of',
     format: 'string',
   })
-  @IsNotEmpty()
-  @IsString()
+  @IsNotEmpty({message: 'l\'id de la session ne peut pas être vide'})
+  @IsString({message: 'l\'id de la session doit être une chaîne de caractère'})
   idSession: string;
 }
