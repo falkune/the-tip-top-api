@@ -260,15 +260,36 @@ export class TicketService {
     ticketGroupedByGroupId = await this.formatTicketGroupedByGroupId(ticketGroupedByGroupId, session);
     let sessionTotalClaimbedTicket = await this.getComputedVal(ticketGroupedByGroupId, "claimbedTicket");
     let sessionTotalNotClaimbedTicket = await this.getComputedVal(ticketGroupedByGroupId, "notClaimbedTicket");
+
     let sessionTotalNumberOfTickets = await this.getComputedVal(ticketGroupedByGroupId, "numberOfTickets");
-    let sessionClaimbedTicketPercentage = sessionTotalNumberOfTickets == 0 ? (0).toFixed(2) : ((sessionTotalClaimbedTicket * 100) / sessionTotalNumberOfTickets).toFixed(2);
-    let sessionNotClaimbedTicketPercentage = sessionTotalNotClaimbedTicket == 0 ? (0).toFixed(2) : ((sessionTotalNotClaimbedTicket * 100) / sessionTotalNumberOfTickets).toFixed(2);
     let sessionTotalNumberOfTicketsPercentage = sessionTotalNumberOfTickets == 0 ? (0).toFixed(2) : ((sessionTotalNumberOfTickets * 100) / session.limitTicket).toFixed(2);
 
+    let sessionClaimbedTicketPercentage = sessionTotalNumberOfTickets == 0 ? (0).toFixed(2) : ((sessionTotalClaimbedTicket * 100) / sessionTotalNumberOfTickets).toFixed(2);
+    let sessionNotClaimbedTicketPercentage = sessionTotalNotClaimbedTicket == 0 ? (0).toFixed(2) : ((sessionTotalNotClaimbedTicket * 100) / sessionTotalNumberOfTickets).toFixed(2);
+
+    let sessionTotalDeliveredTicket = await this.getComputedVal(ticketGroupedByGroupId, "deliveredTicket");
+    let sessionTotalNotDeliveredTicket = await this.getComputedVal(ticketGroupedByGroupId, "notDeliveredTicket");
+
+    let sessionDeliveredTicketPercentage = sessionTotalNumberOfTickets == 0 ? (0).toFixed(2) : ((sessionTotalDeliveredTicket * 100) / sessionTotalNumberOfTickets).toFixed(2);
+    let sessionNotDeliveredTicketPercentage = sessionTotalNotDeliveredTicket == 0 ? (0).toFixed(2) : ((sessionTotalNotDeliveredTicket * 100) / sessionTotalNumberOfTickets).toFixed(2);
 
 
 
-    return { groupStats: ticketGroupedByGroupId, sessionStats: { sessionTotalClaimbedTicket: sessionTotalClaimbedTicket, sessionTotalNotClaimbedTicket: sessionTotalNotClaimbedTicket, sessionTotalNumberOfTickets: sessionTotalNumberOfTickets, sessionClaimbedTicketPercentage: sessionClaimbedTicketPercentage, sessionNotClaimbedTicketPercentage: sessionNotClaimbedTicketPercentage, sessionTotalNumberOfTicketsPercentage: sessionTotalNumberOfTicketsPercentage } };
+
+    return {
+      groupStats: ticketGroupedByGroupId, sessionStats: {
+        sessionTotalClaimbedTicket: sessionTotalClaimbedTicket,
+        sessionTotalNotClaimbedTicket: sessionTotalNotClaimbedTicket,
+        sessionTotalNumberOfTickets: sessionTotalNumberOfTickets,
+        sessionTotalDeliveredTicket: sessionTotalDeliveredTicket,
+        sessionTotalNotDeliveredTicket: sessionTotalNotDeliveredTicket,
+        sessionClaimbedTicketPercentage: sessionClaimbedTicketPercentage,
+        sessionNotClaimbedTicketPercentage: sessionNotClaimbedTicketPercentage,
+        sessionTotalNumberOfTicketsPercentage: sessionTotalNumberOfTicketsPercentage,
+        sessionDeliveredTicketPercentage: sessionDeliveredTicketPercentage,
+        sessionNotDeliveredTicketPercentage: sessionNotDeliveredTicketPercentage
+      }
+    };
   }
 
 
