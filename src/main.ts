@@ -48,6 +48,7 @@ async function bootstrap() {
   });
   app.use(helmet());
   app.useLogger(globalLogger);
+  app.set('trust proxy', true);
   
 
 
