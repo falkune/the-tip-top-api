@@ -246,11 +246,11 @@ export class UserService {
     let user = await this.findByEmail(createForgotPasswordDto.email);
     let forgotPassword = await this.saveForgotPassword(req, createForgotPasswordDto);
     let url = await this.generateVerifyForgotPasswordUrl(forgotPassword);
-   /// await this.mailService.sendForgotPasswordVerifier({ name: user.fullName, email: user.email, url: url }); 
+    await this.mailService.sendForgotPasswordVerifier({ name: user.fullName, email: user.email, url: url }); 
 
     return {
       email: createForgotPasswordDto.email,
-      message: 'Un email de vérification de votre demande vous a été envoyé à l\'addresse email indiqué. ',
+      message: 'Un email de vérification de votre demande vous a été envoyé à l\’adresse email indiqué. ',
       url: url
     };
   }
