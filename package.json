@@ -57,6 +57,7 @@
     "passport-facebook": "^3.0.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-jwt": "^4.0.0",
+    "qs": "^6.11.0",
     "react-scripts": "^5.0.1",
     "reflect-metadata": "^0.1.13",
     "request-ip": "^2.1.3",
