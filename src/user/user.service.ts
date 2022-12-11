@@ -483,7 +483,7 @@ export class UserService {
   private async findUserByEmail(email: string): Promise<User> {
     const user = await this.userModel.findOne({ email, verified: true });
     if (!user) {
-      throw new NotFoundException('Wrong email or password.');
+      throw new NotFoundException('L\'email ou le mot de passe sont incorrectes.');
     }
     return user;
   }
@@ -513,7 +513,7 @@ export class UserService {
     const match = await bcrypt.compare(attemptPass, user.password);
     if (!match) {
       await this.passwordsDoNotMatch(user);
-      throw new NotFoundException('Wrong email or password.');
+      throw new NotFoundException('L\'email ou le mot de passe sont incorrectes.');
     }
     return match;
   }
