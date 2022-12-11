@@ -7,7 +7,7 @@ export class GetTicketBySessionDto {
     description: 'Indentifier of the session where the ticket is part of',
     format: 'string',
   })
-  @IsNotEmpty()
-  @IsString()
+  @IsNotEmpty({message: "l\'id de la session ne peut pas être vide"})
+  @IsString({message: "l\'id de la session doit être une chaîne de caractère"}) 
   idSession: string;
 }

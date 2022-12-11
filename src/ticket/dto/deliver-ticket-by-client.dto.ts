@@ -20,8 +20,8 @@ export class DeliverTicketByClientDto {
     description: 'ticketNumber of the ticket which will be delivered to the client',
     format: 'String',
   })
-  @IsNotEmpty()
-  @IsString() 
+  @IsNotEmpty({message: "le numéro de ticket ne peut pas être vide"})
+  @IsString({message: "le numéro de ticket doit être une chaîne de caractère"}) 
   readonly ticketNumber: string;
 
 }

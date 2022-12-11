@@ -110,37 +110,19 @@ export class TicketService {
 
   async bingo(idSession: string): Promise<any> {
 
-    const [ticket] = await this.ticketModel.aggregate(
-      [
 
-        {
-          $match: {
-
-            $and: [
-              { idSession: {$eq: idSession} },
-              { idClient: { $exists: true } }
-            ]
-          },
+    const clientIds = await this.ticketModel.distinct("idClient", { "idSession": idSession });
+    let clientId = clientIds[Math.floor(Math.random() * clientIds.length)];
 
 
 
+    if (clientId) {
+      console.log(clientId);
+      let session = await this.sessionService.setWinner(idSession, clientId)
 
+      let winner = await this.userService.getOneUser(clientId)
 
-        },
-        { $sample: { size: 1 } }
-
-      ]
-    );
-    if (ticket) {
-      console.log(ticket);
-      let session = await this.sessionService.setWinner(idSession, ticket.ticketNumber)
-      if (ticket.idClient) {
-        let winner = await this.userService.getOneUser(ticket.idClient)
-        console.log(session)
-        return { session, winner }
-      } else {
-        return { session }
-      }
+      return { session, winner }
 
     } else {
       throw new UnprocessableEntityException("Désolé, il n'y as pas de ticket généré ou réclamé dans cette session");
@@ -408,6 +390,8 @@ export class TicketService {
     idClient = userId.valueOf().toString();
     return await this.ticketModel.find({ idClient: { $eq: idClient } });
   }
+
+
 
   /***************************************
    * COUNT THE NUMBER OF CREATED TICKETS *

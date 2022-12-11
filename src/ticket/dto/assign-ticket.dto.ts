@@ -7,7 +7,7 @@ import { ApiProperty } from '@nestjs/swagger';
 export class AssignTicketDto {
  
   @ApiProperty({
-    example: '6546h4e4h6df65h46tu5',
+    example: '639342b2d71ec7e371800b37',
     description: 'Id of the client who owns the ticket',
     format: 'string',
   })
@@ -16,12 +16,12 @@ export class AssignTicketDto {
   idClient: string;
 
   @ApiProperty({
-    example: '6546h4e4h6df65h46tu5',
+    example: '1234567891',
     description: 'ticketNumber of the ticket which will be assigned to the client',
     format: 'String',
   })
-  @IsNotEmpty()
-  @IsString() 
+  @IsNotEmpty({message: "le numéro de ticket ne peut pas être vide"})
+  @IsString({message: "le numéro de ticket doit être une chaîne de caractère"}) 
   readonly ticketNumber: string;
 
 }

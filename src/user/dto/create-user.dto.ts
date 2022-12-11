@@ -3,38 +3,38 @@ import {
   MinLength,
   MaxLength,
   IsEmail,
-  IsString, 
+  IsString,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateUserDto {
   // fullName
   @ApiProperty({
-    example: 'cheikh THIAM',
+    example: 'Furious DUCK',
     description: 'The name of the User',
     format: 'string',
     minLength: 6,
     maxLength: 255,
   })
-  @IsNotEmpty()
-  @IsString()
-  @MinLength(5)
-  @MaxLength(255)
+  @IsNotEmpty({ message: "Le nom complet ne peux pas être vide" })
+  @IsString({ message: "Le nom complet doit être une chaîne de caractère" })
+  @MinLength(5, { message: "le nom complet doit être au minimum composé de 5 caractère" })
+  @MaxLength(255, { message: "le nom complet pas doit être au maximum composé de 255 caractère" })
   readonly fullName: string;
 
   // Email
   @ApiProperty({
-    example: 'cheikh@gmail.com',
+    example: 'furious@gmail.com',
     description: 'The email of the User',
     format: 'email',
     uniqueItems: true,
     minLength: 5,
     maxLength: 255,
   })
-  @IsNotEmpty()
-  @IsString()
-  @MinLength(5)
-  @MaxLength(255)
+  @IsNotEmpty({ message: "l\'email ne peux pas être vide" })
+  @IsString({ message: "l\'email doit être une chaîne de caractère" })
+  @MinLength(5, { message: "l\'email ne doit être au minimum composé de 5 caractère" })
+  @MaxLength(255, { message: "l\'email ne pas doit être au maximum composé de 255 caractère" })
   @IsEmail()
   readonly email: string;
 
@@ -45,20 +45,21 @@ export class CreateUserDto {
     format: 'string',
     minLength: 5,
     maxLength: 1024,
-  }) 
-  @IsNotEmpty()
-  @IsString()
-  @MinLength(5)
-  @MaxLength(1024)
+  })
+  @IsNotEmpty({ message: "le mot de passe ne peux pas être vide" })
+  @IsString({ message: "le mot de passe une chaîne de caractère" })
+  @MinLength(5, { message: "le mot de passe doit être au minimum composé de 5 caractère" })
+  @MaxLength(1024, { message: "le mot de passe doit être au maximum composé de 1024 caractère" })
+
   readonly password: string;
 
   // Date of birth
   @ApiProperty({
-    example: 'I was born !',
+    example: '15/12/2002',
     description: 'Date of birth of the User',
     format: 'date',
-  }) 
-  @IsNotEmpty()
-  @IsString()
-  readonly birthday: string; 
+  })
+  @IsNotEmpty({ message: "la date de naissance ne peux pas être vide" })
+  @IsString({ message: "l\'email doit être une chaîne de caractère" })
+  readonly birthday: string;
 }

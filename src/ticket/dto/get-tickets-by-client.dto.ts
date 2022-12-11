@@ -7,7 +7,7 @@ export class GetTicketByClientDto {
     description: 'Indentifier of the client who get his tickets',
     format: 'string',
   })
-  @IsNotEmpty()
-  @IsString()
+  @IsNotEmpty({message: "l\'id du client ne peut pas être vide"})
+  @IsString({message: "l\'id du client doit être une chaîne de caractère"}) 
   idClient: string;
 }
