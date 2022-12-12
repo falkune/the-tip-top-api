@@ -75,7 +75,7 @@ export class UserService {
     const user = new this.userModel(loginCreateSocialUser);
 
     await this.isEmailUnique(user.email);
-    this.setRegistrationInfo(user);
+    //this.setRegistrationInfo(user);
     await user.save();
     return user;
   }
@@ -246,7 +246,7 @@ export class UserService {
     let user = await this.findByEmail(createForgotPasswordDto.email);
     let forgotPassword = await this.saveForgotPassword(req, createForgotPasswordDto);
     let url = await this.generateVerifyForgotPasswordUrl(forgotPassword);
-    await this.mailService.sendForgotPasswordVerifier({ name: user.fullName, email: user.email, url: url }); 
+    //await this.mailService.sendForgotPasswordVerifier({ name: user.fullName, email: user.email, url: url }); 
 
     return {
       email: createForgotPasswordDto.email,
