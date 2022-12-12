@@ -22,7 +22,9 @@ export class MailService {
         //   name: user.name,
         //   url,
         // },
+        
       });
+      return result;
 
 
 
