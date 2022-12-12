@@ -112,11 +112,11 @@ export class TicketController {
 
 
 
-  @Post("generate-total-tickets")
+  @Post("thetiptop-generate-total-tickets")
   @HttpCode(HttpStatus.CREATED)
   @UseGuards(AuthGuard('jwt'))
   @Roles('admin')
-  @ApiOperation({ summary: 'Generate All tickets for a session' })
+ // @ApiOperation({ summary: 'Generate All tickets for a session' })
   @ApiBearerAuth()
   @ApiHeader({
     name: 'Bearer',
