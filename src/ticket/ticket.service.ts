@@ -21,6 +21,7 @@ import { UserService } from 'src/user/user.service';
 import { Session } from 'src/session/interfaces/session.interface';
 import { DeliverTicketByClientDto } from './dto/deliver-ticket-by-client.dto';
 import { DeliverTicketByAdminDto } from './dto/deliver-ticket-by-admin.dto';
+import { Group } from 'src/group/interfaces/group.interface';
 
 
 @Injectable()
@@ -37,70 +38,88 @@ export class TicketService {
 
   ) { }
 
+
+
+  /*******************
+   * GENERATE TICKET *
+   *******************/
+
+
+  async createTicket(generateTicketDto: CreateTicketDto): Promise<Array<Ticket>> {
+
+    let [ticket] = await this.ticketModel.aggregate(
+      [
+        { $match: { idSession: generateTicketDto.idSession } },  // add ticket (isDelivered and haveIdClient) cond
+        {
+          $sample: { size: 1 }
+        }
+      ]
+    )
+
+    return ticket;
+  }
+
+
+
+
+
+
+
+
   /*****************
    * CREATE TICKET *
    *****************/
 
-  async createTicket(createTicketDto: CreateTicketDto): Promise<Ticket> {
-    const numberOfCreatedTickets = await this.getNumberOfCreatedTicketsInsideSession(createTicketDto?.idSession);
+  async generateTickets(createTicketDto: CreateTicketDto): Promise<any> {
 
+    let session = await this.sessionService.getOneSession(createTicketDto.idSession); ///  get all information about the session passed by the user 
+    let groups = await this.groupService.getAllGroups();
+    let cal = 1
+    groups.forEach(async group => {
 
-    const maxTicketForSession = await this.getMaxTicketForSession(
-      createTicketDto?.idSession,
-    );
-
-
-
-
-
-
-
-
-    if (numberOfCreatedTickets < maxTicketForSession) {
-
-      createTicketDto.ticketNumber = this.getRandomInt();
-
-
-
-      let ticketFound = await this.getTicketByNumber(
-        createTicketDto.ticketNumber,
+      let totalTicketForGroup = (group?.percentage * session.limitTicket) / 100;
+      let currentTicketsForGroup = await this.getAllTicketForGroup(
+        group?._id.valueOf(), session?._id.valueOf()
       );
-
-
-      let randGroup = await this.getRandomGroup(0, createTicketDto.idSession);
-      console.table([numberOfCreatedTickets, maxTicketForSession, ticketFound, createTicketDto.ticketNumber, randGroup]);
-
-
-      let trying = maxTicketForSession;
-
-
-      createTicketDto.idGroup = randGroup;
-      while (
-        ticketFound?.ticketNumber?.toString() ==
-        createTicketDto?.ticketNumber?.toString() &&
-        trying > 0
-      ) {
-        createTicketDto.ticketNumber = this.getRandomInt();
-        ticketFound = await this.getTicketByNumber(
-          createTicketDto.ticketNumber,
-        );
-        trying--;
-
-      }
-
-      if (trying == 0) {
-        throw new ServiceUnavailableException('La limite des numéro possibles est atteint');
-      } else {
-
-
+      totalTicketForGroup =  totalTicketForGroup - currentTicketsForGroup;
+      for (let index = 0; index < totalTicketForGroup; index++) {
+        createTicketDto.ticketNumber = await this.generateTicketNumber(session?._id.valueOf())
+        createTicketDto.idGroup = group?._id.valueOf()
         const ticket = new this.ticketModel(createTicketDto);
         await ticket.save();
-        return ticket;
+        console.log(cal);
+        cal++; //
       }
-    } else {
-      throw new ServiceUnavailableException('La limite de ticket est atteint');
-    }
+    });
+
+    return { message: 'Generation de ticket terminée' }
   }
+
+
+
+  /************************
+   * GENERATE TICKET NUMBER *
+   ************************/
+
+
+  private async generateTicketNumber(idSession: string): Promise<string> {
+
+    let ticketNumber = this.getRandomInt();
+    let ticketFound = await this.getTicketByNumberAndSessionId(
+      ticketNumber, idSession
+    );
+
+    while (ticketFound?.ticketNumber?.toString() == ticketNumber.toString()) {
+      let ticketNumber = this.getRandomInt();
+      ticketFound = await this.getTicketByNumberAndSessionId(
+        ticketNumber, idSession
+      );
+    }
+
+    return ticketNumber.toString();
+  }
+
+
 
   /*********
    * BINGO *
@@ -117,7 +136,7 @@ export class TicketService {
 
 
     if (clientId) {
-      console.log(clientId);
+
       let session = await this.sessionService.setWinner(idSession, clientId)
 
       let winner = await this.userService.getOneUser(clientId)
@@ -335,6 +354,7 @@ export class TicketService {
         el.deliveredTicketPercentage = el.numberOfTickets == 0 ? (0).toFixed(2) : ((el.deliveredTicket * 100) / el.numberOfTickets).toFixed(2);
         el.notDeliveredTicketPercentage = el.numberOfTickets == 0 ? (0).toFixed(2) : ((el.notDeliveredTicket * 100) / el.numberOfTickets).toFixed(2);
         el.groupName = group?.description;
+        el.percentage = group?.percentage;
         if (index === array.length - 1) resolve(ticketGroupedByGroupId);
 
       })
@@ -356,6 +376,19 @@ export class TicketService {
 
   async getOneTicket(id: string): Promise<Ticket> {
     return await this.ticketModel.findById(id);
+  }
+
+  /***************************************
+   * GET TICKET BY NUMBER AND SESSION ID *
+   ***************************************/
+
+
+  async getTicketByNumberAndSessionId(ticketNumber: String, idSession: string): Promise<Ticket> {
+
+    return await this.ticketModel.findOne(
+
+      { $and: [{ ticketNumber: { $eq: ticketNumber } }, { idSession: { $eq: idSession } }] });
+
   }
 
   /***************************
@@ -663,7 +696,12 @@ export class TicketService {
    * GET RANDOM GROUP IN ORDER TO AFFECT IT TO A TICKET *
    ******************************************************/
 
-  private async getRandomGroup(i: number, idSession: string): Promise<string> {
+  private async getRandomGroup(i: number, idSession: string, maxTicketForSession: number): Promise<string> {
+
+
+    let groups = await this.groupService.getAllGroups();
+
+
 
 
     return await this.groupService.getAllGroups().then(async (groups) => {
@@ -681,22 +719,15 @@ export class TicketService {
           group?._id.valueOf(), idSession
         );
 
-        console.info("Group", ticketsForGroup);
-
-
-
-
         let session = await this.sessionService.getOneSession(idSession)
-
         let totalTicketForGroup = (group?.percentage * session.limitTicket) / 100;
-
         if (ticketsForGroup < totalTicketForGroup) {
 
           if (num < s) {
             return group._id.valueOf();
           } else {
 
-            let tmp_alllTicket, tmp_limitTicket;
+            let tmp_alllTicket;
             await this.getAllTicketForGroup(lastGroup._id.valueOf(), idSession).then((val) => {
               tmp_alllTicket = val;
             });
@@ -705,7 +736,7 @@ export class TicketService {
             return tmp_alllTicket <
               limitticketOfTheLastGroup
               ? lastGroup?._id.valueOf()
-              : await this.getRandomGroup(0, idSession).then((nu) =>
+              : await this.getRandomGroup(0, idSession, maxTicketForSession).then((nu) =>
                 nu
               );
           }
@@ -714,10 +745,9 @@ export class TicketService {
           return this.getAllTicketForGroup(lastGroup._id.valueOf(), idSession) <
             lastGroup?.limitTicket
             ? lastGroup._id.valueOf()
-            : this.getRandomGroup(i + 1, idSession);
+            : this.getRandomGroup(i + 1, idSession, maxTicketForSession);
         }
       }
-
       return null;
     });
   }
@@ -771,4 +801,60 @@ export class TicketService {
       throw new NotAcceptableException('Le numéro du ticket fournit est incorrecte ou il n\'as pas encore été réclamé pas un client.');
     }
   }
+
+
+
+
+
+
+  // private async getRandomGroup(i: number, idSession: string, maxTicketForSession: number): Promise<string> {
+
+
+  //   return await this.groupService.getAllGroups().then(async (groups) => {
+
+  //     let group = groups[i];
+  //     let lastGroup = groups[groups.length - 1];
+  //     let num = Math.random() * 100,
+  //       s = 0;
+  //     i = i == groups.length ? 0 : i;
+
+  //     for (; i < groups.length; ++i) {
+  //       s += group?.percentage;
+
+  //       let ticketsForGroup = await this.getAllTicketForGroup(
+  //         group?._id.valueOf(), idSession
+  //       );
+
+  //       let session = await this.sessionService.getOneSession(idSession)
+  //       let totalTicketForGroup = (group?.percentage * session.limitTicket) / 100;
+  //       if (ticketsForGroup < totalTicketForGroup) {
+
+  //         if (num < s) {
+  //           return group._id.valueOf();
+  //         } else {
+
+  //           let tmp_alllTicket;
+  //           await this.getAllTicketForGroup(lastGroup._id.valueOf(), idSession).then((val) => {
+  //             tmp_alllTicket = val;
+  //           });
+
+  //           let limitticketOfTheLastGroup = (lastGroup?.percentage * session.limitTicket) / 100
+  //           return tmp_alllTicket <
+  //             limitticketOfTheLastGroup
+  //             ? lastGroup?._id.valueOf()
+  //             : await this.getRandomGroup(0, idSession, maxTicketForSession).then((nu) =>
+  //               nu
+  //             );
+  //         }
+  //       } else {
+
+  //         return this.getAllTicketForGroup(lastGroup._id.valueOf(), idSession) <
+  //           lastGroup?.limitTicket
+  //           ? lastGroup._id.valueOf()
+  //           : this.getRandomGroup(i + 1, idSession, maxTicketForSession);
+  //       }
+  //     }
+  //     return null;
+  //   });
+  // }
 }
