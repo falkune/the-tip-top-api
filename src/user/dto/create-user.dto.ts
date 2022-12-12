@@ -18,7 +18,7 @@ export class CreateUserDto {
   })
   @IsNotEmpty({ message: "Le nom complet ne peux pas être vide" })
   @IsString({ message: "Le nom complet doit être une chaîne de caractère" })
-  @MinLength(5, { message: "le nom complet doit être au minimum composé de 5 caractère" })
+  @MinLength(6, { message: "le nom complet doit être au minimum composé de 5 caractère" })
   @MaxLength(255, { message: "le nom complet pas doit être au maximum composé de 255 caractère" })
   readonly fullName: string;
 
