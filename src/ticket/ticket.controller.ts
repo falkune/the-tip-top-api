@@ -109,6 +109,24 @@ export class TicketController {
     return await this.ticketService.createTicket(createTicketDto);
   }
 
+
+
+
+  @Post("generate-total-tickets")
+  @HttpCode(HttpStatus.CREATED)
+  @UseGuards(AuthGuard('jwt'))
+  @Roles('admin')
+  @ApiOperation({ summary: 'Generate All tickets for a session' })
+  @ApiBearerAuth()
+  @ApiHeader({
+    name: 'Bearer',
+    description: 'the token we need for auth.',
+  })
+  @ApiCreatedResponse({})
+  async generateTickets(@Body() createTicketDto: CreateTicketDto) {
+    return await this.ticketService.generateTickets(createTicketDto);
+  }
+
   @Put(':id')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard('jwt'))
