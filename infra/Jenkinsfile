@@ -110,7 +110,7 @@ pipeline{
                   }  
 
             stage("Testing"){
-                    when {branch "dev"}
+                    when {expression { BRANCH_NAME ==~ /(dev|feature)/ }}
                     environment {
                       SCANNER_HOME = tool 'SonarQubeScanner'
                       NODEJS_HOME = "${tool 'Node 16.18.1'}"
