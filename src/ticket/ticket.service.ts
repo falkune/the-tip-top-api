@@ -75,7 +75,8 @@ export class TicketService {
     let session = await this.sessionService.getOneSession(createTicketDto.idSession); ///  get all information about the session passed by the user 
     let groups = await this.groupService.getAllGroups();
     let cal = 1
-    groups.forEach(async group => {
+    if(session){
+        groups.forEach(async group => {
 
       let totalTicketForGroup = (group?.percentage * session.limitTicket) / 100;
       let currentTicketsForGroup = await this.getAllTicketForGroup(
@@ -91,6 +92,10 @@ export class TicketService {
         cal++; //
       }
     });
+    }else{
+      throw new ConflictException("Désolé l'\id de session n'\existe pas dans la base de données.")
+    }
+  
 
     return { message: 'Generation de ticket terminée' }
   }
