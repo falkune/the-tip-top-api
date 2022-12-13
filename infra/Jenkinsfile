@@ -78,7 +78,7 @@ pipeline{
                             
                                      }
 
-                            stage("Deploy Stage"){ 
+                             /*stage("Deploy Stage"){ 
                                 stages{
                                     stage ('To Release'){
                                         when{ branch 'release'}
@@ -103,7 +103,7 @@ pipeline{
                                         }
                                     }
                                 }                 
-                            }
+                            }*/
                         }
                   }  
 
@@ -181,6 +181,13 @@ pipeline{
                         }
                      }
                 }
+
+                  post {
+                     // Clean after build
+                    always {
+                        cleanWs()
+                        deleteDir()
+                  }
                
             }
          }
@@ -189,6 +196,6 @@ pipeline{
 
         stage("end") {
              steps{echo "Successful end"}
-                }
+            }
         } 
    }
