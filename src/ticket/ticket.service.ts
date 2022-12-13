@@ -21,7 +21,7 @@ import { UserService } from 'src/user/user.service';
 import { Session } from 'src/session/interfaces/session.interface';
 import { DeliverTicketByClientDto } from './dto/deliver-ticket-by-client.dto';
 import { DeliverTicketByAdminDto } from './dto/deliver-ticket-by-admin.dto';
-import { Group } from 'src/group/interfaces/group.interface';
+import { info } from 'console';
 
 
 @Injectable()
@@ -49,14 +49,29 @@ export class TicketService {
 
     let [ticket] = await this.ticketModel.aggregate(
       [
-        { $match: { idSession: generateTicketDto.idSession } },  // add ticket (isDelivered and haveIdClient) cond
+        {
+          $match:
+
+          {
+            $and: [{ idSession: { $eq: generateTicketDto.idSession } }, { isDelivered: { $eq: false }, }, {
+              $or: [{ idClient: { $exists: false } }, { idClient: { $eq: null } }]
+            },]
+          }
+
+        },  // add ticket (isDelivered and haveIdClient) cond
         {
           $sample: { size: 1 }
         }
       ]
-    )
 
-    return ticket;
+   
+    )
+   if(ticket){
+        return ticket;
+      }else{
+         throw new UnprocessableEntityException('Désolé il n\'y as plus plus de ticket disponible');
+      }
+    
   }
 
 
