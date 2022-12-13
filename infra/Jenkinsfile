@@ -181,12 +181,12 @@ pipeline{
                         }
 
                         post {
-                     // Clean after build
-                    always {
-                        cleanWs()
-                        deleteDir()
-                  }
-                     }
+                            // Clean after build
+                            always {
+                                cleanWs()
+                                deleteDir()
+                             }
+                       }
                 }
 
                
@@ -200,3 +200,4 @@ pipeline{
             }
         } 
    }
+}
