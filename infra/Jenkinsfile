@@ -78,7 +78,7 @@ pipeline{
                             
                                      }
 
-                          /* */  stage("Deploy Stage"){ 
+                            stage("Deploy Stage"){ 
                                 stages{
                                     stage ('To Release'){
                                         when{ branch 'release'}
@@ -180,15 +180,15 @@ pipeline{
                           waitForQualityGate abortPipeline: false
                         }
                      }
-
-                }   
-           }
+                }
+               
+            }
+         }
       }
     }
 
         stage("end") {
-             steps{echo "Successful end"}
-            }
+                steps{echo "Successful end"}
+          }
         } 
    }
-}
