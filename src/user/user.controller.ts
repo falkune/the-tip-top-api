@@ -62,13 +62,17 @@ export class UserController {
     const urlGenerator = this.generateUrl(user);
     // return urlGenerator;
 
-    return this.mailService.sendUserConfirmation({
+    let sendEmail = await this.mailService.sendUserConfirmation({
       email: user.email,
       name: user.fullName,
       url: urlGenerator,
     });
-
+    console.log(sendEmail)
+    if(sendEmail){
+      return {"message": "un mail de confirmation vous a ete envoye"}
+    }
   }
+  
 
   private generateUrl(user: User) {
     const emailParams = {

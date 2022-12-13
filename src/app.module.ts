@@ -17,10 +17,8 @@ import { UrlGeneratorModule } from 'nestjs-url-generator';
 
 
 @Module({
-  imports: [
-    //MongooseModule.forRoot("mongodb://localhost:27017/thetiptop"),
+  imports: [ 
     MongooseModule.forRoot(process.env.MONGO_URI),
-
     UrlGeneratorModule.forRoot({
       secret: process.env.APP_KEY, // optional, required only for signed URL
       appUrl: process.env.APP_URL

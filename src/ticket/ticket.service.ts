@@ -21,7 +21,7 @@ import { UserService } from 'src/user/user.service';
 import { Session } from 'src/session/interfaces/session.interface';
 import { DeliverTicketByClientDto } from './dto/deliver-ticket-by-client.dto';
 import { DeliverTicketByAdminDto } from './dto/deliver-ticket-by-admin.dto';
-import { Group } from 'src/group/interfaces/group.interface';
+import { info } from 'console';
 
 
 @Injectable()
@@ -49,14 +49,29 @@ export class TicketService {
 
     let [ticket] = await this.ticketModel.aggregate(
       [
-        { $match: { idSession: generateTicketDto.idSession } },  // add ticket (isDelivered and haveIdClient) cond
+        {
+          $match:
+
+          {
+            $and: [{ idSession: { $eq: generateTicketDto.idSession } }, { isDelivered: { $eq: false }, }, {
+              $or: [{ idClient: { $exists: false } }, { idClient: { $eq: null } }]
+            },]
+          }
+
+        },  // add ticket (isDelivered and haveIdClient) cond
         {
           $sample: { size: 1 }
         }
       ]
-    )
 
-    return ticket;
+   
+    )
+   if(ticket){
+        return ticket;
+      }else{
+         throw new UnprocessableEntityException('Désolé il n\'y as plus plus de ticket disponible');
+      }
+    
   }
 
 
@@ -75,22 +90,32 @@ export class TicketService {
     let session = await this.sessionService.getOneSession(createTicketDto.idSession); ///  get all information about the session passed by the user 
     let groups = await this.groupService.getAllGroups();
     let cal = 1
-    groups.forEach(async group => {
+    if (session && groups) {
+      groups.forEach(async group => {
 
-      let totalTicketForGroup = (group?.percentage * session.limitTicket) / 100;
-      let currentTicketsForGroup = await this.getAllTicketForGroup(
-        group?._id.valueOf(), session?._id.valueOf()
-      );
-      totalTicketForGroup =  totalTicketForGroup - currentTicketsForGroup;
-      for (let index = 0; index < totalTicketForGroup; index++) {
-        createTicketDto.ticketNumber = await this.generateTicketNumber(session?._id.valueOf())
-        createTicketDto.idGroup = group?._id.valueOf()
-        const ticket = new this.ticketModel(createTicketDto);
-        await ticket.save();
-        console.log(cal);
-        cal++; //
-      }
-    });
+        if (group) {
+          let totalTicketForGroup = (group?.percentage * session.limitTicket) / 100;
+          let currentTicketsForGroup = await this.getAllTicketForGroup(
+            group?._id.valueOf(), session?._id.valueOf()
+          );
+          totalTicketForGroup = totalTicketForGroup - currentTicketsForGroup;
+          for (let index = 0; index < totalTicketForGroup; index++) {
+            createTicketDto.ticketNumber = await this.generateTicketNumber(session?._id.valueOf())
+            createTicketDto.idGroup = group?._id.valueOf()
+            const ticket = new this.ticketModel(createTicketDto);
+            await ticket.save();
+            console.log(cal);
+            cal++; //
+          }
+        } else {
+          throw new ConflictException("Désolé il n\'y pas de groupe pour la création de ce ticket .")
+
+        }
+      });
+    } else {
+      throw new ConflictException("Désolé l'\id de session n'\existe pas dans la base de données.")
+    }
+
 
     return { message: 'Generation de ticket terminée' }
   }
