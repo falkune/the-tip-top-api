@@ -179,15 +179,16 @@ pipeline{
                            // true = set pipeline to UNSTABLE, false = don't
                           waitForQualityGate abortPipeline: false
                         }
-                     }
-                }
 
-                  post {
+                        post {
                      // Clean after build
                     always {
                         cleanWs()
                         deleteDir()
                   }
+                     }
+                }
+
                
             }
          }
