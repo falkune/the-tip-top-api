@@ -78,7 +78,7 @@ pipeline{
                             
                                      }
 
-                             /*stage("Deploy Stage"){ 
+                          /* */  stage("Deploy Stage"){ 
                                 stages{
                                     stage ('To Release'){
                                         when{ branch 'release'}
@@ -103,7 +103,7 @@ pipeline{
                                         }
                                     }
                                 }                 
-                            }*/
+                            }
                         }
                   }  
 
@@ -179,18 +179,19 @@ pipeline{
                            // true = set pipeline to UNSTABLE, false = don't
                           waitForQualityGate abortPipeline: false
                         }
+                     }
 
-                        post {
-                            // Clean after build
-                            always {
-                                cleanWs()
-                                deleteDir()
-                             }
-                       }
-                }
-
+                      post {
+                     // Clean after build
+                    always {
+                        cleanWs()
+                        deleteDir()
+                  }
                
             }
+                }
+
+                 
          }
       }
     }
