@@ -75,22 +75,32 @@ export class TicketService {
     let session = await this.sessionService.getOneSession(createTicketDto.idSession); ///  get all information about the session passed by the user 
     let groups = await this.groupService.getAllGroups();
     let cal = 1
-    groups.forEach(async group => {
+    if (session && groups) {
+      groups.forEach(async group => {
 
-      let totalTicketForGroup = (group?.percentage * session.limitTicket) / 100;
-      let currentTicketsForGroup = await this.getAllTicketForGroup(
-        group?._id.valueOf(), session?._id.valueOf()
-      );
-      totalTicketForGroup =  totalTicketForGroup - currentTicketsForGroup;
-      for (let index = 0; index < totalTicketForGroup; index++) {
-        createTicketDto.ticketNumber = await this.generateTicketNumber(session?._id.valueOf())
-        createTicketDto.idGroup = group?._id.valueOf()
-        const ticket = new this.ticketModel(createTicketDto);
-        await ticket.save();
-        console.log(cal);
-        cal++; //
-      }
-    });
+        if (group) {
+          let totalTicketForGroup = (group?.percentage * session.limitTicket) / 100;
+          let currentTicketsForGroup = await this.getAllTicketForGroup(
+            group?._id.valueOf(), session?._id.valueOf()
+          );
+          totalTicketForGroup = totalTicketForGroup - currentTicketsForGroup;
+          for (let index = 0; index < totalTicketForGroup; index++) {
+            createTicketDto.ticketNumber = await this.generateTicketNumber(session?._id.valueOf())
+            createTicketDto.idGroup = group?._id.valueOf()
+            const ticket = new this.ticketModel(createTicketDto);
+            await ticket.save();
+            console.log(cal);
+            cal++; //
+          }
+        } else {
+          throw new ConflictException("Désolé il n\'y pas de groupe pour la création de ce ticket .")
+
+        }
+      });
+    } else {
+      throw new ConflictException("Désolé l'\id de session n'\existe pas dans la base de données.")
+    }
+
 
     return { message: 'Generation de ticket terminée' }
   }
