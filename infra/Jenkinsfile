@@ -62,7 +62,6 @@ pipeline{
                                         stage("Push Images To Registry"){
                                 
                                            steps{
-                                                 echo "push postgres image to the docker private registry"
                                                  sh "infra/scripts/registry.sh db"
                                                  echo "push api image to the private registry"
                                                  sh "infra/scripts/registry.sh api"        
@@ -189,7 +188,7 @@ pipeline{
     }
 
         stage("end") {
-             steps{echo "Successful end"}
-                }
+                steps{echo "Successful end"}
+          }
         } 
    }
