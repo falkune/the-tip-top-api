@@ -55,7 +55,6 @@ pipeline{
                                     stages {
                                         stage("login"){ 
                                             steps{
-                                                echo "Login to the docker private registry"
                                                 sh "docker login -u ${REGISTRY_CRED_USR} -p ${REGISTRY_CRED_PSW} https://${DOCKER_PRIVATE_REGISTER}"    
                                               }
                                          }
@@ -63,7 +62,6 @@ pipeline{
                                         stage("Push Images To Registry"){
                                 
                                            steps{
-                                                 echo "push postgres image to the docker private registry"
                                                  sh "infra/scripts/registry.sh db"
                                                  echo "push api image to the private registry"
                                                  sh "infra/scripts/registry.sh api"        
@@ -110,7 +108,7 @@ pipeline{
                   }  
 
             stage("Testing"){
-                    when {branch "dev"}
+                    when {expression { BRANCH_NAME ==~ /(dev|feature)/ }}
                     environment {
                       SCANNER_HOME = tool 'SonarQubeScanner'
                       NODEJS_HOME = "${tool 'Node 16.18.1'}"
@@ -190,7 +188,7 @@ pipeline{
     }
 
         stage("end") {
-             steps{echo "Successful end"}
-                }
+                steps{echo "Successful end"}
+          }
         } 
    }
