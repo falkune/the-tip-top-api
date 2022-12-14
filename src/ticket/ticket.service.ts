@@ -104,7 +104,7 @@ export class TicketService {
             createTicketDto.idGroup = group?._id.valueOf()
             const ticket = new this.ticketModel(createTicketDto);
             await ticket.save();
-            console.log(cal);
+            
             cal++; //
           }
         } else {
