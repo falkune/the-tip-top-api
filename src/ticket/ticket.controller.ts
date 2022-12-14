@@ -301,7 +301,7 @@ export class TicketController {
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard('jwt'))
   @Roles('client', 'admin')
-  @ApiOperation({ summary: 'Get ticket by clientId' })
+  @ApiOperation({ summary: 'Get ticket by clientId FOR USER' })
   @ApiBearerAuth()
   @ApiHeader({
     name: 'Bearer',
@@ -317,6 +317,32 @@ export class TicketController {
       getTicketByClientDto.idClient
     );
   }
+
+
+
+
+
+  @Post('history-client')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard('jwt'))
+  @Roles('admin')
+  @ApiOperation({ summary: 'Get ticket by clientId FOR ADMIN' })
+  @ApiBearerAuth()
+  @ApiHeader({
+    name: 'Bearer',
+    description: 'the token we need for auth.',
+  })
+  @ApiOkResponse({})
+  async getHistoryClient(
+    @Body() getTicketByClientDto: GetTicketByClientDto,
+  ) {
+
+
+    return await this.ticketService.getHistoryClient(
+      getTicketByClientDto.idClient
+    );
+  }
+
 
 
 

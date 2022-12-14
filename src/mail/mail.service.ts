@@ -10,13 +10,13 @@ export class MailService {
 
     
     const url = `${user.url}`;
-    let html = '<p>Bonjour ' + user.name + '</p><p>Veillez confirmer votre addresse email en cliant sur </p><p><a href="' + url + '">Confirmer</a></p><p>Si vous n\'avez pa été à l\'origine de cette demande , vous pouvez ignorer ce message.</p>';
+    let html = '<p>Bonjour ' + user.name + '</p><p>Veillez confirmer votre adresse email via ce <a href="' + url + '">lien</a></p> <p>Si vous n\'avez pa été à l\'origine de cette demande , vous pouvez ignorer ce message.</p>';
 
     try {
       let result = await this.mailerService.sendMail({
         to: user.email,
         from: 'info@dsp-archiwebo21-ct-df-an-cd.fr', // override default from
-        subject: 'Bienvenue au jeu de thétiptop. Confirmer votre email',
+        subject: 'Bienvenue au jeu concours de thétiptop. Confirmer votre email',
         html: html, // `.hbs` extension is appended automatically
         // context: { // ✏️ filling curly brackets with content
         //   name: user.name,
@@ -43,13 +43,13 @@ export class MailService {
 
  
     const url = `${user.url}`;
-    let html = '<p>Bonjour ' + user.name + ',</p><p>  Bienvenu au jeu thé tip top</p><p><a href="' + url + '">Verifier mes ticket maintenant </a></p>';
+    let html = '<p>Bonjour ' + user.name + ',</p><p>  Félicitation pour votre inscription !</p> <p> Vous pouvez dès à présent vous rendre sur notre site pour finaliser votre participation via ce <a href="' + url + '"> lien. </a>  </p>';
 
     try {
       let result = await this.mailerService.sendMail({
         to: user.email,
         from: 'info@dsp-archiwebo21-ct-df-an-cd.fr', // override default from
-        subject: 'Bienvenue au jeu de thétiptop. Comment jouer ?',
+        subject: 'Bienvenue au jeu concours thétiptop. Comment jouer ?',
         html: html, // `.hbs` extension is appended automatically
         // context: { // ✏️ filling curly brackets with content
         //   name: user.name,
