@@ -64,14 +64,14 @@ export class TicketService {
         }
       ]
 
-   
+
     )
-   if(ticket){
-        return ticket;
-      }else{
-         throw new UnprocessableEntityException('Désolé il n\'y as plus plus de ticket disponible');
-      }
-    
+    if (ticket) {
+      return ticket;
+    } else {
+      throw new UnprocessableEntityException('Désolé il n\'y as plus plus de ticket disponible');
+    }
+
   }
 
 
@@ -104,7 +104,7 @@ export class TicketService {
             createTicketDto.idGroup = group?._id.valueOf()
             const ticket = new this.ticketModel(createTicketDto);
             await ticket.save();
-            
+
             cal++; //
           }
         } else {
@@ -191,53 +191,8 @@ export class TicketService {
 
           $group: {
             _id: '$idGroup',
-            "numberOfTickets": {
-              "$sum": {
-                "$cond": [
-                  {
-                    "$eq": [
-                      "$idSession", idSession
-                    ]
-                  }, 1,
-                  0]
-              }
-            },
-            "notClaimbedTicket": {
-              "$sum": {
-                "$cond": [
-                  {
-                    "$and": [
-                      {
-                        "$or": [
-                          {
-                            "$eq": [
-                              {
-                                "$type": "$idClient"
-                              },
-                              "missing"
-                            ]
-                          },
-                          {
-                            "$eq": [
-                              "$idClient",
-                              null
-                            ]
-                          }
-                        ]
-                      },
-                      {
-                        "$eq": [
-                          "$idSession", idSession
-                        ]
-                      }
-                    ]
 
-                  },
-                  1,
-                  0
-                ]
-              }
-            },
+
             "claimbedTicket": {
               "$sum": {
 
@@ -290,33 +245,6 @@ export class TicketService {
                 ]
               }
             },
-            "notDeliveredTicket": {
-              "$sum": {
-
-
-                "$cond": [
-                  {
-
-                    "$and": [
-                      {
-                        "$eq": [
-                          "$isDelivered", false
-                        ]
-                      },
-                      {
-                        "$eq": [
-                          "$idSession", idSession
-                        ]
-                      }
-                    ]
-
-
-                  },
-                  1,
-                  0
-                ]
-              }
-            },
           }
 
         }
@@ -324,35 +252,14 @@ export class TicketService {
 
     ticketGroupedByGroupId = await this.formatTicketGroupedByGroupId(ticketGroupedByGroupId, session);
     let sessionTotalClaimbedTicket = await this.getComputedVal(ticketGroupedByGroupId, "claimbedTicket");
-    let sessionTotalNotClaimbedTicket = await this.getComputedVal(ticketGroupedByGroupId, "notClaimbedTicket");
-
-    let sessionTotalNumberOfTickets = await this.getComputedVal(ticketGroupedByGroupId, "numberOfTickets");
-    let sessionTotalNumberOfTicketsPercentage = sessionTotalNumberOfTickets == 0 ? (0).toFixed(2) : ((sessionTotalNumberOfTickets * 100) / session.limitTicket).toFixed(2);
-
-    let sessionClaimbedTicketPercentage = sessionTotalNumberOfTickets == 0 ? (0).toFixed(2) : ((sessionTotalClaimbedTicket * 100) / sessionTotalNumberOfTickets).toFixed(2);
-    let sessionNotClaimbedTicketPercentage = sessionTotalNotClaimbedTicket == 0 ? (0).toFixed(2) : ((sessionTotalNotClaimbedTicket * 100) / sessionTotalNumberOfTickets).toFixed(2);
 
     let sessionTotalDeliveredTicket = await this.getComputedVal(ticketGroupedByGroupId, "deliveredTicket");
-    let sessionTotalNotDeliveredTicket = await this.getComputedVal(ticketGroupedByGroupId, "notDeliveredTicket");
-
-    let sessionDeliveredTicketPercentage = sessionTotalNumberOfTickets == 0 ? (0).toFixed(2) : ((sessionTotalDeliveredTicket * 100) / sessionTotalNumberOfTickets).toFixed(2);
-    let sessionNotDeliveredTicketPercentage = sessionTotalNotDeliveredTicket == 0 ? (0).toFixed(2) : ((sessionTotalNotDeliveredTicket * 100) / sessionTotalNumberOfTickets).toFixed(2);
-
 
 
 
     return {
       groupStats: ticketGroupedByGroupId, sessionStats: {
-        sessionTotalClaimbedTicket: sessionTotalClaimbedTicket,
-        sessionTotalNotClaimbedTicket: sessionTotalNotClaimbedTicket,
-        sessionTotalNumberOfTickets: sessionTotalNumberOfTickets,
-        sessionTotalDeliveredTicket: sessionTotalDeliveredTicket,
-        sessionTotalNotDeliveredTicket: sessionTotalNotDeliveredTicket,
-        sessionClaimbedTicketPercentage: sessionClaimbedTicketPercentage,
-        sessionNotClaimbedTicketPercentage: sessionNotClaimbedTicketPercentage,
-        sessionTotalNumberOfTicketsPercentage: sessionTotalNumberOfTicketsPercentage,
-        sessionDeliveredTicketPercentage: sessionDeliveredTicketPercentage,
-        sessionNotDeliveredTicketPercentage: sessionNotDeliveredTicketPercentage
+        sessionTotalClaimbedTicket, sessionTotalDeliveredTicket
       }
     };
   }
@@ -373,11 +280,6 @@ export class TicketService {
         let group = await this.groupService.getOneGroup(el._id);
         el.limitTicket = Math.round((session.limitTicket * group.percentage) / 100);
         el.sessionLimitTicket = session.limitTicket;
-        el.numberOfTicketsPercentage = el.limitTicket == 0 ? (0).toFixed(2) : ((el.numberOfTickets * 100) / el.limitTicket).toFixed(2);
-        el.claimbedTicketPercentage = el.numberOfTickets == 0 ? (0).toFixed(2) : ((el.claimbedTicket * 100) / el.numberOfTickets).toFixed(2);
-        el.notClaimbedTicketPercentage = el.numberOfTickets == 0 ? (0).toFixed(2) : ((el.notClaimbedTicket * 100) / el.numberOfTickets).toFixed(2);
-        el.deliveredTicketPercentage = el.numberOfTickets == 0 ? (0).toFixed(2) : ((el.deliveredTicket * 100) / el.numberOfTickets).toFixed(2);
-        el.notDeliveredTicketPercentage = el.numberOfTickets == 0 ? (0).toFixed(2) : ((el.notDeliveredTicket * 100) / el.numberOfTickets).toFixed(2);
         el.groupName = group?.description;
         el.percentage = group?.percentage;
         if (index === array.length - 1) resolve(ticketGroupedByGroupId);
