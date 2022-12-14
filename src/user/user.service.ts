@@ -402,65 +402,102 @@ export class UserService {
    * GET NUMBER OF USER BY DAY *
    *****************************/
 
-  async getNumberOfRegistrationByDay(params): Promise<Array<User>> {
+  async getNumberOfRegistrationByDay(params): Promise<any> {
 
-    let user;
+
+    let registrationsByDay: any = [];
+    let totalRegistrations: number = 0;
+    let todaysNumberOfRegistration: number = 0;
     try {
-      user = this.sessionService.getOneSession(params.idSession).then(async (session) => {
-        console.log(session);
+      let session = await this.sessionService.getOneSession(params.idSession);
 
-        return await this.userModel.aggregate(
-          [
+      registrationsByDay = await this.userModel.aggregate(
+        [
+
+          {
+            $match:
 
             {
-              $match:
 
-              {
-
-                createdAt: {
-                  $gte: new Date(session.startDate),
-                  $lt: new Date(session.endDate)
+              createdAt: {
+                $gte: new Date(session.startDate),
+                $lt: new Date(session.endDate)
               }
 
-                
-              },
 
             },
 
+          },
 
-            {
-              $group: {
-                _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
 
-                "nomberOfRegitration": {
-                  "$sum": {
-                    "$cond": [
-                      {
-                        "$and": [
-                          {
-                            $gte: ["$createdAt", new Date(session.startDate)]
-                          },
-                          {
-                            $lte: ["$createdAt", new Date(session.endDate)]
-                          },
-                        ]
-                      },
-                      1,
-                      0
-                    ]
-                  }
-                },
-              }
+          {
+            $group: {
+              _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+
+              "numberOfRegistration": {
+                "$sum": {
+                  "$cond": [
+                    {
+                      "$and": [
+                        {
+                          $gte: ["$createdAt", new Date(session.startDate)]
+                        },
+                        {
+                          $lte: ["$createdAt", new Date(session.endDate)]
+                        },
+                      ]
+                    },
+                    1,
+                    0
+                  ]
+                }
+              },
             }
-          ]).sort({ _id: 1 });
+          }
+        ]).sort({ _id: 1 });
+
+
+
+      let today = new Date();
+
+
+
+
+
+
+      if (Array.isArray(registrationsByDay)) {
+
+
+
+        return new Promise((resolve, reject) => {
+          registrationsByDay.forEach(async (el, index, array) => {
+
+            if (el?._id == this.formatDateYYMMDD(today)) {
+              todaysNumberOfRegistration = el?.numberOfRegistration
+            }
+
+            totalRegistrations = totalRegistrations + el?.numberOfRegistration;
+
+            if (index === array.length - 1) resolve({registrationsByDay,totalRegistrations,todaysNumberOfRegistration});
+
+          })
+
+        });
+
+ 
+      }else{
+       return {registrationsByDay,totalRegistrations,todaysNumberOfRegistration}
       }
-      )
+
+
     } catch (error) {
       throw new NotAcceptableException('Sorry the sesssionId is Wrong', error);
     }
 
 
-    return user;
+
+
+   
 
 
 
@@ -709,6 +746,21 @@ export class UserService {
       day = '0' + day;
 
     return [day, month, year].join('/');
+  }
+
+
+  private formatDateYYMMDD(date) {
+    var d = new Date(date),
+      month = '' + (d.getMonth() + 1),
+      day = '' + d.getDate(),
+      year = d.getFullYear();
+
+    if (month.length < 2)
+      month = '0' + month;
+    if (day.length < 2)
+      day = '0' + day;
+
+    return [year, month, day].join('-');
   }
 
 
