@@ -47,6 +47,14 @@ import { MailService } from 'src/mail/mail.service';
 export class UserController {
   constructor(private readonly userService: UserService, private maileService: MailerService, private mailService: MailService, private readonly urlGeneratorService: UrlGeneratorService) { }
 
+
+
+
+
+
+
+
+
   // ╔═╗╦ ╦╔╦╗╦ ╦╔═╗╔╗╔╔╦╗╦╔═╗╔═╗╔╦╗╔═╗
   // ╠═╣║ ║ ║ ╠═╣║╣ ║║║ ║ ║║  ╠═╣ ║ ║╣
   // ╩ ╩╚═╝ ╩ ╩ ╩╚═╝╝╚╝ ╩ ╩╚═╝╩ ╩ ╩ ╚═╝
@@ -122,7 +130,7 @@ export class UserController {
   async verifyEmail(@Param() emailParams: EmailParams,
     @Query() emailQuery: EmailQuery, @Res() res: Response) {
     let verify = await this.userService.verifyEmail(emailQuery.verification);
-    console.log(verify);
+    
     return res.render('requestVerifyEmail', {
       layout: 'layout_main',
       message: { isExpired: !verify.fullName, text: verify.fullName, url: process.env.FRONT_END_URL },
@@ -131,6 +139,18 @@ export class UserController {
   }
 
 
+
+
+    @Post('createFakUsers')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'createFakUsers' })
+  @ApiCreatedResponse({})
+  async createFakUsers() {
+
+   return  await this.userService.createFakUsers();
+
+    
+  }
 
 
 
@@ -208,7 +228,7 @@ export class UserController {
   async forgotPasswordVerify(@Param() emailParams: EmailParams,
     @Query() emailQuery: EmailQuery, @Res() res: Response, @Req() req: Request) {
     let verify = await this.userService.forgotPasswordVerify(req, emailQuery.verification);
-    console.log(verify);
+    
     return res.render('requestVerifyForgetPassword', {
       layout: 'layout_main',
       message: { isExpired: !verify.email, text: verify.email, url: process.env.FRONT_END_URL },
