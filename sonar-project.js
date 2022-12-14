@@ -15,5 +15,5 @@ sonarqubeScanner(
             'sonar.log.level': 'DEBUG',
             'sonar.verbose': 'true'
         }
-    }, () => { console.log('Error Occurred while scanning');}
+    }, () => { }
     );
