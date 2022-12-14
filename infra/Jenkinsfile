@@ -188,12 +188,7 @@ pipeline{
       }
     }
 
-        stage("end") {
-                steps{echo "Successful end"}
-          }
-        }
-
-         post{
+    post{
              success{
                  echo "====++++only when successful++++===="
                  emailext body: "${currentBuild.currentResult}: Job ${env.JOB_NAME}\nMore Info can be found here: ${env.BUILD_URL}", 
@@ -210,4 +205,9 @@ pipeline{
                  to: 'donaldfotso44@gmail.com'
              }
          } 
+
+        stage("end") {
+                steps{echo "Successful end"}
+          }
+        }
    }
