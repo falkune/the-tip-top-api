@@ -79,8 +79,8 @@ pipeline{
                                      }
 
                             stage("Deploy Stage"){ 
+                                when{expression { BRANCH_NAME ==~ /(release|main)/}}
                                 stages{
-                                    when{expression { BRANCH_NAME ==~ /(release|main)/}}
                                     stage ('To Release'){
                                         steps{
                                             sshagent(credentials: ['devops-sshkey-private']) {
