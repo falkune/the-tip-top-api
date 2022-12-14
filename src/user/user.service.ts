@@ -538,7 +538,7 @@ export class UserService {
       this.mailService.sendWelcomeEmail({
         email: userCreated.email,
         name: userCreated.fullName,
-        url: "https://dev.dsp-archiwebo21-ct-df-an-cd.fr/",
+        url: process.env.APP_URL,
       });
       return userCreated;
     }
