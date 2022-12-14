@@ -188,11 +188,12 @@ pipeline{
       }
     }
 
-    post{
+        
+         post{
              success{
                  echo "====++++only when successful++++===="
                  emailext body: "${currentBuild.currentResult}: Job ${env.JOB_NAME}\nMore Info can be found here: ${env.BUILD_URL}", 
-                 subject: "${PROJECT_NAME} - Build # ${BUILD_NUMBER} - ${BUILD_STATUS}",
+                 subject: "$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS",
                  recipientProviders: [developers(), requestor()],
                  to: 'donaldfotso44@gmail.com'        
               }
@@ -206,8 +207,6 @@ pipeline{
              }
          } 
 
-        stage("end") {
-                steps{echo "Successful end"}
-          }
+        
         }
    }
