@@ -54,89 +54,6 @@ export class UserService {
     private readonly urlGeneratorService: UrlGeneratorService
   ) { }
 
-  /*******************
-   * CREATE FAK USER *
-   *******************/
-
-
-  NewformatDate(date) {
-    var d = new Date(date),
-      month = '' + (d.getMonth() + 1),
-      day = '' + d.getDate(),
-      year = d.getFullYear();
-
-    if (month.length < 2)
-      month = '0' + month;
-    if (day.length < 2)
-      day = '0' + day;
-
-    return [year, month, day].join('-');
-  }
-
-
-  async createFakUsers(): Promise<any> {
-
-
-    console.log("Cheikh")
-
-
-    const fakerUser = (): any => ({
-      fullName: faker.name.firstName() + " " + faker.name.lastName(),
-      email: faker.internet.email(),
-      verified: true,
-      password: faker.internet.password(),
-      birthday: this.NewformatDate(faker.date.between('1950-01-01T00:00:00.000Z', '2004-01-01T00:00:00.000Z'))
-    });
-
-
-
-    let tikets = [];
-
-    for (let index = 0; index < 100; index++) {
-      let user = await fakerUser();
-      user = new this.userModel(user);
-      await this.isEmailUnique(user.email);
-      this.setRegistrationInfo(user);
-      await user.save();
-
-
-
-      let tikets = await this.ticketModel.find({
-        $or: [{ idClient: { $exists: false } }, { idClient: { $eq: null } }],
-      }).limit(100);
-
-
-
-      for (let index = 0; index < tikets.length; index++) {
-        const element = tikets[index];
-        await this.ticketModel.findOneAndUpdate({ _id: element._id }, { $set: { "idClient": user.id.valueOf() } })
-      }
-
-      console.log(index)
-    };
-    return { message: tikets.length }
-  }
-
-
-
-
-
-
-
-
-
-
-  //   /// --------- Users ---------------
-  //   for (let i = 0; i < fakerUser; i++) {
-
-  //   }faker.date.between('2020-01-01T00:00:00.000Z', '2030-01-01T00:00:00.000Z')
-  // const user = new this.userModel();
-  // await this.isEmailUnique(user.email);
-  // this.setRegistrationInfo(user);
-  // await user.save();
-  // return user;
-
-
 
   /***************
    * UPDATE USER *
@@ -331,7 +248,7 @@ export class UserService {
     let user = await this.findByEmail(createForgotPasswordDto.email);
     let forgotPassword = await this.saveForgotPassword(req, createForgotPasswordDto);
     let url = await this.generateVerifyForgotPasswordUrl(forgotPassword);
-    //await this.mailService.sendForgotPasswordVerifier({ name: user.fullName, email: user.email, url: url }); 
+    await this.mailService.sendForgotPasswordVerifier({ name: user.fullName, email: user.email, url: url }); 
 
     return {
       email: createForgotPasswordDto.email,
@@ -478,15 +395,15 @@ export class UserService {
 
             totalRegistrations = totalRegistrations + el?.numberOfRegistration;
 
-            if (index === array.length - 1) resolve({registrationsByDay,totalRegistrations,todaysNumberOfRegistration});
+            if (index === array.length - 1) resolve({ registrationsByDay, totalRegistrations, todaysNumberOfRegistration });
 
           })
 
         });
 
- 
-      }else{
-       return {registrationsByDay,totalRegistrations,todaysNumberOfRegistration}
+
+      } else {
+        return { registrationsByDay, totalRegistrations, todaysNumberOfRegistration }
       }
 
 
@@ -497,7 +414,7 @@ export class UserService {
 
 
 
-   
+
 
 
 
@@ -621,7 +538,7 @@ export class UserService {
       this.mailService.sendWelcomeEmail({
         email: userCreated.email,
         name: userCreated.fullName,
-        url: "https://dev.dsp-archiwebo21-ct-df-an-cd.fr/",
+        url: process.env.APP_URL,
       });
       return userCreated;
     }

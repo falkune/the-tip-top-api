@@ -1,6 +1,7 @@
 import * as mongoose from 'mongoose';
 import * as validator from 'validator';
 import * as bcrypt from 'bcrypt';
+import { faker } from '@faker-js/faker';
 
 export const UserSchema = new mongoose.Schema(
   {
@@ -65,12 +66,17 @@ export const UserSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
+
+    createdAt    : { type: Date},
   },
+ 
+
   {
     versionKey: false,
-    timestamps: true,
-  },
+    timestamps: { updatedAt: true},}
+  
 );
+
 
 // UserSchema.pre('save', async function(next: mongoose.HookNextFunction) {
 UserSchema.pre('save', async function (next) {
@@ -83,7 +89,7 @@ UserSchema.pre('save', async function (next) {
     // tslint:disable-next-line:no-string-literal
     const hashed = await bcrypt.hash(this['password'], 10);
     // tslint:disable-next-line:no-string-literal
-    this['password'] = hashed;
+    this['password'] = hashed; 
     return next();
   } catch (err) {
     return next(err);
