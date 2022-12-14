@@ -140,20 +140,7 @@ export class UserController {
 
 
 
-
-    @Post('createFakUsers')
-  @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'createFakUsers' })
-  @ApiCreatedResponse({})
-  async createFakUsers() {
-
-   return  await this.userService.createFakUsers();
-
-    
-  }
-
-
-
+ 
 
   /*******************
    * LOGIN CLASSIQUE *
@@ -258,7 +245,7 @@ export class UserController {
    * USERS-BY-SESSION *
    ********************/
 
-  @Post('users-by-session')
+  @Get('users-by-session/:idSession')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard('jwt'))
   @Roles('admin')
@@ -270,12 +257,12 @@ export class UserController {
   })
   @ApiOkResponse({})
   async getTicketBySession(
-    @Body() getTicketBySessionDto: GetTicketBySessionDto,
+    @Param() params
   ) {
 
 
     return await this.userService.getUsersBySession(
-      getTicketBySessionDto.idSession,
+      params.idSession
     );
   }
 
@@ -292,8 +279,6 @@ export class UserController {
   @ApiParam({ name: 'id', description: 'id of the session' })
   @ApiOkResponse({})
   async getNumberOfRegistrationByDay(@Param() params) {
-
-
     return await this.userService.getNumberOfRegistrationByDay(params);
   }
 

@@ -90,7 +90,7 @@ export class UserService {
 
 
 
-let tikets = [];
+    let tikets = [];
 
     for (let index = 0; index < 100; index++) {
       let user = await fakerUser();
@@ -99,44 +99,44 @@ let tikets = [];
       this.setRegistrationInfo(user);
       await user.save();
 
-      
+
 
       let tikets = await this.ticketModel.find({
-          $or: [{ idClient: { $exists: false } }, { idClient: { $eq: null } }],
-        }).limit(100);
-
-   
-      
-        for (let index = 0; index < tikets.length; index++) {
-          const element = tikets[index];
-          await this.ticketModel.findOneAndUpdate({ _id: element._id }, { $set: { "idClient": user.id.valueOf() } })
-        }
-
-        console.log(index)
-      };
-      return { message: tikets.length }
-    }
-    
-  
+        $or: [{ idClient: { $exists: false } }, { idClient: { $eq: null } }],
+      }).limit(100);
 
 
 
-   
+      for (let index = 0; index < tikets.length; index++) {
+        const element = tikets[index];
+        await this.ticketModel.findOneAndUpdate({ _id: element._id }, { $set: { "idClient": user.id.valueOf() } })
+      }
+
+      console.log(index)
+    };
+    return { message: tikets.length }
+  }
 
 
 
 
-    //   /// --------- Users ---------------
-    //   for (let i = 0; i < fakerUser; i++) {
 
-    //   }faker.date.between('2020-01-01T00:00:00.000Z', '2030-01-01T00:00:00.000Z')
-    // const user = new this.userModel();
-    // await this.isEmailUnique(user.email);
-    // this.setRegistrationInfo(user);
-    // await user.save();
-    // return user;
 
-  
+
+
+
+
+  //   /// --------- Users ---------------
+  //   for (let i = 0; i < fakerUser; i++) {
+
+  //   }faker.date.between('2020-01-01T00:00:00.000Z', '2030-01-01T00:00:00.000Z')
+  // const user = new this.userModel();
+  // await this.isEmailUnique(user.email);
+  // this.setRegistrationInfo(user);
+  // await user.save();
+  // return user;
+
+
 
   /***************
    * UPDATE USER *
@@ -170,7 +170,7 @@ let tikets = [];
    ****************/
 
   async verifyEmail(verification: string) {
-    
+
     const user = await this.findByVerification(verification);
     if (user && user.fullName) {
       await this.setUserAsVerified(user);
@@ -381,26 +381,7 @@ let tikets = [];
    *****************************/
 
   async getUsersBySession(idSession: string): Promise<Array<User>> {
-    let tickets = await this.ticketModel.find({
-      idSession: { $eq: idSession },
-      $and: [
-        {
-          $or: [{ idClient: { $exists: true } }, { idClient: { $ne: null } }],
-        },
-      ],
-    });
-
-    let idClients = [];
-    for (let n = 1; n < tickets.length; ++n) {
-      tickets.forEach((ticket) => {
-        idClients.push(ticket.idClient);
-      });
-    }
-
-    console.log(new Set(idClients));
-    
-
-
+    const idClients = await this.ticketModel.distinct("idClient", { "idSession": idSession });
     return await this.userModel.find({ _id: { $in: idClients } }, { idClient: 1, fullName: 1, email: 1, birthday: 1, userLocation: 1 });
   }
 
@@ -426,9 +407,27 @@ let tikets = [];
     let user;
     try {
       user = this.sessionService.getOneSession(params.idSession).then(async (session) => {
+        console.log(session);
 
         return await this.userModel.aggregate(
           [
+
+            {
+              $match:
+
+              {
+
+                createdAt: {
+                  $gte: new Date(session.startDate),
+                  $lt: new Date(session.endDate)
+              }
+
+                
+              },
+
+            },
+
+
             {
               $group: {
                 _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
