@@ -125,7 +125,7 @@ export class SessionService {
 
   async deleteSession(id: string): Promise<any> {
     let res = await this.SessionModel.findByIdAndDelete(id);
-    console.log(res);
+    
 
 
     if (!res) {

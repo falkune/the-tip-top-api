@@ -47,6 +47,14 @@ import { MailService } from 'src/mail/mail.service';
 export class UserController {
   constructor(private readonly userService: UserService, private maileService: MailerService, private mailService: MailService, private readonly urlGeneratorService: UrlGeneratorService) { }
 
+
+
+
+
+
+
+
+
   // ╔═╗╦ ╦╔╦╗╦ ╦╔═╗╔╗╔╔╦╗╦╔═╗╔═╗╔╦╗╔═╗
   // ╠═╣║ ║ ║ ╠═╣║╣ ║║║ ║ ║║  ╠═╣ ║ ║╣
   // ╩ ╩╚═╝ ╩ ╩ ╩╚═╝╝╚╝ ╩ ╩╚═╝╩ ╩ ╩ ╚═╝
@@ -122,7 +130,7 @@ export class UserController {
   async verifyEmail(@Param() emailParams: EmailParams,
     @Query() emailQuery: EmailQuery, @Res() res: Response) {
     let verify = await this.userService.verifyEmail(emailQuery.verification);
-    console.log(verify);
+    
     return res.render('requestVerifyEmail', {
       layout: 'layout_main',
       message: { isExpired: !verify.fullName, text: verify.fullName, url: process.env.FRONT_END_URL },
@@ -132,8 +140,7 @@ export class UserController {
 
 
 
-
-
+ 
 
   /*******************
    * LOGIN CLASSIQUE *
@@ -208,7 +215,7 @@ export class UserController {
   async forgotPasswordVerify(@Param() emailParams: EmailParams,
     @Query() emailQuery: EmailQuery, @Res() res: Response, @Req() req: Request) {
     let verify = await this.userService.forgotPasswordVerify(req, emailQuery.verification);
-    console.log(verify);
+    
     return res.render('requestVerifyForgetPassword', {
       layout: 'layout_main',
       message: { isExpired: !verify.email, text: verify.email, url: process.env.FRONT_END_URL },
@@ -238,7 +245,7 @@ export class UserController {
    * USERS-BY-SESSION *
    ********************/
 
-  @Post('users-by-session')
+  @Get('users-by-session/:idSession')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard('jwt'))
   @Roles('admin')
@@ -250,12 +257,12 @@ export class UserController {
   })
   @ApiOkResponse({})
   async getTicketBySession(
-    @Body() getTicketBySessionDto: GetTicketBySessionDto,
+    @Param() params
   ) {
 
 
     return await this.userService.getUsersBySession(
-      getTicketBySessionDto.idSession,
+      params.idSession
     );
   }
 
@@ -272,8 +279,6 @@ export class UserController {
   @ApiParam({ name: 'id', description: 'id of the session' })
   @ApiOkResponse({})
   async getNumberOfRegistrationByDay(@Param() params) {
-
-
     return await this.userService.getNumberOfRegistrationByDay(params);
   }
 

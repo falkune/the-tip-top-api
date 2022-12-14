@@ -29,8 +29,11 @@ import { SessionService } from '../session/session.service';
 import { LoginCreateSocialUser } from './dto/login-create-social.dto';
 import { UrlGeneratorService } from 'nestjs-url-generator/dist/url-generator.service';
 import { EmailQuery } from './query/email.query';
-import { UserController } from './user.controller'; 
+import { UserController } from './user.controller';
 import { TicketService } from 'src/ticket/ticket.service';
+import { faker } from '@faker-js/faker';
+
+
 
 
 
@@ -50,6 +53,88 @@ export class UserService {
     private readonly logger: LoggerService,
     private readonly urlGeneratorService: UrlGeneratorService
   ) { }
+
+  /*******************
+   * CREATE FAK USER *
+   *******************/
+
+
+  NewformatDate(date) {
+    var d = new Date(date),
+      month = '' + (d.getMonth() + 1),
+      day = '' + d.getDate(),
+      year = d.getFullYear();
+
+    if (month.length < 2)
+      month = '0' + month;
+    if (day.length < 2)
+      day = '0' + day;
+
+    return [year, month, day].join('-');
+  }
+
+
+  async createFakUsers(): Promise<any> {
+
+
+    console.log("Cheikh")
+
+
+    const fakerUser = (): any => ({
+      fullName: faker.name.firstName() + " " + faker.name.lastName(),
+      email: faker.internet.email(),
+      verified: true,
+      password: faker.internet.password(),
+      birthday: this.NewformatDate(faker.date.between('1950-01-01T00:00:00.000Z', '2004-01-01T00:00:00.000Z'))
+    });
+
+
+
+    let tikets = [];
+
+    for (let index = 0; index < 100; index++) {
+      let user = await fakerUser();
+      user = new this.userModel(user);
+      await this.isEmailUnique(user.email);
+      this.setRegistrationInfo(user);
+      await user.save();
+
+
+
+      let tikets = await this.ticketModel.find({
+        $or: [{ idClient: { $exists: false } }, { idClient: { $eq: null } }],
+      }).limit(100);
+
+
+
+      for (let index = 0; index < tikets.length; index++) {
+        const element = tikets[index];
+        await this.ticketModel.findOneAndUpdate({ _id: element._id }, { $set: { "idClient": user.id.valueOf() } })
+      }
+
+      console.log(index)
+    };
+    return { message: tikets.length }
+  }
+
+
+
+
+
+
+
+
+
+
+  //   /// --------- Users ---------------
+  //   for (let i = 0; i < fakerUser; i++) {
+
+  //   }faker.date.between('2020-01-01T00:00:00.000Z', '2030-01-01T00:00:00.000Z')
+  // const user = new this.userModel();
+  // await this.isEmailUnique(user.email);
+  // this.setRegistrationInfo(user);
+  // await user.save();
+  // return user;
 
 
 
@@ -85,7 +170,7 @@ export class UserService {
    ****************/
 
   async verifyEmail(verification: string) {
-    console.log(verification);
+
     const user = await this.findByVerification(verification);
     if (user && user.fullName) {
       await this.setUserAsVerified(user);
@@ -96,15 +181,15 @@ export class UserService {
     };
   }
 
-    /******************
-   * GET ONE User *
-   ******************/
+  /******************
+ * GET ONE User *
+ ******************/
 
-     async getOneUser(id: string): Promise<User> {
-    
-      return await this.userModel.findById(id);
-    }
-  
+  async getOneUser(id: string): Promise<User> {
+
+    return await this.userModel.findById(id);
+  }
+
 
   /**********
    * LOGOUT *
@@ -296,26 +381,7 @@ export class UserService {
    *****************************/
 
   async getUsersBySession(idSession: string): Promise<Array<User>> {
-    let tickets = await this.ticketModel.find({
-      idSession: { $eq: idSession },
-      $and: [
-        {
-          $or: [{ idClient: { $exists: true } }, { idClient: { $ne: null } }],
-        },
-      ],
-    });
-
-    let idClients = [];
-    for (let n = 1; n < tickets.length; ++n) {
-      tickets.forEach((ticket) => {
-        idClients.push(ticket.idClient);
-      });
-    }
-
-    console.log(new Set(idClients));
-    console.log(tickets);
-  
-
+    const idClients = await this.ticketModel.distinct("idClient", { "idSession": idSession });
     return await this.userModel.find({ _id: { $in: idClients } }, { idClient: 1, fullName: 1, email: 1, birthday: 1, userLocation: 1 });
   }
 
@@ -341,9 +407,27 @@ export class UserService {
     let user;
     try {
       user = this.sessionService.getOneSession(params.idSession).then(async (session) => {
+        console.log(session);
 
         return await this.userModel.aggregate(
           [
+
+            {
+              $match:
+
+              {
+
+                createdAt: {
+                  $gte: new Date(session.startDate),
+                  $lt: new Date(session.endDate)
+              }
+
+                
+              },
+
+            },
+
+
             {
               $group: {
                 _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
