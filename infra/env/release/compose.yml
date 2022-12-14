@@ -46,6 +46,8 @@ services:
       - MONGO_URI=mongodb://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/thetiptop
       - FRONT_END_URL=https://dev.dsp-archiwebo21-ct-df-an-cd.fr
       - APP_URL=https://api.dev.dsp-archiwebo21-ct-df-an-cd.fr
+      - NODE_OPTIONS=--max_old_space_size=6096
+
 
     volumes:
        - /etc/localtime:/etc/localtime:ro
