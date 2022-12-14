@@ -242,7 +242,7 @@ export class UserController {
   /***************************
    *     RESET-PASSWORD      * 
    ***************************/
-
+  @Post('reset-password')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Reset password after verify reset password' })
   @ApiBearerAuth()
