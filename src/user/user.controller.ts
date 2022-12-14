@@ -49,6 +49,21 @@ export class UserController {
 
 
 
+  // @Post('createFakUsers')
+  // @HttpCode(HttpStatus.CREATED)
+  // @ApiOperation({ summary: 'createFakUsers' })
+  // @ApiCreatedResponse({})
+  // async createFakUsers() {
+
+  //  return  await this.userService.createFakUsers();
+
+    
+  // }
+
+
+
+
+
 
 
 

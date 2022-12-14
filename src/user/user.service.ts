@@ -54,89 +54,6 @@ export class UserService {
     private readonly urlGeneratorService: UrlGeneratorService
   ) { }
 
-  /*******************
-   * CREATE FAK USER *
-   *******************/
-
-
-  NewformatDate(date) {
-    var d = new Date(date),
-      month = '' + (d.getMonth() + 1),
-      day = '' + d.getDate(),
-      year = d.getFullYear();
-
-    if (month.length < 2)
-      month = '0' + month;
-    if (day.length < 2)
-      day = '0' + day;
-
-    return [year, month, day].join('-');
-  }
-
-
-  async createFakUsers(): Promise<any> {
-
-
-    console.log("Cheikh")
-
-
-    const fakerUser = (): any => ({
-      fullName: faker.name.firstName() + " " + faker.name.lastName(),
-      email: faker.internet.email(),
-      verified: true,
-      password: faker.internet.password(),
-      birthday: this.NewformatDate(faker.date.between('1950-01-01T00:00:00.000Z', '2004-01-01T00:00:00.000Z'))
-    });
-
-
-
-    let tikets = [];
-
-    for (let index = 0; index < 100; index++) {
-      let user = await fakerUser();
-      user = new this.userModel(user);
-      await this.isEmailUnique(user.email);
-      this.setRegistrationInfo(user);
-      await user.save();
-
-
-
-      let tikets = await this.ticketModel.find({
-        $or: [{ idClient: { $exists: false } }, { idClient: { $eq: null } }],
-      }).limit(100);
-
-
-
-      for (let index = 0; index < tikets.length; index++) {
-        const element = tikets[index];
-        await this.ticketModel.findOneAndUpdate({ _id: element._id }, { $set: { "idClient": user.id.valueOf() } })
-      }
-
-      console.log(index)
-    };
-    return { message: tikets.length }
-  }
-
-
-
-
-
-
-
-
-
-
-  //   /// --------- Users ---------------
-  //   for (let i = 0; i < fakerUser; i++) {
-
-  //   }faker.date.between('2020-01-01T00:00:00.000Z', '2030-01-01T00:00:00.000Z')
-  // const user = new this.userModel();
-  // await this.isEmailUnique(user.email);
-  // this.setRegistrationInfo(user);
-  // await user.save();
-  // return user;
-
-
 
   /***************
    * UPDATE USER *
@@ -331,7 +248,7 @@ export class UserService {
     let user = await this.findByEmail(createForgotPasswordDto.email);
     let forgotPassword = await this.saveForgotPassword(req, createForgotPasswordDto);
     let url = await this.generateVerifyForgotPasswordUrl(forgotPassword);
-    //await this.mailService.sendForgotPasswordVerifier({ name: user.fullName, email: user.email, url: url }); 
+    await this.mailService.sendForgotPasswordVerifier({ name: user.fullName, email: user.email, url: url }); 
 
     return {
       email: createForgotPasswordDto.email,
@@ -402,65 +319,102 @@ export class UserService {
    * GET NUMBER OF USER BY DAY *
    *****************************/
 
-  async getNumberOfRegistrationByDay(params): Promise<Array<User>> {
+  async getNumberOfRegistrationByDay(params): Promise<any> {
 
-    let user;
+
+    let registrationsByDay: any = [];
+    let totalRegistrations: number = 0;
+    let todaysNumberOfRegistration: number = 0;
     try {
-      user = this.sessionService.getOneSession(params.idSession).then(async (session) => {
-        console.log(session);
+      let session = await this.sessionService.getOneSession(params.idSession);
 
-        return await this.userModel.aggregate(
-          [
+      registrationsByDay = await this.userModel.aggregate(
+        [
+
+          {
+            $match:
 
             {
-              $match:
 
-              {
-
-                createdAt: {
-                  $gte: new Date(session.startDate),
-                  $lt: new Date(session.endDate)
+              createdAt: {
+                $gte: new Date(session.startDate),
+                $lt: new Date(session.endDate)
               }
 
-                
-              },
 
             },
 
+          },
 
-            {
-              $group: {
-                _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
 
-                "nomberOfRegitration": {
-                  "$sum": {
-                    "$cond": [
-                      {
-                        "$and": [
-                          {
-                            $gte: ["$createdAt", new Date(session.startDate)]
-                          },
-                          {
-                            $lte: ["$createdAt", new Date(session.endDate)]
-                          },
-                        ]
-                      },
-                      1,
-                      0
-                    ]
-                  }
-                },
-              }
+          {
+            $group: {
+              _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+
+              "numberOfRegistration": {
+                "$sum": {
+                  "$cond": [
+                    {
+                      "$and": [
+                        {
+                          $gte: ["$createdAt", new Date(session.startDate)]
+                        },
+                        {
+                          $lte: ["$createdAt", new Date(session.endDate)]
+                        },
+                      ]
+                    },
+                    1,
+                    0
+                  ]
+                }
+              },
             }
-          ]).sort({ _id: 1 });
+          }
+        ]).sort({ _id: 1 });
+
+
+
+      let today = new Date();
+
+
+
+
+
+
+      if (Array.isArray(registrationsByDay)) {
+
+
+
+        return new Promise((resolve, reject) => {
+          registrationsByDay.forEach(async (el, index, array) => {
+
+            if (el?._id == this.formatDateYYMMDD(today)) {
+              todaysNumberOfRegistration = el?.numberOfRegistration
+            }
+
+            totalRegistrations = totalRegistrations + el?.numberOfRegistration;
+
+            if (index === array.length - 1) resolve({ registrationsByDay, totalRegistrations, todaysNumberOfRegistration });
+
+          })
+
+        });
+
+
+      } else {
+        return { registrationsByDay, totalRegistrations, todaysNumberOfRegistration }
       }
-      )
+
+
     } catch (error) {
       throw new NotAcceptableException('Sorry the sesssionId is Wrong', error);
     }
 
 
-    return user;
+
+
+
 
 
 
@@ -584,7 +538,7 @@ export class UserService {
       this.mailService.sendWelcomeEmail({
         email: userCreated.email,
         name: userCreated.fullName,
-        url: "https://dev.dsp-archiwebo21-ct-df-an-cd.fr/",
+        url: process.env.APP_URL,
       });
       return userCreated;
     }
@@ -709,6 +663,21 @@ export class UserService {
       day = '0' + day;
 
     return [day, month, year].join('/');
+  }
+
+
+  private formatDateYYMMDD(date) {
+    var d = new Date(date),
+      month = '' + (d.getMonth() + 1),
+      day = '' + d.getDate(),
+      year = d.getFullYear();
+
+    if (month.length < 2)
+      month = '0' + month;
+    if (day.length < 2)
+      day = '0' + day;
+
+    return [year, month, day].join('-');
   }
 
 
