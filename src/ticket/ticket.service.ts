@@ -574,6 +574,17 @@ export class TicketService {
   }
 
 
+    /*************************
+ * GET TICKET BY CLIENTID *
+ *************************/
+
+
+    async getHistoryClient(idClient: string): Promise<Array<Ticket>> {
+     
+      
+      return await this.ticketModel.find({ idClient: { $eq: idClient } });
+    }
+
 
   /***************************************
    * COUNT THE NUMBER OF CREATED TICKETS *
