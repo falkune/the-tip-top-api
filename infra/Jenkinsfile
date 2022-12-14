@@ -185,6 +185,14 @@ pipeline{
             }
          }
 
+      }
+    }
+
+        stage("end") {
+                steps{echo "Successful end"}
+          }
+        }
+
          post{
              success{
                  echo "====++++only when successful++++===="
@@ -201,12 +209,5 @@ pipeline{
                  subject: "${PROJECT_NAME} - Build # ${BUILD_NUMBER} - ${BUILD_STATUS}"
                  body: "${currentBuild.currentResult}: Job ${env.JOB_NAME}\nMore Info can be found here: ${env.BUILD_URL}"
              }
-         }
-      }
-    }
-
-        stage("end") {
-                steps{echo "Successful end"}
-          }
-        } 
+         } 
    }
