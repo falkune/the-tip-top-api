@@ -289,7 +289,7 @@ export class UserService {
     await this.resetUserPassword(resetPasswordDto);
     return {
       email: resetPasswordDto.email,
-      message: 'password successfully changed.',
+      message: 'mot de passe changé avec success.',
     };
   }
 
