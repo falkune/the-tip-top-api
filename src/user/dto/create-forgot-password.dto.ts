@@ -10,10 +10,12 @@ export class CreateForgotPasswordDto {
       minLength: 5,
       maxLength: 255,
     })
-    @IsNotEmpty()
-    @IsString()
-    @MinLength(5)
-    @MaxLength(255)
-    @IsEmail()
+    
+
+    @IsNotEmpty({ message: "l\'email ne peux pas être vide" })
+    @IsString({ message: "l\'email doit être une chaîne de caractère" })
+    @MinLength(5, { message: "l\'email ne doit être au minimum composé de 5 caractère" })
+    @MaxLength(255, { message: "l\'email ne pas doit être au maximum composé de 255 caractère" })
+    @IsEmail({ message: "l\'email doit être un email" })
     readonly email: string;
   }

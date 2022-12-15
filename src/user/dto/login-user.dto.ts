@@ -11,11 +11,13 @@ export class LoginUserDto {
       minLength: 5,
       maxLength: 255,
     })
-    @IsNotEmpty()
-    @IsString()
-    @MinLength(5)
-    @MaxLength(255)
-    @IsEmail()
+
+    @IsNotEmpty({ message: "l\'email ne peux pas être vide" })
+    @IsString({ message: "l\'email doit être une chaîne de caractère" })
+    @MinLength(5, { message: "l\'email ne doit être au minimum composé de 5 caractère" })
+    @MaxLength(255, { message: "l\'email ne pas doit être au maximum composé de 255 caractère" })
+    @IsEmail({ message: "l\'email doit être un email" })
+    
     readonly email: string;
 
     @ApiProperty({
@@ -25,9 +27,11 @@ export class LoginUserDto {
       minLength: 5,
       maxLength: 1024,
     })
-    @IsNotEmpty()
-    @IsString()
-    @MinLength(5)
-    @MaxLength(1024)
+    
+
+    @IsNotEmpty({ message: "le mot de passe ne peux pas être vide" })
+    @IsString({ message: "le mot de passe une chaîne de caractère" })
+    @MinLength(5, { message: "le mot de passe doit être au minimum composé de 5 caractère" })
+    @MaxLength(1024, { message: "le mot de passe doit être au maximum composé de 1024 caractère" })
     readonly password: string;
   }
