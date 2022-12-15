@@ -93,7 +93,7 @@ export class AuthService {
     refreshToken: refreshToken
   });
   if (res.acknowledged && res.deletedCount == 1) {
-     return {message:"Successfully logged out"}
+     return {message:"Vous êtes bien déconnecté"}
   }else{
     throw new UnauthorizedException('User has been already logged out.')
   }
