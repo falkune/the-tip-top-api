@@ -82,6 +82,7 @@ pipeline{
                                 when{expression { BRANCH_NAME ==~ /(release|main)/}}
                                 stages{
                                     stage ('To Release'){
+                                        when {branch 'release'}
                                         steps{
                                             sshagent(credentials: ['devops-sshkey-private']) {
                                                 echo "copy release infra folder env on prod remote"
