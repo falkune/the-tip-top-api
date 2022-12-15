@@ -13,7 +13,7 @@ import { ConfigModule } from '@nestjs/config';
 import { FacebookStrategy } from './auth/strategies/facebook.strategy';
 import { GoogleStrategy } from './auth/strategies/google.strategy';
 import { UrlGeneratorModule } from 'nestjs-url-generator';
-//import { urlGeneratorModuleConfig } from 'configs/signed-url.config';
+//import { urlGeneratorModuleConfig } from 'configs/signed-url.config'; v
 
 
 @Module({
