@@ -12,10 +12,10 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { ConfigModule } from '@nestjs/config';
 import { FacebookStrategy } from './auth/strategies/facebook.strategy';
 import { GoogleStrategy } from './auth/strategies/google.strategy';
-import { UrlGeneratorModule } from 'nestjs-url-generator';
-//import { urlGeneratorModuleConfig } from 'configs/signed-url.config'; v
-
-
+import { UrlGeneratorModule } from 'nestjs-url-generator'; 
+import { ScheduleModule } from '@nestjs/schedule';
+ 
+ 
 @Module({
   imports: [ 
     MongooseModule.forRoot(process.env.MONGO_URI),
@@ -32,6 +32,7 @@ import { UrlGeneratorModule } from 'nestjs-url-generator';
         },
       }
     }),
+    ScheduleModule.forRoot(),
     UserModule,
     AuthModule,
     TicketModule,
