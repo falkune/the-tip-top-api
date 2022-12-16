@@ -8,9 +8,12 @@ import {
   Inject,
   UnprocessableEntityException,
 } from '@nestjs/common';
+
+
+
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-
+import { Cron } from '@nestjs/schedule';
 import { Ticket } from './interfaces/ticket.interface';
 import { GroupService } from '../group/group.service';
 import { CreateTicketDto } from './dto/create-ticket.dto';
@@ -21,8 +24,7 @@ import { UserService } from 'src/user/user.service';
 import { Session } from 'src/session/interfaces/session.interface';
 import { DeliverTicketByClientDto } from './dto/deliver-ticket-by-client.dto';
 import { DeliverTicketByAdminDto } from './dto/deliver-ticket-by-admin.dto';
-import { info } from 'console';
-
+import { fi } from 'date-fns/locale';
 
 @Injectable()
 export class TicketService {
@@ -73,6 +75,7 @@ export class TicketService {
     }
 
   }
+
 
 
 
@@ -152,8 +155,19 @@ export class TicketService {
 
 
 
-  async bingo(idSession: string): Promise<any> {
 
+
+  @Cron(' * * * * * *')
+  log() {
+    this.sessionService.getCurrentSession().then((session) => {
+      if ((new Date() >= new Date(session[0]?.endDate?.toString())) && (!session[0]?.winner || session[0]?.winner == "")) {
+        this.bingo(session[0]?._id);
+      }
+    })
+  }
+
+  async bingo(idSession: string): Promise<any> {
+    console.log('Bingo Bingo Bingo', new Date());
 
     const clientIds = await this.ticketModel.distinct("idClient", { "idSession": idSession });
     let clientId = clientIds[Math.floor(Math.random() * clientIds.length)];
@@ -161,10 +175,11 @@ export class TicketService {
 
 
     if (clientId) {
-
-      let session = await this.sessionService.setWinner(idSession, clientId)
-
       let winner = await this.userService.getOneUser(clientId)
+
+      let session = await this.sessionService.setWinner(idSession, winner?.email);
+
+
 
       return { session, winner }
 
@@ -174,122 +189,6 @@ export class TicketService {
 
 
   }
-
-  // /************************
-  //  * GET TICKET STATISTICS *
-  //  ************************/
-
-  // async getTicketStats(idSession: string): Promise<Object> {
-
-  //   let session = await this.sessionService.getOneSession(idSession);
-
-
-  //   let ticketGroupedByGroupId = await this.ticketModel.aggregate(
-  //     [
-
-  //       {
-
-  //         $group: {
-  //           _id: '$idGroup',
-
-
-  //           "claimbedTicket": {
-  //             "$sum": {
-
-
-  //               "$cond": [
-  //                 {
-
-  //                   "$and": [
-  //                     {
-  //                       $gte: ["$idClient", null]
-  //                     },
-  //                     {
-  //                       "$eq": [
-  //                         "$idSession", idSession
-  //                       ]
-  //                     }
-  //                   ]
-
-
-  //                 },
-  //                 1,
-  //                 0
-  //               ]
-  //             }
-  //           },
-  //           "deliveredTicket": {
-  //             "$sum": {
-
-
-  //               "$cond": [
-  //                 {
-
-  //                   "$and": [
-  //                     {
-  //                       "$eq": [
-  //                         "$isDelivered", true
-  //                       ]
-  //                     },
-  //                     {
-  //                       "$eq": [
-  //                         "$idSession", idSession
-  //                       ]
-  //                     }
-  //                   ]
-
-
-  //                 },
-  //                 1,
-  //                 0
-  //               ]
-  //             }
-  //           },
-  //         }
-
-  //       }
-  //     ],).sort({ _id: 1 });
-
-  //   ticketGroupedByGroupId = await this.formatTicketGroupedByGroupId(ticketGroupedByGroupId, session);
-  //   let sessionTotalClaimbedTicket = await this.getComputedVal(ticketGroupedByGroupId, "claimbedTicket");
-
-  //   let sessionTotalDeliveredTicket = await this.getComputedVal(ticketGroupedByGroupId, "deliveredTicket");
-
-
-
-  //   return {
-  //     groupStats: ticketGroupedByGroupId, sessionStats: {
-  //       sessionTotalClaimbedTicket, sessionTotalDeliveredTicket
-  //     }
-  //   };
-  // }
-
-
-  // private getComputedVal(arr: Array<any>, attr: string): Promise<number> {
-  //   return arr.reduce(function (prev, cur) {
-
-  //     return prev + cur[attr];
-  //   }, 0);
-  // }
-
-  // private formatTicketGroupedByGroupId(ticketGroupedByGroupId: Array<any>, session: Session): Promise<Array<Ticket>> {
-
-  //   return new Promise((resolve, reject) => {
-  //     ticketGroupedByGroupId.forEach(async (el, index, array) => {
-
-  //       let group = await this.groupService.getOneGroup(el._id);
-  //       el.limitTicket = Math.round((session.limitTicket * group.percentage) / 100);
-  //       el.sessionLimitTicket = session.limitTicket;
-  //       el.groupName = group?.description;
-  //       el.percentage = group?.percentage;
-  //       if (index === array.length - 1) resolve(ticketGroupedByGroupId);
-
-  //     })
-  //   });
-
-  // }
-
-
 
   /************************
    * GET TICKET STATISTICS *
@@ -574,16 +473,16 @@ export class TicketService {
   }
 
 
-    /*************************
- * GET TICKET BY CLIENTID *
- *************************/
+  /*************************
+* GET TICKET BY CLIENTID *
+*************************/
 
 
-    async getHistoryClient(idClient: string): Promise<Array<Ticket>> {
-     
-      
-      return await this.ticketModel.find({ idClient: { $eq: idClient } });
-    }
+  async getHistoryClient(idClient: string): Promise<Array<Ticket>> {
+
+
+    return await this.ticketModel.find({ idClient: { $eq: idClient } });
+  }
 
 
   /***************************************
@@ -960,6 +859,7 @@ export class TicketService {
     } else {
       throw new NotAcceptableException('Le numéro du ticket fournit est incorrecte ou il n\'as pas encore été réclamé pas un client.');
     }
+
   }
 
 

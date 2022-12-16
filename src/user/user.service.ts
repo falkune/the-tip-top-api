@@ -30,8 +30,7 @@ import { LoginCreateSocialUser } from './dto/login-create-social.dto';
 import { UrlGeneratorService } from 'nestjs-url-generator/dist/url-generator.service';
 import { EmailQuery } from './query/email.query';
 import { UserController } from './user.controller';
-import { TicketService } from 'src/ticket/ticket.service';
-import { faker } from '@faker-js/faker';
+import { TicketService } from 'src/ticket/ticket.service'; 
 
 
 
@@ -289,7 +288,7 @@ export class UserService {
     await this.resetUserPassword(resetPasswordDto);
     return {
       email: resetPasswordDto.email,
-      message: 'mot de passe changé avec success.',
+      message: 'Mot de passe changé avec success.',
     };
   }
 
@@ -408,7 +407,7 @@ export class UserService {
 
 
     } catch (error) {
-      throw new NotAcceptableException('Sorry the sesssionId is Wrong', error);
+      throw new NotAcceptableException('Sorry the sessionId is Wrong', error);
     }
 
 
@@ -475,7 +474,7 @@ export class UserService {
   private async isEmailUnique(email: string) {
     const user = await this.userModel.findOne({ email, verified: true });
     if (user) {
-      throw new BadRequestException('Email most be unique.');
+      throw new BadRequestException('L\'email doit être uninque.');
     }
   }
 
@@ -508,7 +507,7 @@ export class UserService {
   private async findByEmail(email: string): Promise<User> {
     const user = await this.userModel.findOne({ email, verified: true });
     if (!user) {
-      throw new NotFoundException('Email not found.');
+      throw new NotFoundException('Email introuvable.');
     }
     return user;
   }
@@ -558,7 +557,7 @@ export class UserService {
 
   private isUserBlocked(user) {
     if (user.blockExpires > Date.now()) {
-      throw new ConflictException('User has been blocked try later.');
+      throw new ConflictException('L\'utilisateur a été bloqué, ressayer plus tard.');
     }
   }
 
@@ -567,7 +566,7 @@ export class UserService {
     await user.save();
     if (user.loginAttempts >= this.LOGIN_ATTEMPTS_TO_BLOCK) {
       await this.blockUser(user);
-      throw new ConflictException('User blocked.');
+      throw new ConflictException('Utilisateur bloqué.');
     }
   }
 

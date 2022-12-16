@@ -75,8 +75,14 @@ export class SessionService {
   async updateSessionPut(
     id: string,
     createSessionDto: CreateSessionDto,
-  ): Promise<Session> {
-    return await this.SessionModel.findOneAndUpdate({ _id: id }, createSessionDto);
+  ): Promise<any> {
+   
+    try {
+      let session  =await this.SessionModel.findOneAndUpdate({ _id: id }, createSessionDto);
+      return {session,message :"Session mis à jour avec success"}
+    } catch (error) {
+      
+    }
 
   }
 
